@@ -2,9 +2,9 @@
 % Please edit documentation in R/simulate.R
 \name{sim_tree_shape}
 \alias{sim_tree_shape}
-\title{Ultrametric tree with given imbalance and branching-time parameters}
+\title{Ultrametric trees with given imbalance and branching-time parameters}
 \usage{
-sim_tree_shape(n, beta = 0, c = 0)
+sim_tree_shape(n, beta = 0, c = 0, nsim = 1, root_age = 1)
 }
 \arguments{
 \item{n}{Number of tips, a single integer of at least 2.}
@@ -13,19 +13,27 @@ sim_tree_shape(n, beta = 0, c = 0)
 values give more imbalanced trees.}
 
 \item{c}{Lineage dependence of the split rate, a single finite number.}
+
+\item{nsim}{Number of trees.}
+
+\item{root_age}{Age of the root (positive).}
 }
 \value{
-A binary, ultrametric \code{phylo} object with root depth 1.
+With \code{nsim = 1}, a binary, ultrametric \code{phylo} object with root
+depth \code{root_age}; otherwise a \code{multiPhylo} object with \code{nsim} such trees.
 }
 \description{
 Draws the topology with \code{\link[=rtopology_beta]{rtopology_beta()}} and the internode intervals with
-\code{\link[=intervals_lineage_rate]{intervals_lineage_rate()}}, and combines them with \code{\link[=assign_ages]{assign_ages()}}. Because
-the gamma statistic depends only on the intervals and the Colless index only
-on the topology, \code{beta} mainly controls imbalance and \code{c} mainly controls
-gamma.
+\code{\link[=intervals_lineage_rate]{intervals_lineage_rate()}}, and combines them with \code{\link[=assign_ages]{assign_ages()}}. The
+topology and the intervals are drawn independently, the gamma statistic
+depends only on the intervals and the Colless index only on the topology, so
+for a given \code{n} the realized gamma depends only on \code{c} and the realized
+Colless index only on \code{beta}. To draw trees near target values of both
+statistics, see \code{\link[=sim_tree_target]{sim_tree_target()}}.
 }
 \examples{
 set.seed(1)
 tr <- sim_tree_shape(50, beta = -1, c = -1)
 ape::gammaStat(tr)
+trees <- sim_tree_shape(50, beta = -1, c = -1, nsim = 10, root_age = 30)
 }

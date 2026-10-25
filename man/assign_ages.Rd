@@ -10,7 +10,7 @@ assign_ages(topo, g)
 \item{topo}{Binary, rooted \code{phylo} topology.}
 
 \item{g}{Internode intervals, as from \code{\link[=intervals_lineage_rate]{intervals_lineage_rate()}}
-(length \code{Ntip(topo) - 1}).}
+(length \code{Ntip(topo) - 1}, positive and finite).}
 }
 \value{
 \code{topo} with branch lengths; ultrametric, with root depth \code{sum(g)}.

@@ -1,0 +1,93 @@
+---
+title: "Simulating trees with controlled shape"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Simulating trees with controlled shape}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
+```
+
+```{r setup}
+library(treeshapesim)
+set.seed(1)
+```
+
+## Two shape statistics, two processes
+
+The gamma statistic of Pybus and Harvey (2000) summarizes the distribution of
+branching times: it is near zero for Yule trees and negative when branching
+times are concentrated near the root. The Colless index summarizes topological
+imbalance; normalized against its Yule expectation, it is near zero for Yule
+trees and positive for more imbalanced ones. `tree_shape()` returns both.
+
+`sim_tree_shape()` draws the topology from Aldous' beta-splitting model
+(`beta`) and the internode intervals from a pure-birth process in which each of
+the k lineages splits at rate k^c (`c`). The two are drawn independently, gamma
+depends only on the intervals and the Colless index only on the topology, so
+`c` moves gamma without changing the Colless index and `beta` does the
+opposite.
+
+```{r}
+yule <- sim_tree_shape(100, nsim = 50)
+early <- sim_tree_shape(100, c = -1, nsim = 50)
+imbalanced <- sim_tree_shape(100, beta = -1.5, nsim = 50)
+shapes <- lapply(list(yule = yule, early = early, imbalanced = imbalanced),
+                 function(trees) colMeans(t(vapply(trees, tree_shape, numeric(2)))))
+do.call(rbind, shapes)
+```
+
+## Reaching target values
+
+The mean of each statistic depends on its parameter and on the number of tips.
+`calibrate_shape()` estimates both curves for a given number of tips, and
+`shape_params()` inverts them. Since each curve is estimated from its own
+process, without building trees, the calibration is fast. Use more draws per
+value (`reps`, 200 by default) for a study; a few are enough here.
+
+```{r}
+cal <- calibrate_shape(100, reps = 50)
+cal
+shape_params(cal, gamma = -2, colless = 1)
+```
+
+The parameters give the target values on average, but single trees vary around
+them. `sim_tree_target()` keeps only trees whose statistics fall within a
+tolerance of the targets. Because topology and intervals are independent, it
+rejects them separately, which gives the same distribution of trees as
+rejecting whole trees, with a much higher acceptance rate.
+
+```{r}
+trees <- sim_tree_target(100, gamma = -2, colless = 1, nsim = 20, tol = 0.25,
+                         calibration = cal, root_age = 50)
+summary(attr(trees, "shape"))
+attr(trees, "acceptance")
+```
+
+## A grid of tree shapes
+
+For simulation studies, `shape_grid()` crosses levels of both statistics. The
+levels can come, for instance, from quantiles of `tree_shape()` over empirical
+trees of a similar size; here they are set by hand.
+
+```{r}
+grid <- shape_grid(100, gamma = c(-2, -1, 0), colless = c(0, 0.5, 1),
+                   calibration = cal)
+grid
+cell <- grid[grid$gamma == -1 & grid$colless == 0.5, ]
+cell_trees <- sim_tree_target(100, gamma = cell$gamma, colless = cell$colless,
+                              nsim = 10, calibration = cal)
+```
+
+## References
+
+Aldous, D. (1996). Probability distributions on cladograms. In D. Aldous &
+R. Pemantle (Eds.), *Random discrete structures* (pp. 1–18). Springer.
+https://doi.org/10.1007/978-1-4612-0719-1_1
+
+Pybus, O. G., & Harvey, P. H. (2000). Testing macro-evolutionary models using
+incomplete molecular phylogenies. *Proceedings of the Royal Society B*, 267,
+2267–2272. https://doi.org/10.1098/rspb.2000.1278
