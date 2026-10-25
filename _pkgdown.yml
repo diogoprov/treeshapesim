@@ -8,6 +8,14 @@ reference:
   desc: Ultrametric trees with separately controlled imbalance and branching times.
   contents:
   - sim_tree_shape
+  - sim_tree_target
+- title: Target shapes and grids
+  desc: Shape statistics, calibration of the parameters and grids of tree shapes.
+  contents:
+  - tree_shape
+  - calibrate_shape
+  - shape_params
+  - shape_grid
 - title: Building blocks
   desc: Topology, internode intervals and their combination.
   contents:

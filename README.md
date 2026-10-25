@@ -37,16 +37,20 @@ remotes::install_github("diogoprov/treeshapesim")
 library(treeshapesim)
 set.seed(1)
 tr <- sim_tree_shape(100, beta = -1, c = -0.5)   # imbalanced, early splits
-ape::gammaStat(tr)
+tree_shape(tr)                                    # gamma and normalized Colless
 
-# a 3 x 3 grid of tree shapes, 100 trees per cell
-grid <- expand.grid(beta = c(-1.5, -0.75, 0), c = c(-1, -0.5, 0))
-trees <- lapply(seq_len(nrow(grid)), function(i)
-  replicate(100, sim_tree_shape(100, grid$beta[i], grid$c[i]), simplify = FALSE))
+# trees near target values of gamma and Colless
+cal <- calibrate_shape(100)                       # calibration for 100 tips
+trees <- sim_tree_target(100, gamma = -2, colless = 1, nsim = 50, tol = 0.25,
+                         calibration = cal)
+
+# a 3 x 3 grid of tree shapes and the parameters of each cell
+grid <- shape_grid(100, gamma = c(-2, -1, 0), colless = c(0, 0.5, 1),
+                   calibration = cal)
 ```
 
-The tree statistics themselves (gamma, Colless and many others) can be computed
-with [treestats](https://github.com/thijsjanzen/treestats).
+See `vignette("treeshapesim")` for a walk-through. Many other tree statistics
+can be computed with [treestats](https://github.com/thijsjanzen/treestats).
 
 ## References
 

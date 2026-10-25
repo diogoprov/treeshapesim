@@ -88,3 +88,22 @@ test_that("non-finite or malformed arguments are rejected", {
   expect_error(sim_tree_shape(1e10), "`n`")
   expect_error(intervals_lineage_rate(10, c = NaN), "`c`")
 })
+
+test_that("nsim and root_age", {
+  set.seed(8)
+  trees <- sim_tree_shape(20, beta = -1, c = -1, nsim = 3, root_age = 25)
+  expect_s3_class(trees, "multiPhylo")
+  expect_length(trees, 3)
+  expect_equal(max(ape::node.depth.edgelength(trees[[2]])), 25, tolerance = 1e-10)
+  # the defaults keep the trees of version 0.1.0 (values frozen from it)
+  set.seed(9)
+  a <- sim_tree_shape(30, -0.5, 0.2)
+  expect_equal(a$edge.length[c(1, 2, 3, 10, 30, 58)],
+               c(0.438640484330867, 0.561359515669133, 0.561359515669133,
+                 0.212964724332516, 0.119147621644043, 0.39735936236442),
+               tolerance = 1e-12)
+  expect_equal(a$edge[c(1, 10, 30), ], matrix(c(31L, 36L, 45L, 32L, 5L, 15L), 3))
+  expect_error(sim_tree_shape(10, nsim = 0), "`nsim`")
+  expect_error(sim_tree_shape(10, root_age = -1), "`root_age`")
+  expect_error(assign_ages(rtopology_beta(5), c(1, 1, 1, -1)), "`g`")
+})

@@ -1,0 +1,13 @@
+bibentry(
+  bibtype = "Manual",
+  title = "treeshapesim: Simulate Trees with Separately Controlled Imbalance and Branching Times",
+  author = person("Diogo B.", "Provete"),
+  year = "2026",
+  note = paste("R package version", meta$Version),
+  url = "https://github.com/diogoprov/treeshapesim",
+  textVersion = paste0(
+    "Provete, D. B. (2026). treeshapesim: Simulate trees with separately ",
+    "controlled imbalance and branching times. R package version ",
+    meta$Version, ". https://github.com/diogoprov/treeshapesim"
+  )
+)
