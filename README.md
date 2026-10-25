@@ -1,5 +1,10 @@
 # treeshapesim
 
+<!-- badges: start -->
+[![r-universe](https://diogoprov.r-universe.dev/badges/treeshapesim)](https://diogoprov.r-universe.dev/treeshapesim)
+[![pkgdown](https://github.com/diogoprov/treeshapesim/actions/workflows/pkgdown.yaml/badge.svg)](https://diogoprov.github.io/treeshapesim/)
+<!-- badges: end -->
+
 Simulate rooted, binary, ultrametric trees in which topological imbalance and
 the distribution of branching times are set by separate parameters.
 
@@ -13,6 +18,8 @@ the distribution of branching times are set by separate parameters.
 The gamma statistic depends only on the internode intervals and the Colless
 index only on the topology, so `beta` mainly moves the Colless index and `c`
 mainly moves gamma.
+
+Documentation: <https://diogoprov.github.io/treeshapesim/>
 
 ## Installation
 
