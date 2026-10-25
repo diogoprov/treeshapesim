@@ -20,16 +20,16 @@ sim_tree_shape(n, beta = 0, c = 0)
 
 - n:
 
-  Number of tips (at least 2).
+  Number of tips, a single integer of at least 2.
 
 - beta:
 
-  Aldous' beta, greater than -2. Lower values give more imbalanced
-  trees.
+  Aldous' beta, a single finite number greater than -2. Lower values
+  give more imbalanced trees.
 
 - c:
 
-  Lineage dependence of the split rate.
+  Lineage dependence of the split rate, a single finite number.
 
 ## Value
 

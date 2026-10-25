@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">treeshapesim</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.0.9000</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -28,14 +28,23 @@
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.png" class="logo" alt=""><h1>Changelog</h1>
-      <small>Source: <a href="https://github.com/diogoprov/treeshapesim/blob/0.1.0/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
+      <small>Source: <a href="https://github.com/diogoprov/treeshapesim/blob/main/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="development version" id="treeshapesim-development-version">treeshapesim (development version)<a class="anchor" aria-label="anchor" href="#treeshapesim-development-version"></a></h2>
+<ul><li>
+<code><a href="../reference/rtopology_beta.html">rtopology_beta()</a></code> builds the topology iteratively instead of recursively, so large and very imbalanced trees (e.g. 3,000 tips with <code>beta</code> near -2) no longer fail; with the same seed it returns exactly the same trees as before.</li>
+<li>
+<code><a href="../reference/sim_tree_shape.html">sim_tree_shape()</a></code>, <code><a href="../reference/rtopology_beta.html">rtopology_beta()</a></code> and <code><a href="../reference/intervals_lineage_rate.html">intervals_lineage_rate()</a></code> check their arguments: <code>n</code> must be a single integer of at least 2, <code>beta</code> a single finite number greater than -2 and <code>c</code> a single finite number (non-finite <code>c</code> used to return trees with <code>NaN</code> branch lengths).</li>
+<li>Package checks (R CMD check) on GitHub Actions.</li>
+</ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.1.0" id="treeshapesim-010">treeshapesim 0.1.0<a class="anchor" aria-label="anchor" href="#treeshapesim-010"></a></h2>
 <ul><li>First release: <code><a href="../reference/sim_tree_shape.html">sim_tree_shape()</a></code>, <code><a href="../reference/rtopology_beta.html">rtopology_beta()</a></code>, <code><a href="../reference/intervals_lineage_rate.html">intervals_lineage_rate()</a></code> and <code><a href="../reference/assign_ages.html">assign_ages()</a></code>, taken from the pcps-sim project.</li>
 </ul></div>
-  </main></div>
+  </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
+    </nav></aside></div>
 
 
     <footer><div class="pkgdown-footer-left">

@@ -16,11 +16,11 @@ intervals_lineage_rate(n, c = 0)
 
 - n:
 
-  Number of tips.
+  Number of tips, a single integer of at least 2.
 
 - c:
 
-  Lineage dependence of the split rate.
+  Lineage dependence of the split rate, a single finite number.
 
 ## Value
 
