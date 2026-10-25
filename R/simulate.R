@@ -5,9 +5,9 @@
 #' `beta = 0` is Yule, `beta = -1.5` is PDA, `beta` close to -2 is
 #' caterpillar-like and large `beta` is balanced.
 #'
-#' @param n Number of tips (at least 2).
-#' @param beta Aldous' beta, greater than -2. Lower values give more imbalanced
-#'   trees.
+#' @param n Number of tips, a single integer of at least 2.
+#' @param beta Aldous' beta, a single finite number greater than -2. Lower
+#'   values give more imbalanced trees.
 #' @return A `phylo` object without branch lengths, with tips `t1`, ..., `tn`.
 #' @references Aldous, D. (1996). Probability distributions on cladograms. In
 #'   D. Aldous & R. Pemantle (Eds.), *Random discrete structures* (pp. 1--18).
@@ -17,16 +17,45 @@
 #' rtopology_beta(10, beta = -1)
 #' @export
 rtopology_beta <- function(n, beta = 0) {
-  stopifnot(n >= 2, beta > -2)
-  split_clade <- function(tips) {
-    m <- length(tips)
-    if (m == 1) return(tips)
-    i <- seq_len(m - 1)
-    lw <- lgamma(beta + i + 1) + lgamma(beta + m - i + 1) - lgamma(i + 1) - lgamma(m - i + 1)
-    k <- sample(i, 1, prob = exp(lw - max(lw)))
-    paste0("(", split_clade(tips[seq_len(k)]), ",", split_clade(tips[-seq_len(k)]), ")")
+  check_n(n)
+  check_beta(beta)
+  n <- as.integer(n)
+  # Clades are split depth first, left before right, in the order of a
+  # recursive construction, with an explicit stack instead of recursion (which
+  # fails for large, very imbalanced trees). Clade = tips start..start + m - 1.
+  # Internal nodes are numbered and edges listed in preorder, as ape::read.tree()
+  # does for the equivalent Newick string, so the same seed gives the same tree.
+  edge <- matrix(0L, 2 * n - 2, 2)
+  n_edge <- 0L
+  next_node <- n + 1L
+  stack <- list(c(start = 1L, m = n, parent = 0L))
+  while (length(stack) > 0) {
+    clade <- stack[[length(stack)]]
+    stack[[length(stack)]] <- NULL
+    m <- clade[["m"]]
+    if (m == 1) {
+      id <- clade[["start"]]
+    } else {
+      id <- next_node
+      next_node <- next_node + 1L
+    }
+    if (clade[["parent"]] > 0) {
+      n_edge <- n_edge + 1L
+      edge[n_edge, ] <- c(clade[["parent"]], id)
+    }
+    if (m > 1) {
+      i <- seq_len(m - 1)
+      lw <- lgamma(beta + i + 1) + lgamma(beta + m - i + 1) - lgamma(i + 1) - lgamma(m - i + 1)
+      k <- sample(i, 1, prob = exp(lw - max(lw)))
+      start <- clade[["start"]]
+      stack[[length(stack) + 1]] <- c(start = start + k, m = m - k, parent = id)
+      stack[[length(stack) + 1]] <- c(start = start, m = k, parent = id)
+    }
   }
-  ape::read.tree(text = paste0(split_clade(paste0("t", seq_len(n))), ";"))
+  tree <- list(edge = edge, Nnode = n - 1L, tip.label = paste0("t", seq_len(n)))
+  class(tree) <- "phylo"
+  attr(tree, "order") <- "cladewise"
+  tree
 }
 
 #' Internode intervals of a pure-birth process with lineage-dependent rates
@@ -36,8 +65,8 @@ rtopology_beta <- function(n, beta = 0) {
 #' accumulate (gamma < 0); `c > 0` accelerates it (gamma > 0). The final
 #' interval (n lineages, up to the present) is drawn from the same law.
 #'
-#' @param n Number of tips.
-#' @param c Lineage dependence of the split rate.
+#' @param n Number of tips, a single integer of at least 2.
+#' @param c Lineage dependence of the split rate, a single finite number.
 #' @return Intervals g_2, ..., g_n (length n - 1), scaled to sum 1.
 #' @references Pybus, O. G., & Harvey, P. H. (2000). Testing macro-evolutionary
 #'   models using incomplete molecular phylogenies. *Proceedings of the Royal
@@ -47,6 +76,8 @@ rtopology_beta <- function(n, beta = 0) {
 #' intervals_lineage_rate(10, c = -1)
 #' @export
 intervals_lineage_rate <- function(n, c = 0) {
+  check_n(n)
+  check_c(c)
   k <- 2:n
   g <- stats::rexp(n - 1, rate = k^(1 + c))
   g / sum(g)
@@ -104,5 +135,26 @@ assign_ages <- function(topo, g) {
 #' ape::gammaStat(tr)
 #' @export
 sim_tree_shape <- function(n, beta = 0, c = 0) {
+  check_n(n)
+  check_beta(beta)
+  check_c(c)
   assign_ages(rtopology_beta(n, beta), intervals_lineage_rate(n, c))
+}
+
+# argument checks shared by the exported functions
+check_n <- function(n) {
+  if (!is.numeric(n) || length(n) != 1 || !is.finite(n) || n < 2 || n != round(n) ||
+      n > .Machine$integer.max) {
+    stop("`n` must be a single integer of at least 2.", call. = FALSE)
+  }
+}
+check_beta <- function(beta) {
+  if (!is.numeric(beta) || length(beta) != 1 || !is.finite(beta) || beta <= -2) {
+    stop("`beta` must be a single finite number greater than -2.", call. = FALSE)
+  }
+}
+check_c <- function(c) {
+  if (!is.numeric(c) || length(c) != 1 || !is.finite(c)) {
+    stop("`c` must be a single finite number.", call. = FALSE)
+  }
 }

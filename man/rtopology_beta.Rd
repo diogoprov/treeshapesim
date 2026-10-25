@@ -7,10 +7,10 @@
 rtopology_beta(n, beta = 0)
 }
 \arguments{
-\item{n}{Number of tips (at least 2).}
+\item{n}{Number of tips, a single integer of at least 2.}
 
-\item{beta}{Aldous' beta, greater than -2. Lower values give more imbalanced
-trees.}
+\item{beta}{Aldous' beta, a single finite number greater than -2. Lower
+values give more imbalanced trees.}
 }
 \value{
 A \code{phylo} object without branch lengths, with tips \code{t1}, ..., \code{tn}.
