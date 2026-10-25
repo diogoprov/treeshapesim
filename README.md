@@ -1,4 +1,4 @@
-# treeshapesim
+# treeshapesim <img src="man/figures/logo.png" align="right" height="139" alt="treeshapesim hex sticker" />
 
 <!-- badges: start -->
 [![r-universe](https://diogoprov.r-universe.dev/badges/treeshapesim)](https://diogoprov.r-universe.dev/treeshapesim)

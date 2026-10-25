@@ -1,6 +1,8 @@
 # Hex sticker for treeshapesim: four trees with increasing Aldous' beta (from a
-# comb to a balanced tree). Run from the package root; writes
-# man/figures/logo.png. Needs ggplot2 and hexSticker.
+# comb to a balanced tree), drawn with hexSticker. Run from the package root;
+# writes man/figures/logo.png. Needs ggplot2, hexSticker and pkgload. The
+# logo.png in the repository was made with data-raw/hex_preview_ggplot2.R,
+# which draws the same sticker with ggplot2 only.
 library(ggplot2)
 library(hexSticker)
 pkgload::load_all()
