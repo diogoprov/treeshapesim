@@ -1,0 +1,16 @@
+url: https://diogoprov.github.io/treeshapesim/
+
+template:
+  bootstrap: 5
+
+reference:
+- title: Simulate trees
+  desc: Ultrametric trees with separately controlled imbalance and branching times.
+  contents:
+  - sim_tree_shape
+- title: Building blocks
+  desc: Topology, internode intervals and their combination.
+  contents:
+  - rtopology_beta
+  - intervals_lineage_rate
+  - assign_ages
