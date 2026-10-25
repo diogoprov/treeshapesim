@@ -1,0 +1,25 @@
+Package: treeshapesim
+Title: Simulate Trees with Separately Controlled Imbalance and Branching Times
+Version: 0.1.0
+Authors@R: person("Diogo B.", "Provete", email = "dbprovete@gmail.com",
+    role = c("aut", "cre"))
+Description: Simulates rooted, binary, ultrametric trees in which topological
+    imbalance and the distribution of branching times are set by separate
+    parameters. The topology is drawn from Aldous' beta-splitting model and the
+    internode intervals from a pure-birth process in which each of k lineages
+    splits at rate k^c. Because the gamma statistic depends only on the
+    internode intervals and the Colless index only on the topology, beta mainly
+    controls imbalance and c mainly controls gamma.
+License: MIT + file LICENSE
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.3.2
+Imports:
+    ape,
+    stats
+Suggests:
+    testthat (>= 3.0.0),
+    treestats
+Config/testthat/edition: 3
+URL: https://github.com/diogoprov/treeshapesim
+BugReports: https://github.com/diogoprov/treeshapesim/issues
