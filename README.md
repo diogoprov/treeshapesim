@@ -3,6 +3,7 @@
 <!-- badges: start -->
 [![r-universe](https://diogoprov.r-universe.dev/badges/treeshapesim)](https://diogoprov.r-universe.dev/treeshapesim)
 [![pkgdown](https://github.com/diogoprov/treeshapesim/actions/workflows/pkgdown.yaml/badge.svg)](https://diogoprov.github.io/treeshapesim/)
+[![R-CMD-check](https://github.com/diogoprov/treeshapesim/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/diogoprov/treeshapesim/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
 Simulate rooted, binary, ultrametric trees in which topological imbalance and

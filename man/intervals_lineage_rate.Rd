@@ -7,9 +7,9 @@
 intervals_lineage_rate(n, c = 0)
 }
 \arguments{
-\item{n}{Number of tips.}
+\item{n}{Number of tips, a single integer of at least 2.}
 
-\item{c}{Lineage dependence of the split rate.}
+\item{c}{Lineage dependence of the split rate, a single finite number.}
 }
 \value{
 Intervals g_2, ..., g_n (length n - 1), scaled to sum 1.
