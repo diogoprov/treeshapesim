@@ -7,7 +7,7 @@
 ## Citation
 
 Source:
-[`DESCRIPTION`](https://github.com/diogoprov/treeshapesim/blob/main/DESCRIPTION)
+[`DESCRIPTION`](https://github.com/diogoprov/treeshapesim/blob/0.1.0/DESCRIPTION)
 
 Provete D (2026). *treeshapesim: Simulate Trees with Separately
 Controlled Imbalance and Branching Times*. R package version 0.1.0,
