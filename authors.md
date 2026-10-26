@@ -11,7 +11,7 @@ Source:
 
 Provete, D. B. (2026). treeshapesim: Simulate trees with separately
 controlled imbalance and branching times. R package version 0.1.0.9000.
-https://github.com/diogoprov/treeshapesim
+https://doi.org/10.5281/zenodo.23647260
 
     @Manual{,
       title = {treeshapesim: Simulate Trees with Separately Controlled Imbalance and Branching Times},
@@ -19,4 +19,5 @@ https://github.com/diogoprov/treeshapesim
       year = {2026},
       note = {R package version 0.1.0.9000},
       url = {https://github.com/diogoprov/treeshapesim},
+      doi = {10.5281/zenodo.23647260},
     }

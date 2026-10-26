@@ -93,6 +93,76 @@
 <p>See <code><a href="articles/treeshapesim.html">vignette("treeshapesim")</a></code> for a walk-through. Many other tree statistics can be computed with <a href="https://github.com/thijsjanzen/treestats" class="external-link">treestats</a>.</p>
 </div>
 <div class="section level2">
+<h2 id="how-treeshapesim-differs-from-treesim-and-aptreeshape">How treeshapesim differs from TreeSim and apTreeshape<a class="anchor" aria-label="anchor" href="#how-treeshapesim-differs-from-treesim-and-aptreeshape"></a>
+</h2>
+<table class="table">
+<colgroup>
+<col width="25%">
+<col width="25%">
+<col width="25%">
+<col width="25%">
+</colgroup>
+<thead><tr>
+<th></th>
+<th>treeshapesim</th>
+<th>TreeSim</th>
+<th>apTreeshape</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>Purpose</td>
+<td>Trees whose imbalance and distribution of branching times vary independently, for simulation studies on tree shape</td>
+<td>Trees from birth–death processes</td>
+<td>Analysis and simulation of tree topologies</td>
+</tr>
+<tr>
+<td>Topology</td>
+<td>Aldous’ beta-splitting model, with <code>beta</code> as a continuous parameter</td>
+<td>Not a parameter: it follows from the birth–death process</td>
+<td>Yule, PDA, Aldous’ branching, biased and user-defined split models (<code>rtreeshape()</code>); beta-splitting with a clade age–richness index (<code>simulate_tree()</code>, <code>simulate_yule()</code>)</td>
+</tr>
+<tr>
+<td>Branching times</td>
+<td>Pure birth with per-lineage rate k^c, drawn independently of the topology, so gamma can be negative, near zero or positive</td>
+<td>Birth–death with constant rates, rate shifts, mass extinctions or density-dependent speciation, conditioned on the number of tips and/or the age</td>
+<td>None (<code>rtreeshape()</code>), ranks 1 to n − 1 (<code>simulate_tree()</code>) or a constant-rate birth–death process (<code>simulate_yule()</code>)</td>
+</tr>
+<tr>
+<td>Separate control of imbalance and branching times</td>
+<td>Yes: the realized gamma depends only on <code>c</code> and the realized Colless index only on <code>beta</code>
+</td>
+<td>No: imbalance is not set</td>
+<td>Imbalance is set by <code>beta</code>; branching times have no shape parameter of their own</td>
+</tr>
+<tr>
+<td>Target values of gamma and Colless</td>
+<td>Yes: calibration, rejection to a tolerance and grids of shapes (<code><a href="reference/sim_tree_target.html">sim_tree_target()</a></code>, <code><a href="reference/shape_grid.html">shape_grid()</a></code>)</td>
+<td>No</td>
+<td>No</td>
+</tr>
+<tr>
+<td>Extinction, serial sampling, gene trees</td>
+<td>No (pure birth, complete sampling)</td>
+<td>Yes</td>
+<td>Extinction in the ranked-tree models</td>
+</tr>
+<tr>
+<td>Estimation and tests of tree shape</td>
+<td>No</td>
+<td>No</td>
+<td>Yes (e.g. <code>maxlik.betasplit()</code>, <code>aldous.test()</code>)</td>
+</tr>
+</tbody>
+</table>
+<p>Use TreeSim for trees from specific birth–death models and apTreeshape to model, estimate or test topological imbalance. Use treeshapesim when the imbalance and the distribution of branching times have to be varied as separate factors. The comparison is based on the documentation of TreeSim 2.4 and apTreeshape 1.5-0.1.</p>
+</div>
+<div class="section level2">
+<h2 id="citation">Citation<a class="anchor" aria-label="anchor" href="#citation"></a>
+</h2>
+<p>Provete, D. B. (2026). treeshapesim: Simulate trees with separately controlled imbalance and branching times. R package. <a href="https://doi.org/10.5281/zenodo.23647260" class="external-link uri">https://doi.org/10.5281/zenodo.23647260</a></p>
+<p>This DOI always points to the latest version; each release also has its own DOI on Zenodo. In R, <code>citation("treeshapesim")</code> gives the entry with the installed version.</p>
+</div>
+<div class="section level2">
 <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
 </h2>
 <p>Aldous, D. (1996). Probability distributions on cladograms. In D. Aldous &amp; R. Pemantle (Eds.), <em>Random discrete structures</em> (pp. 1–18). Springer. <a href="https://doi.org/10.1007/978-1-4612-0719-1_1" class="external-link uri">https://doi.org/10.1007/978-1-4612-0719-1_1</a></p>
@@ -136,6 +206,7 @@
 <li><a href="https://diogoprov.r-universe.dev/treeshapesim" class="external-link"><img src="https://diogoprov.r-universe.dev/badges/treeshapesim" alt="r-universe"></a></li>
 <li><a href="https://diogoprov.github.io/treeshapesim/"><img src="https://github.com/diogoprov/treeshapesim/actions/workflows/pkgdown.yaml/badge.svg" alt="pkgdown"></a></li>
 <li><a href="https://github.com/diogoprov/treeshapesim/actions/workflows/R-CMD-check.yaml" class="external-link"><img src="https://github.com/diogoprov/treeshapesim/actions/workflows/R-CMD-check.yaml/badge.svg" alt="R-CMD-check"></a></li>
+<li><a href="https://doi.org/10.5281/zenodo.23647260" class="external-link"><img src="https://zenodo.org/badge/DOI/10.5281/zenodo.23647260.svg" alt="DOI"></a></li>
 </ul>
 </div>
 

@@ -75,8 +75,8 @@
 <td>PR #3</td>
 </tr><tr><td>7. Citação</td>
 <td>
-<code>inst/CITATION</code> (ainda sem DOI)</td>
-<td>PR #3</td>
+<code>inst/CITATION</code> e README com o DOI de conceito do Zenodo</td>
+<td>PR #3 e commit seguinte</td>
 </tr><tr><td>11. <code><a href="reference/tree_shape.html">tree_shape()</a></code>
 </td>
 <td>γ e Colless normalizado (Yule) em R puro, iguais a <code><a href="https://rdrr.io/pkg/ape/man/gammaStat.html" class="external-link">ape::gammaStat()</a></code> e <code>treestats::colless(normalization = "yule")</code>; o treestats continua em Suggests</td>
@@ -85,6 +85,9 @@
 </td>
 <td>intervalos positivos e finitos; árvore binária e enraizada</td>
 <td>PR #3</td>
+</tr><tr><td>Comparação com outros pacotes</td>
+<td>tabela no README (página inicial) com TreeSim e apTreeshape</td>
+<td>commit seguinte</td>
 </tr><tr><td>14. Documentação precisa</td>
 <td>a independência de γ e Colless em relação a <code>c</code> e β agora é descrita como exata (para um dado n)</td>
 <td>PR #3</td>
@@ -94,9 +97,7 @@
 <div class="section level3">
 <h3 id="alta-prioridade">Alta prioridade<a class="anchor" aria-label="anchor" href="#alta-prioridade"></a></h3>
 <ul><li>
-<strong>DOI do Zenodo.</strong> Ligar o repositório ao Zenodo e publicar uma release (por exemplo, 0.2.0), depois acrescentar o DOI ao <code>inst/CITATION</code> e ao README. Fecha de vez o item 7.</li>
-<li>
-<strong>Versão 0.2.0.</strong> Trocar 0.1.0.9000 por 0.2.0 no DESCRIPTION e no NEWS ao publicar a release, já que entraram funções novas.</li>
+<strong>Release 0.2.0.</strong> O DOI de conceito do Zenodo (10.5281/zenodo.23647260) já está no <code>inst/CITATION</code> e no README; a release 0.1.0 (DOI de versão 10.5281/zenodo.23647261) é anterior aos PRs #2 e #3. Trocar 0.1.0.9000 por 0.2.0 no DESCRIPTION e no NEWS e publicar a release, que gera o DOI da 0.2.0.</li>
 <li>
 <strong>Desempenho da topologia (resto do item 5).</strong> Só vale se alguém precisar de árvores muito grandes e desbalanceadas. Para não mudar as árvores existentes, o caminho seria um gerador novo e opcional (por exemplo, em C++ ou com outro algoritmo de amostragem), mantendo o atual como padrão.</li>
 </ul></div>

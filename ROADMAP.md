@@ -16,20 +16,21 @@ check em macOS, Windows e Ubuntu, e pkgdown) passou.
 | 4\. Profundidade da raiz | `root_age` em [`sim_tree_shape()`](https://diogoprov.github.io/treeshapesim/reference/sim_tree_shape.md) e [`sim_tree_target()`](https://diogoprov.github.io/treeshapesim/reference/sim_tree_target.md) | PR \#3 |
 | 5\. Desempenho | **Parcial.** [`assign_ages()`](https://diogoprov.github.io/treeshapesim/reference/assign_ages.md) ficou sem [`ape::prop.part()`](https://rdrr.io/pkg/ape/man/boot.phylo.html) (ganho pequeno, árvores idênticas). O gargalo é [`rtopology_beta()`](https://diogoprov.github.io/treeshapesim/reference/rtopology_beta.md), O(n²) em árvores desbalanceadas; pré-calcular os `lgamma` mudava algumas árvores por arredondamento e foi revertido | PR \#3 |
 | 6\. Vignette | [`vignette("treeshapesim")`](https://diogoprov.github.io/treeshapesim/articles/treeshapesim.md): separação dos processos, calibração, alvos e grade | PR \#3 |
-| 7\. Citação | `inst/CITATION` (ainda sem DOI) | PR \#3 |
+| 7\. Citação | `inst/CITATION` e README com o DOI de conceito do Zenodo | PR \#3 e commit seguinte |
 | 11\. [`tree_shape()`](https://diogoprov.github.io/treeshapesim/reference/tree_shape.md) | γ e Colless normalizado (Yule) em R puro, iguais a [`ape::gammaStat()`](https://rdrr.io/pkg/ape/man/gammaStat.html) e `treestats::colless(normalization = "yule")`; o treestats continua em Suggests | PR \#3 |
 | 13\. Validar [`assign_ages()`](https://diogoprov.github.io/treeshapesim/reference/assign_ages.md) | intervalos positivos e finitos; árvore binária e enraizada | PR \#3 |
+| Comparação com outros pacotes | tabela no README (página inicial) com TreeSim e apTreeshape | commit seguinte |
 | 14\. Documentação precisa | a independência de γ e Colless em relação a `c` e β agora é descrita como exata (para um dado n) | PR \#3 |
 
 ## A fazer
 
 ### Alta prioridade
 
-- **DOI do Zenodo.** Ligar o repositório ao Zenodo e publicar uma
-  release (por exemplo, 0.2.0), depois acrescentar o DOI ao
-  `inst/CITATION` e ao README. Fecha de vez o item 7.
-- **Versão 0.2.0.** Trocar 0.1.0.9000 por 0.2.0 no DESCRIPTION e no NEWS
-  ao publicar a release, já que entraram funções novas.
+- **Release 0.2.0.** O DOI de conceito do Zenodo
+  (10.5281/zenodo.23647260) já está no `inst/CITATION` e no README; a
+  release 0.1.0 (DOI de versão 10.5281/zenodo.23647261) é anterior aos
+  PRs \#2 e \#3. Trocar 0.1.0.9000 por 0.2.0 no DESCRIPTION e no NEWS e
+  publicar a release, que gera o DOI da 0.2.0.
 - **Desempenho da topologia (resto do item 5).** Só vale se alguém
   precisar de árvores muito grandes e desbalanceadas. Para não mudar as
   árvores existentes, o caminho seria um gerador novo e opcional (por
