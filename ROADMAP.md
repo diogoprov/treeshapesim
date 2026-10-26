@@ -22,6 +22,7 @@ desenvolvimento 0.1.0.9000.
 | 13. Validar `assign_ages()` | intervalos positivos e finitos; árvore binária e enraizada | PR #3 |
 | Comparação com outros pacotes | tabela no README (página inicial) com TreeSim e apTreeshape | commit seguinte |
 | Release 0.2.0 | versão 0.2.0 no DESCRIPTION e no NEWS; release no GitHub; DOI da versão 10.5281/zenodo.23666434 (conceito 10.5281/zenodo.23647260) | release 0.2.0 |
+| Release 0.2.1 | teste do `fit_shape()` com árvore fixa (as topologias simuladas diferem entre arm64 e x86-64 para a mesma semente) e nota de reprodutibilidade em `?sim_tree_shape`; CI verde em macOS, Windows e Ubuntu (devel, release e oldrel); DOI da versão 10.5281/zenodo.23667814 | release 0.2.1 |
 | `fit_shape()` | β (β-splitting, a partir da topologia) e `c` (modelo DDX do laser, com c = −x) de árvores empíricas, com bootstrap paramétrico, detecção de limites e tolerância de ultrametricidade; conferido contra o apTreeshape e o laser arquivados (diferenças ≤ 3e-5) | PR #4 |
 | Validação dos estimadores | `data-raw/validate_estimators.R`: o gerador segue o β-splitting; o DDX recupera `c` com viés ≤ 0,06 | commit `74fb2a2` |
 | 14. Documentação precisa | a independência de γ e Colless em relação a `c` e β agora é descrita como exata (para um dado n) | PR #3 |
