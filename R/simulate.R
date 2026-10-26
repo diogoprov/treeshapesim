@@ -142,6 +142,10 @@ assign_ages <- function(topo, g) {
 #' @param root_age Age of the root (positive).
 #' @return With `nsim = 1`, a binary, ultrametric `phylo` object with root
 #'   depth `root_age`; otherwise a `multiPhylo` object with `nsim` such trees.
+#' @section Reproducibility: The same seed gives the same trees on the same
+#'   platform. Between platforms (for instance, arm64 and x86-64), differences
+#'   in the last bit of floating-point functions can change a few draws of the
+#'   topology, so trees may differ.
 #' @examples
 #' set.seed(1)
 #' tr <- sim_tree_shape(50, beta = -1, c = -1)

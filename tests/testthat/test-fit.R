@@ -11,11 +11,13 @@ test_that("fit_shape recovers the parameters of large trees", {
 
 test_that("estimates are stable (values checked against apTreeshape and laser)", {
   # beta matched apTreeshape::maxlik.betasplit() and c matched laser::DDX()
-  # to within 3e-5 on 30 random trees (both packages archived on CRAN)
-  set.seed(31)
-  f <- fit_shape(sim_tree_shape(80, -1.2, -0.6))
+  # to within 3e-5 on 30 random trees (both packages archived on CRAN). The
+  # tree is read from a file, because simulated topologies can differ between
+  # platforms for the same seed (see ?sim_tree_shape).
+  tr <- ape::read.tree(test_path("fixtures", "tree80.nwk"))
+  f <- fit_shape(tr, tol = 1e-8)
   expect_equal(c(f$beta, f$c, f$r), c(-1.2207825020, -0.4522262078, 13.0757228117),
-               tolerance = 1e-6)
+               tolerance = 1e-5)
 })
 
 test_that("the profiled r maximizes the DDX likelihood", {

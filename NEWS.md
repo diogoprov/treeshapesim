@@ -1,3 +1,7 @@
+# treeshapesim 0.2.1
+
+- A test of `fit_shape()` used a simulated tree, whose topology differs between arm64 and x86-64 for the same seed; it now reads a fixed tree. `?sim_tree_shape` documents that the same seed gives the same trees on the same platform.
+
 # treeshapesim 0.2.0
 
 - `fit_shape()` estimates `beta` (maximum likelihood of the beta-splitting model from the topology) and `c` (maximum likelihood of the DDX model of laser, with `c = -x`) from an empirical tree, with an optional parametric bootstrap; on 30 random trees, `beta` matched the archived apTreeshape (`maxlik.betasplit()`) and `c` matched laser (`DDX()`) to within 3e-5.

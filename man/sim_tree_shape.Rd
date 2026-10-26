@@ -31,6 +31,13 @@ for a given \code{n} the realized gamma depends only on \code{c} and the realize
 Colless index only on \code{beta}. To draw trees near target values of both
 statistics, see \code{\link[=sim_tree_target]{sim_tree_target()}}.
 }
+\section{Reproducibility}{
+ The same seed gives the same trees on the same
+platform. Between platforms (for instance, arm64 and x86-64), differences
+in the last bit of floating-point functions can change a few draws of the
+topology, so trees may differ.
+}
+
 \examples{
 set.seed(1)
 tr <- sim_tree_shape(50, beta = -1, c = -1)
