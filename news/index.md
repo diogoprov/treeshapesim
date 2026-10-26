@@ -1,6 +1,6 @@
 # Changelog
 
-## treeshapesim (development version)
+## treeshapesim 0.2.0
 
 - [`fit_shape()`](https://diogoprov.github.io/treeshapesim/reference/fit_shape.md)
   estimates `beta` (maximum likelihood of the beta-splitting model from

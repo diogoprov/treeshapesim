@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="index.html">treeshapesim</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.0.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -88,6 +88,9 @@
 </tr><tr><td>Comparação com outros pacotes</td>
 <td>tabela no README (página inicial) com TreeSim e apTreeshape</td>
 <td>commit seguinte</td>
+</tr><tr><td>Release 0.2.0</td>
+<td>versão 0.2.0 no DESCRIPTION e no NEWS; release no GitHub, que gera o DOI da versão no Zenodo (conceito 10.5281/zenodo.23647260)</td>
+<td>release 0.2.0</td>
 </tr><tr><td><code><a href="reference/fit_shape.html">fit_shape()</a></code></td>
 <td>β (β-splitting, a partir da topologia) e <code>c</code> (modelo DDX do laser, com c = −x) de árvores empíricas, com bootstrap paramétrico, detecção de limites e tolerância de ultrametricidade; conferido contra o apTreeshape e o laser arquivados (diferenças ≤ 3e-5)</td>
 <td>PR #4</td>
@@ -105,8 +108,6 @@
 <div class="section level3">
 <h3 id="alta-prioridade">Alta prioridade<a class="anchor" aria-label="anchor" href="#alta-prioridade"></a></h3>
 <ul><li>
-<strong>Release 0.2.0.</strong> O DOI de conceito do Zenodo (10.5281/zenodo.23647260) já está no <code>inst/CITATION</code> e no README; a release 0.1.0 (DOI de versão 10.5281/zenodo.23647261) é anterior aos PRs #2 e #3. Trocar 0.1.0.9000 por 0.2.0 no DESCRIPTION e no NEWS e publicar a release, que gera o DOI da 0.2.0.</li>
-<li>
 <strong>Desempenho da topologia (resto do item 5).</strong> Só vale se alguém precisar de árvores muito grandes e desbalanceadas. Para não mudar as árvores existentes, o caminho seria um gerador novo e opcional (por exemplo, em C++ ou com outro algoritmo de amostragem), mantendo o atual como padrão.</li>
 </ul></div>
 <div class="section level3">
