@@ -1,5 +1,15 @@
 # Changelog
 
+## treeshapesim 0.2.1
+
+- A test of
+  [`fit_shape()`](https://diogoprov.github.io/treeshapesim/reference/fit_shape.md)
+  used a simulated tree, whose topology differs between arm64 and x86-64
+  for the same seed; it now reads a fixed tree.
+  [`?sim_tree_shape`](https://diogoprov.github.io/treeshapesim/reference/sim_tree_shape.md)
+  documents that the same seed gives the same trees on the same
+  platform.
+
 ## treeshapesim 0.2.0
 
 - [`fit_shape()`](https://diogoprov.github.io/treeshapesim/reference/fit_shape.md)

@@ -17,13 +17,13 @@ estimar os parâmetros de árvores empíricas. Versão de desenvolvimento
 | 2\. Grades de formato | [`shape_grid()`](https://diogoprov.github.io/treeshapesim/reference/shape_grid.md): cruza níveis de γ e Colless e dá β e `c` de cada célula | PR \#3 |
 | 3\. Várias árvores por chamada | `nsim` em [`sim_tree_shape()`](https://diogoprov.github.io/treeshapesim/reference/sim_tree_shape.md), que devolve `multiPhylo` | PR \#3 |
 | 4\. Profundidade da raiz | `root_age` em [`sim_tree_shape()`](https://diogoprov.github.io/treeshapesim/reference/sim_tree_shape.md) e [`sim_tree_target()`](https://diogoprov.github.io/treeshapesim/reference/sim_tree_target.md) | PR \#3 |
-| 5\. Desempenho | **Parcial.** [`assign_ages()`](https://diogoprov.github.io/treeshapesim/reference/assign_ages.md) ficou sem [`ape::prop.part()`](https://rdrr.io/pkg/ape/man/boot.phylo.html) (ganho pequeno, árvores idênticas). O gargalo é [`rtopology_beta()`](https://diogoprov.github.io/treeshapesim/reference/rtopology_beta.md), O(n²) em árvores desbalanceadas; pré-calcular os `lgamma` mudava algumas árvores por arredondamento e foi revertido | PR \#3 |
+| 5\. Desempenho | **Encerrado.** Benchmark: código compilado não compensa (ver abaixo). Antes: [`assign_ages()`](https://diogoprov.github.io/treeshapesim/reference/assign_ages.md) ficou sem [`ape::prop.part()`](https://rdrr.io/pkg/ape/man/boot.phylo.html) (ganho pequeno, árvores idênticas). O gargalo é [`rtopology_beta()`](https://diogoprov.github.io/treeshapesim/reference/rtopology_beta.md), O(n²) em árvores desbalanceadas; pré-calcular os `lgamma` mudava algumas árvores por arredondamento e foi revertido | PR \#3 |
 | 6\. Vignette | [`vignette("treeshapesim")`](https://diogoprov.github.io/treeshapesim/articles/treeshapesim.md): separação dos processos, calibração, alvos e grade | PR \#3 |
 | 7\. Citação | `inst/CITATION` e README com o DOI de conceito do Zenodo | PR \#3 e commit seguinte |
 | 11\. [`tree_shape()`](https://diogoprov.github.io/treeshapesim/reference/tree_shape.md) | γ e Colless normalizado (Yule) em R puro, iguais a [`ape::gammaStat()`](https://rdrr.io/pkg/ape/man/gammaStat.html) e `treestats::colless(normalization = "yule")`; o treestats continua em Suggests | PR \#3 |
 | 13\. Validar [`assign_ages()`](https://diogoprov.github.io/treeshapesim/reference/assign_ages.md) | intervalos positivos e finitos; árvore binária e enraizada | PR \#3 |
 | Comparação com outros pacotes | tabela no README (página inicial) com TreeSim e apTreeshape | commit seguinte |
-| Release 0.2.0 | versão 0.2.0 no DESCRIPTION e no NEWS; release no GitHub, que gera o DOI da versão no Zenodo (conceito 10.5281/zenodo.23647260) | release 0.2.0 |
+| Release 0.2.0 | versão 0.2.0 no DESCRIPTION e no NEWS; release no GitHub; DOI da versão 10.5281/zenodo.23666434 (conceito 10.5281/zenodo.23647260) | release 0.2.0 |
 | [`fit_shape()`](https://diogoprov.github.io/treeshapesim/reference/fit_shape.md) | β (β-splitting, a partir da topologia) e `c` (modelo DDX do laser, com c = −x) de árvores empíricas, com bootstrap paramétrico, detecção de limites e tolerância de ultrametricidade; conferido contra o apTreeshape e o laser arquivados (diferenças ≤ 3e-5) | PR \#4 |
 | Validação dos estimadores | `data-raw/validate_estimators.R`: o gerador segue o β-splitting; o DDX recupera `c` com viés ≤ 0,06 | commit `74fb2a2` |
 | 14\. Documentação precisa | a independência de γ e Colless em relação a `c` e β agora é descrita como exata (para um dado n) | PR \#3 |
@@ -31,12 +31,6 @@ estimar os parâmetros de árvores empíricas. Versão de desenvolvimento
 ## A fazer
 
 ### Alta prioridade
-
-- **Desempenho da topologia (resto do item 5).** Só vale se alguém
-  precisar de árvores muito grandes e desbalanceadas. Para não mudar as
-  árvores existentes, o caminho seria um gerador novo e opcional (por
-  exemplo, em C++ ou com outro algoritmo de amostragem), mantendo o
-  atual como padrão.
 
 ### Média prioridade
 
@@ -72,12 +66,44 @@ estimar os parâmetros de árvores empíricas. Versão de desenvolvimento
   `<doi:...>` e checks no win-builder e no R-hub.
 - **17. Cobertura de testes** (`covr` e badge).
 - **18. Revisão no rOpenSci.**
-- **19. Partes em C++**, se o desempenho continuar sendo um problema.
 
 Retirado: **15. Outros modelos de topologia.** O apTreeshape já oferece
 Yule, PDA, Aldous’ branching, biased, funções de partição do usuário e o
 modelo de Maliet et al.; em vez de duplicar, basta a integração descrita
 acima.
+
+## Desempenho: código compilado não compensa (benchmark de 2026-10-26)
+
+`data-raw/benchmark_topology.R`, máquina ociosa (carga 2,4), Apple
+Silicon, R 4.6.1, mediana de 3 repetições; resultados em
+`data-raw/benchmark/`. O protótipo em C++
+(`data-raw/prototype/rtopology_beta.cpp`) reproduz exatamente as árvores
+e o estado do gerador da versão em R (usa `unif_rand`, `lgammafn` e
+`revsort` do R).
+
+| n = 20.000 | topologia em R | em C++ | ganho | [`assign_ages()`](https://diogoprov.github.io/treeshapesim/reference/assign_ages.md) |
+|----|---:|---:|---:|---:|
+| β = −1,9 | 5,4 s | 4,5 s | 1,2× | 0,4 s |
+| β = −1 | 0,14 s | 0,05 s | 2,8× | 2,1 s |
+| β = 0 | 0,11 s | 0,02 s | 4,6× | 2,4 s |
+| β = 2 | 0,11 s | 0,02 s | 5,3× | 2,4 s |
+
+- Onde a topologia é cara (árvores muito desbalanceadas), o custo é o
+  cálculo de O(n²) termos `lgamma`, e o C++ só ganha 1,2 a 2×.
+  Reaproveitar esses termos mudaria algumas árvores por arredondamento,
+  o que já foi descartado.
+- Onde o C++ ganha 5×, a topologia já leva cerca de 0,1 s; o tempo total
+  passa a ser dominado por
+  [`assign_ages()`](https://diogoprov.github.io/treeshapesim/reference/assign_ages.md)
+  (cerca de 2,4 s com 20.000 pontas em árvores equilibradas), que também
+  precisa repetir o [`sample()`](https://rdrr.io/r/base/sample.html) do
+  R para manter as árvores.
+- Conclusão: o pacote fica em R puro. Mesmo o pior caso testado (20.000
+  pontas, β = −1,9) leva cerca de 6 s por árvore. O protótipo fica em
+  `data-raw/` para o caso de alguém precisar de árvores muito maiores;
+  nesse caso, C ou C++ via API do R seria o caminho (Julia e Rust não
+  conseguem reproduzir as árvores sem reimplementar o gerador e o
+  [`sample()`](https://rdrr.io/r/base/sample.html) do R).
 
 ## Validação dos estimadores (rodada em 2026-10-26)
 

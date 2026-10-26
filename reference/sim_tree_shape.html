@@ -19,7 +19,7 @@ statistics, see sim_tree_target()."><meta property="og:image" content="https://d
 
     <a class="navbar-brand me-2" href="../index.html">treeshapesim</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -41,7 +41,7 @@ statistics, see sim_tree_target()."><meta property="og:image" content="https://d
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.png" class="logo" alt=""><h1>Ultrametric trees with given imbalance and branching-time parameters</h1>
-      <small class="dont-index">Source: <a href="https://github.com/diogoprov/treeshapesim/blob/0.2.0/R/simulate.R" class="external-link"><code>R/simulate.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/diogoprov/treeshapesim/blob/main/R/simulate.R" class="external-link"><code>R/simulate.R</code></a></small>
       <div class="d-none name"><code>sim_tree_shape.Rd</code></div>
     </div>
 
@@ -89,6 +89,13 @@ values give more imbalanced trees.</p></dd>
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     <p>With <code>nsim = 1</code>, a binary, ultrametric <code>phylo</code> object with root
 depth <code>root_age</code>; otherwise a <code>multiPhylo</code> object with <code>nsim</code> such trees.</p>
+    </div>
+    <div class="section level2">
+    <h2 id="reproducibility">Reproducibility<a class="anchor" aria-label="anchor" href="#reproducibility"></a></h2>
+    <p>The same seed gives the same trees on the same
+platform. Between platforms (for instance, arm64 and x86-64), differences
+in the last bit of floating-point functions can change a few draws of the
+topology, so trees may differ.</p>
     </div>
 
     <div class="section level2">

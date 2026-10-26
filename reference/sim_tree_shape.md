@@ -47,6 +47,13 @@ sim_tree_shape(n, beta = 0, c = 0, nsim = 1, root_age = 1)
 With `nsim = 1`, a binary, ultrametric `phylo` object with root depth
 `root_age`; otherwise a `multiPhylo` object with `nsim` such trees.
 
+## Reproducibility
+
+The same seed gives the same trees on the same platform. Between
+platforms (for instance, arm64 and x86-64), differences in the last bit
+of floating-point functions can change a few draws of the topology, so
+trees may differ.
+
 ## Examples
 
 ``` r
