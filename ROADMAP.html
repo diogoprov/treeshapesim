@@ -106,9 +106,7 @@
 <ul><li>
 <strong>9. Taxa de especiação definida pelo usuário.</strong> Plano detalhado abaixo.</li>
 <li>
-<strong>Validação cruzada dos estimadores (agendada).</strong> O script <code>data-raw/validate_estimators.R</code> mede viés e erro de dois estimadores em árvores do pacote: o de β por <code>apTreeshape::maxlik.betasplit()</code> e o de <code>c</code> pelo modelo DDX (ver abaixo). São 7 valores de β e 5 de <code>c</code>, com n = 50, 100 e 200 e 200 árvores cada. A rodada espera a máquina liberar. Recuperar o β com uma implementação independente confirma que o gerador segue o modelo de β-splitting.</li>
-<li>
-<strong>Estimar β e <code>c</code> de árvores empíricas (<code>fit_shape()</code>), depois da validação.</strong> Ver a seção sobre a literatura. Seria um invólucro, com citação, de métodos já publicados, mais um bootstrap paramétrico feito com o próprio simulador.</li>
+<strong>Estimar β e <code>c</code> de árvores empíricas (<code>fit_shape()</code>).</strong> Implementar no próprio pacote, sem depender do apTreeshape (arquivado no CRAN em 2023): a verossimilhança do β-splitting a partir da topologia (Aldous 1996; usada por Blum &amp; François 2006) e a do DDX para <code>c</code> (Rabosky 2006). Bootstrap paramétrico com o próprio simulador para intervalos de confiança, e aviso para árvores pequenas e equilibradas, onde o estimador de β é impreciso (ver a validação). Testar contra o apTreeshape arquivado e contra o DDX do laser arquivado, só no <code>data-raw/</code>, fora do pacote.</li>
 <li>
 <strong>8. Fração amostrada.</strong> Um argumento para podar pontas ao acaso, porque o γ é sensível à amostragem incompleta. A extinção (nascimento e morte) sai do escopo, porque é o terreno do TreeSim.</li>
 <li>
@@ -125,7 +123,7 @@
 <div class="section level3">
 <h3 id="baixa-prioridade">Baixa prioridade<a class="anchor" aria-label="anchor" href="#baixa-prioridade"></a></h3>
 <ul><li>
-<strong>Manter a tabela comparativa do README</strong> atualizada quando TreeSim ou apTreeshape mudarem (hoje cita TreeSim 2.4 e apTreeshape 1.5-0.1).</li>
+<strong>Manter a tabela comparativa do README</strong> atualizada quando TreeSim ou apTreeshape mudarem (hoje cita TreeSim 2.4 e apTreeshape 1.5-0.1, este arquivado no CRAN em 2023).</li>
 <li>
 <strong>16. CRAN.</strong> Faz mais sentido depois do aceite do artigo; exige <code>cran-comments.md</code>, as referências no campo Description no formato <code>&lt;doi:...&gt;</code> e checks no win-builder e no R-hub.</li>
 <li>
@@ -136,6 +134,14 @@
 </ul><p>Retirado: <strong>15. Outros modelos de topologia.</strong> O apTreeshape já oferece Yule, PDA, Aldous’ branching, biased, funções de partição do usuário e o modelo de Maliet et al.; em vez de duplicar, basta a integração descrita acima.</p>
 </div>
 </div>
+<div class="section level2">
+<h2 id="validação-dos-estimadores-rodada-em-2026-10-26">Validação dos estimadores (rodada em 2026-10-26)<a class="anchor" aria-label="anchor" href="#valida%C3%A7%C3%A3o-dos-estimadores-rodada-em-2026-10-26"></a></h2>
+<p><code>data-raw/validate_estimators.R</code>, 200 árvores por condição, n = 50, 100 e 200; resultados em <code>data-raw/validation/</code> (<code>summary.csv</code>). Rodou em 4 min, num núcleo, depois que a máquina liberou. O apTreeshape 1.5-0.1 foi instalado do arquivo do CRAN numa biblioteca separada.</p>
+<ul><li>
+<strong>β por <code>apTreeshape::maxlik.betasplit()</code>.</strong> Para β ≤ −1, praticamente sem viés (≤ 0,15 com n = 50; ≈ 0 com n = 200). Para β ≥ 0, viés positivo e grande variância em árvores pequenas (n = 50, β = 0: média 0,44, REQM 1,38; com β = 3, estimativas no limite superior da busca, 10), que diminuem com n (β = 0: viés 0,06 com n = 200). É o comportamento de um estimador consistente aplicado ao modelo certo: <strong>o gerador de topologias segue o β-splitting.</strong> A imprecisão para árvores equilibradas é do estimador.</li>
+<li>
+<strong><code>c</code> pelo DDX.</strong> Viés pequeno e negativo (−0,04 a −0,06 com n = 50; −0,01 a −0,02 com n = 200) e REQM de ≈ 0,2 (n = 50) a ≈ 0,08 (n = 200). O viés vem de o pacote sortear o último intervalo da mesma lei, que o DDX não trata como evento; pode ser corrigido no <code>fit_shape()</code> ou removido pelo bootstrap paramétrico.</li>
+</ul></div>
 <div class="section level2">
 <h2 id="o-que-a-literatura-diz-sobre-estimar-β-e-c">O que a literatura diz sobre estimar β e <code>c</code>
 <a class="anchor" aria-label="anchor" href="#o-que-a-literatura-diz-sobre-estimar-%CE%B2-e-c"></a></h2>
@@ -149,7 +155,7 @@
 <li>Padrões de ramificação não distinguem diversidade-dependência de dependência do tempo (Pannetier et al. 2020, <a href="doi:10.1111/evo.14124" class="uri">doi:10.1111/evo.14124</a>). Logo, um <code>c</code> estimado descreve a forma da curva de acúmulo de linhagens, não o mecanismo. Isso precisa estar na documentação.</li>
 </ul></li>
 <li>
-<strong>O estimador de β também existe.</strong> O β do modelo de β-splitting é estimado por máxima verossimilhança a partir da topologia e foi aplicado a um grande conjunto de filogenias publicadas por Blum &amp; François (2006, <a href="doi:10.1080/10635150600889625" class="uri">doi:10.1080/10635150600889625</a>); está implementado em <code>apTreeshape::maxlik.betasplit()</code>. Basta usá-lo (Suggests), não reimplementá-lo.</li>
+<strong>O estimador de β também existe.</strong> O β do modelo de β-splitting é estimado por máxima verossimilhança a partir da topologia e foi aplicado a um grande conjunto de filogenias publicadas por Blum &amp; François (2006, <a href="doi:10.1080/10635150600889625" class="uri">doi:10.1080/10635150600889625</a>); está implementado em <code>apTreeshape::maxlik.betasplit()</code>. Como o apTreeshape foi arquivado no CRAN em 2023, o treeshapesim não pode depender dele; a verossimilhança, que é simples, deve ser reimplementada e citada.</li>
 <li>
 <strong>Validade da validação cruzada.</strong> Como <code>maxlik.betasplit()</code> implementa a verossimilhança do mesmo modelo de Aldous (1996), recuperar o β verdadeiro em árvores de <code><a href="reference/rtopology_beta.html">rtopology_beta()</a></code> é um teste legítimo de que o gerador está correto. No caso do <code>c</code>, comparar com o DDX é um teste de consistência do gerador de intervalos e, ao mesmo tempo, mede o viés do estimador nas árvores do pacote.</li>
 <li>
