@@ -21,7 +21,7 @@ assign_ages(topo, g)
 
   Internode intervals, as from
   [`intervals_lineage_rate()`](https://diogoprov.github.io/treeshapesim/reference/intervals_lineage_rate.md)
-  (length `Ntip(topo) - 1`).
+  (length `Ntip(topo) - 1`, positive and finite).
 
 ## Value
 
