@@ -5,9 +5,10 @@ bibentry(
   year = "2026",
   note = paste("R package version", meta$Version),
   url = "https://github.com/diogoprov/treeshapesim",
+  doi = "10.5281/zenodo.23647260",
   textVersion = paste0(
     "Provete, D. B. (2026). treeshapesim: Simulate trees with separately ",
     "controlled imbalance and branching times. R package version ",
-    meta$Version, ". https://github.com/diogoprov/treeshapesim"
+    meta$Version, ". https://doi.org/10.5281/zenodo.23647260"
   )
 )
