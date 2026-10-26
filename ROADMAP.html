@@ -34,7 +34,7 @@
 
 <div id="treeshapesim-estado-e-próximos-passos" class="section level1">
 
-<p>Atualizado em 2026-10-26, depois do merge do PR #3, da comparação com TreeSim e apTreeshape (README) e de uma busca na literatura (Consensus, Undermind e Scholar Gateway) sobre estimar os parâmetros de árvores empíricas. Versão de desenvolvimento 0.1.0.9000.</p>
+<p>Atualizado em 2026-10-26, depois do merge do PR #4 (<code><a href="reference/fit_shape.html">fit_shape()</a></code>), do PR #3, da comparação com TreeSim e apTreeshape (README) e de uma busca na literatura (Consensus, Undermind e Scholar Gateway) sobre estimar os parâmetros de árvores empíricas. Versão de desenvolvimento 0.1.0.9000.</p>
 <div class="section level2">
 <h2 id="feito">Feito<a class="anchor" aria-label="anchor" href="#feito"></a></h2>
 <table class="table"><colgroup><col width="33%"><col width="33%"><col width="33%"></colgroup><thead><tr><th>Item</th>
@@ -88,6 +88,14 @@
 </tr><tr><td>Comparação com outros pacotes</td>
 <td>tabela no README (página inicial) com TreeSim e apTreeshape</td>
 <td>commit seguinte</td>
+</tr><tr><td><code><a href="reference/fit_shape.html">fit_shape()</a></code></td>
+<td>β (β-splitting, a partir da topologia) e <code>c</code> (modelo DDX do laser, com c = −x) de árvores empíricas, com bootstrap paramétrico, detecção de limites e tolerância de ultrametricidade; conferido contra o apTreeshape e o laser arquivados (diferenças ≤ 3e-5)</td>
+<td>PR #4</td>
+</tr><tr><td>Validação dos estimadores</td>
+<td>
+<code>data-raw/validate_estimators.R</code>: o gerador segue o β-splitting; o DDX recupera <code>c</code> com viés ≤ 0,06</td>
+<td>commit <code>74fb2a2</code>
+</td>
 </tr><tr><td>14. Documentação precisa</td>
 <td>a independência de γ e Colless em relação a <code>c</code> e β agora é descrita como exata (para um dado n)</td>
 <td>PR #3</td>
@@ -105,8 +113,6 @@
 <h3 id="média-prioridade">Média prioridade<a class="anchor" aria-label="anchor" href="#m%C3%A9dia-prioridade"></a></h3>
 <ul><li>
 <strong>9. Taxa de especiação definida pelo usuário.</strong> Plano detalhado abaixo.</li>
-<li>
-<strong>Estimar β e <code>c</code> de árvores empíricas (<code><a href="reference/fit_shape.html">fit_shape()</a></code>).</strong> Implementar no próprio pacote, sem depender do apTreeshape (arquivado no CRAN em 2023): a verossimilhança do β-splitting a partir da topologia (Aldous 1996; usada por Blum &amp; François 2006) e a do DDX para <code>c</code> (Rabosky 2006). Bootstrap paramétrico com o próprio simulador para intervalos de confiança, e aviso para árvores pequenas e equilibradas, onde o estimador de β é impreciso (ver a validação). Testar contra o apTreeshape arquivado e contra o DDX do laser arquivado, só no <code>data-raw/</code>, fora do pacote.</li>
 <li>
 <strong>8. Fração amostrada.</strong> Um argumento para podar pontas ao acaso, porque o γ é sensível à amostragem incompleta. A extinção (nascimento e morte) sai do escopo, porque é o terreno do TreeSim.</li>
 <li>

@@ -1,9 +1,11 @@
 # treeshapesim: estado e próximos passos
 
-Atualizado em 2026-10-26, depois do merge do PR \#3, da comparação com
-TreeSim e apTreeshape (README) e de uma busca na literatura (Consensus,
-Undermind e Scholar Gateway) sobre estimar os parâmetros de árvores
-empíricas. Versão de desenvolvimento 0.1.0.9000.
+Atualizado em 2026-10-26, depois do merge do PR \#4
+([`fit_shape()`](https://diogoprov.github.io/treeshapesim/reference/fit_shape.md)),
+do PR \#3, da comparação com TreeSim e apTreeshape (README) e de uma
+busca na literatura (Consensus, Undermind e Scholar Gateway) sobre
+estimar os parâmetros de árvores empíricas. Versão de desenvolvimento
+0.1.0.9000.
 
 ## Feito
 
@@ -21,6 +23,8 @@ empíricas. Versão de desenvolvimento 0.1.0.9000.
 | 11\. [`tree_shape()`](https://diogoprov.github.io/treeshapesim/reference/tree_shape.md) | γ e Colless normalizado (Yule) em R puro, iguais a [`ape::gammaStat()`](https://rdrr.io/pkg/ape/man/gammaStat.html) e `treestats::colless(normalization = "yule")`; o treestats continua em Suggests | PR \#3 |
 | 13\. Validar [`assign_ages()`](https://diogoprov.github.io/treeshapesim/reference/assign_ages.md) | intervalos positivos e finitos; árvore binária e enraizada | PR \#3 |
 | Comparação com outros pacotes | tabela no README (página inicial) com TreeSim e apTreeshape | commit seguinte |
+| [`fit_shape()`](https://diogoprov.github.io/treeshapesim/reference/fit_shape.md) | β (β-splitting, a partir da topologia) e `c` (modelo DDX do laser, com c = −x) de árvores empíricas, com bootstrap paramétrico, detecção de limites e tolerância de ultrametricidade; conferido contra o apTreeshape e o laser arquivados (diferenças ≤ 3e-5) | PR \#4 |
+| Validação dos estimadores | `data-raw/validate_estimators.R`: o gerador segue o β-splitting; o DDX recupera `c` com viés ≤ 0,06 | commit `74fb2a2` |
 | 14\. Documentação precisa | a independência de γ e Colless em relação a `c` e β agora é descrita como exata (para um dado n) | PR \#3 |
 
 ## A fazer
@@ -42,16 +46,6 @@ empíricas. Versão de desenvolvimento 0.1.0.9000.
 
 - **9. Taxa de especiação definida pelo usuário.** Plano detalhado
   abaixo.
-- **Estimar β e `c` de árvores empíricas
-  ([`fit_shape()`](https://diogoprov.github.io/treeshapesim/reference/fit_shape.md)).**
-  Implementar no próprio pacote, sem depender do apTreeshape (arquivado
-  no CRAN em 2023): a verossimilhança do β-splitting a partir da
-  topologia (Aldous 1996; usada por Blum & François 2006) e a do DDX
-  para `c` (Rabosky 2006). Bootstrap paramétrico com o próprio simulador
-  para intervalos de confiança, e aviso para árvores pequenas e
-  equilibradas, onde o estimador de β é impreciso (ver a validação).
-  Testar contra o apTreeshape arquivado e contra o DDX do laser
-  arquivado, só no `data-raw/`, fora do pacote.
 - **8. Fração amostrada.** Um argumento para podar pontas ao acaso,
   porque o γ é sensível à amostragem incompleta. A extinção (nascimento
   e morte) sai do escopo, porque é o terreno do TreeSim.
