@@ -2,6 +2,12 @@
 
 ## treeshapesim (development version)
 
+- [`fit_shape()`](https://diogoprov.github.io/treeshapesim/reference/fit_shape.md)
+  estimates `beta` (maximum likelihood of the beta-splitting model from
+  the topology) and `c` (maximum likelihood of the DDX model of laser,
+  with `c = -x`) from an empirical tree, with an optional parametric
+  bootstrap; on 30 random trees, `beta` matched the archived apTreeshape
+  (`maxlik.betasplit()`) and `c` matched laser (`DDX()`) to within 3e-5.
 - [`sim_tree_target()`](https://diogoprov.github.io/treeshapesim/reference/sim_tree_target.md)
   draws trees whose gamma statistic and normalized Colless index fall
   within a tolerance of target values: `beta` and `c` come from

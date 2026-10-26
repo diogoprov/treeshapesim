@@ -156,6 +156,26 @@ they are set by hand.</p>
 <span>                              nsim <span class="op">=</span> <span class="fl">10</span>, calibration <span class="op">=</span> <span class="va">cal</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
+<h2 id="placing-an-empirical-tree-on-the-same-scale">Placing an empirical tree on the same scale<a class="anchor" aria-label="anchor" href="#placing-an-empirical-tree-on-the-same-scale"></a>
+</h2>
+<p><code><a href="../reference/fit_shape.html">fit_shape()</a></code> estimates <code>beta</code> from the
+topology and <code>c</code> from the branching times by maximum
+likelihood (the beta-splitting model and the DDX model of the R package
+laser, with <code>c = -x</code>), and a parametric bootstrap with the
+package’s own generators gives percentile intervals. The estimate of
+<code>beta</code> is imprecise for balanced trees with few tips, and
+<code>c</code> describes the shape of the lineage-through-time curve,
+not its cause.</p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">empirical</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/sim_tree_shape.html">sim_tree_shape</a></span><span class="op">(</span><span class="fl">150</span>, beta <span class="op">=</span> <span class="op">-</span><span class="fl">1</span>, c <span class="op">=</span> <span class="op">-</span><span class="fl">0.7</span><span class="op">)</span>   <span class="co"># stands in for a real tree</span></span>
+<span><span class="fu"><a href="../reference/fit_shape.html">fit_shape</a></span><span class="op">(</span><span class="va">empirical</span>, boot <span class="op">=</span> <span class="fl">30</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Shape estimates for a tree with 150 tips</span></span>
+<span><span class="co">#&gt;      estimate   2.5%  97.5%</span></span>
+<span><span class="co">#&gt; beta   -1.200 -1.360 -0.835</span></span>
+<span><span class="co">#&gt; c      -0.678 -0.856 -0.496</span></span>
+<span><span class="co">#&gt; gamma = -7.5 | normalized Colless = 7.13</span></span></code></pre></div>
+</div>
+<div class="section level2">
 <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
 </h2>
 <p>Aldous, D. (1996). Probability distributions on cladograms. In D.

@@ -35,6 +35,8 @@
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="development version" id="treeshapesim-development-version">treeshapesim (development version)<a class="anchor" aria-label="anchor" href="#treeshapesim-development-version"></a></h2>
 <ul><li>
+<code><a href="../reference/fit_shape.html">fit_shape()</a></code> estimates <code>beta</code> (maximum likelihood of the beta-splitting model from the topology) and <code>c</code> (maximum likelihood of the DDX model of laser, with <code>c = -x</code>) from an empirical tree, with an optional parametric bootstrap; on 30 random trees, <code>beta</code> matched the archived apTreeshape (<code>maxlik.betasplit()</code>) and <code>c</code> matched laser (<code>DDX()</code>) to within 3e-5.</li>
+<li>
 <code><a href="../reference/sim_tree_target.html">sim_tree_target()</a></code> draws trees whose gamma statistic and normalized Colless index fall within a tolerance of target values: <code>beta</code> and <code>c</code> come from calibration curves (<code><a href="../reference/calibrate_shape.html">calibrate_shape()</a></code>, inverted by <code><a href="../reference/shape_params.html">shape_params()</a></code>), and topologies and internode intervals are rejected separately, which is equivalent to rejecting whole trees but much more efficient.</li>
 <li>
 <code><a href="../reference/shape_grid.html">shape_grid()</a></code> crosses levels of gamma and Colless and gives the parameters of each combination.</li>

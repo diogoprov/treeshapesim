@@ -42,15 +42,16 @@ empíricas. Versão de desenvolvimento 0.1.0.9000.
 
 - **9. Taxa de especiação definida pelo usuário.** Plano detalhado
   abaixo.
-- **Estimar β e `c` de árvores empíricas (`fit_shape()`).** Implementar
-  no próprio pacote, sem depender do apTreeshape (arquivado no CRAN em
-  2023): a verossimilhança do β-splitting a partir da topologia (Aldous
-  1996; usada por Blum & François 2006) e a do DDX para `c` (Rabosky
-  2006). Bootstrap paramétrico com o próprio simulador para intervalos
-  de confiança, e aviso para árvores pequenas e equilibradas, onde o
-  estimador de β é impreciso (ver a validação). Testar contra o
-  apTreeshape arquivado e contra o DDX do laser arquivado, só no
-  `data-raw/`, fora do pacote.
+- **Estimar β e `c` de árvores empíricas
+  ([`fit_shape()`](https://diogoprov.github.io/treeshapesim/reference/fit_shape.md)).**
+  Implementar no próprio pacote, sem depender do apTreeshape (arquivado
+  no CRAN em 2023): a verossimilhança do β-splitting a partir da
+  topologia (Aldous 1996; usada por Blum & François 2006) e a do DDX
+  para `c` (Rabosky 2006). Bootstrap paramétrico com o próprio simulador
+  para intervalos de confiança, e aviso para árvores pequenas e
+  equilibradas, onde o estimador de β é impreciso (ver a validação).
+  Testar contra o apTreeshape arquivado e contra o DDX do laser
+  arquivado, só no `data-raw/`, fora do pacote.
 - **8. Fração amostrada.** Um argumento para podar pontas ao acaso,
   porque o γ é sensível à amostragem incompleta. A extinção (nascimento
   e morte) sai do escopo, porque é o terreno do TreeSim.
@@ -106,7 +107,8 @@ instalado do arquivo do CRAN numa biblioteca separada.
 - **`c` pelo DDX.** Viés pequeno e negativo (−0,04 a −0,06 com n = 50;
   −0,01 a −0,02 com n = 200) e REQM de ≈ 0,2 (n = 50) a ≈ 0,08 (n =
   200). O viés vem de o pacote sortear o último intervalo da mesma lei,
-  que o DDX não trata como evento; pode ser corrigido no `fit_shape()`
+  que o DDX não trata como evento; pode ser corrigido no
+  [`fit_shape()`](https://diogoprov.github.io/treeshapesim/reference/fit_shape.md)
   ou removido pelo bootstrap paramétrico.
 
 ## O que a literatura diz sobre estimar β e `c`
@@ -120,9 +122,10 @@ Busca feita em 2026-10-26. Referências conferidas nas fontes indicadas.
   intervalo com k linhagens tem taxa total k^(1 + c). Portanto, **c =
   −x**, e estimar `c` por máxima verossimilhança é ajustar o DDX. O
   laser saiu do CRAN, mas o modelo continua sendo usado. Um
-  `fit_shape()` deve citar o DDX e o laser, e não apresentar a estimação
-  como novidade. Em dados com o último intervalo sorteado da mesma lei
-  (como em
+  [`fit_shape()`](https://diogoprov.github.io/treeshapesim/reference/fit_shape.md)
+  deve citar o DDX e o laser, e não apresentar a estimação como
+  novidade. Em dados com o último intervalo sorteado da mesma lei (como
+  em
   [`intervals_lineage_rate()`](https://diogoprov.github.io/treeshapesim/reference/intervals_lineage_rate.md)),
   um pequeno viés é possível; a validação agendada mede isso.
 - **Cuidados de interpretação.**

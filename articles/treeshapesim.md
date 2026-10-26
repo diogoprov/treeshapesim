@@ -116,6 +116,27 @@ cell_trees <- sim_tree_target(100, gamma = cell$gamma, colless = cell$colless,
                               nsim = 10, calibration = cal)
 ```
 
+## Placing an empirical tree on the same scale
+
+[`fit_shape()`](https://diogoprov.github.io/treeshapesim/reference/fit_shape.md)
+estimates `beta` from the topology and `c` from the branching times by
+maximum likelihood (the beta-splitting model and the DDX model of the R
+package laser, with `c = -x`), and a parametric bootstrap with the
+package’s own generators gives percentile intervals. The estimate of
+`beta` is imprecise for balanced trees with few tips, and `c` describes
+the shape of the lineage-through-time curve, not its cause.
+
+``` r
+
+empirical <- sim_tree_shape(150, beta = -1, c = -0.7)   # stands in for a real tree
+fit_shape(empirical, boot = 30)
+#> Shape estimates for a tree with 150 tips
+#>      estimate   2.5%  97.5%
+#> beta   -1.200 -1.360 -0.835
+#> c      -0.678 -0.856 -0.496
+#> gamma = -7.5 | normalized Colless = 7.13
+```
+
 ## References
 
 Aldous, D. (1996). Probability distributions on cladograms. In D. Aldous

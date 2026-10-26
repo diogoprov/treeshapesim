@@ -24,6 +24,13 @@ shapes.
 - [`shape_grid()`](https://diogoprov.github.io/treeshapesim/reference/shape_grid.md)
   : Grid of tree shapes
 
+## Fit empirical trees
+
+Estimate the shape parameters of a tree on the scale of the simulations.
+
+- [`fit_shape()`](https://diogoprov.github.io/treeshapesim/reference/fit_shape.md)
+  : Estimate the shape parameters of a tree
+
 ## Building blocks
 
 Topology, internode intervals and their combination.
