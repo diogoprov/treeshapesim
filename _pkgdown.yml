@@ -16,6 +16,10 @@ reference:
   - calibrate_shape
   - shape_params
   - shape_grid
+- title: Fit empirical trees
+  desc: Estimate the shape parameters of a tree on the scale of the simulations.
+  contents:
+  - fit_shape
 - title: Building blocks
   desc: Topology, internode intervals and their combination.
   contents:
