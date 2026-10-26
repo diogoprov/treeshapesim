@@ -1,6 +1,8 @@
 # Validation of two estimators on trees simulated with treeshapesim (not part of
 # the package build; data-raw/ is in .Rbuildignore).
 #   1. beta: apTreeshape::maxlik.betasplit() (maximum likelihood of Aldous'
+#      (apTreeshape was archived on CRAN in 2023; install 1.5-0.1 from the CRAN
+#      archive, with its dependencies quantreg, cubature, coda and pbapply)
 #      beta-splitting model; Blum & Francois 2006) on topologies from
 #      rtopology_beta(). An independent implementation recovering beta checks
 #      that the generator follows the beta-splitting model.

@@ -39,16 +39,14 @@ desenvolvimento 0.1.0.9000.
 ### Média prioridade
 
 - **9. Taxa de especiação definida pelo usuário.** Plano detalhado abaixo.
-- **Validação cruzada dos estimadores (agendada).** O script
-  `data-raw/validate_estimators.R` mede viés e erro de dois estimadores em
-  árvores do pacote: o de β por `apTreeshape::maxlik.betasplit()` e o de `c` pelo
-  modelo DDX (ver abaixo). São 7 valores de β e 5 de `c`, com n = 50, 100 e 200
-  e 200 árvores cada. A rodada espera a máquina liberar. Recuperar o β com uma
-  implementação independente confirma que o gerador segue o modelo de
-  β-splitting.
-- **Estimar β e `c` de árvores empíricas (`fit_shape()`), depois da validação.**
-  Ver a seção sobre a literatura. Seria um invólucro, com citação, de métodos já
-  publicados, mais um bootstrap paramétrico feito com o próprio simulador.
+- **Estimar β e `c` de árvores empíricas (`fit_shape()`).** Implementar no
+  próprio pacote, sem depender do apTreeshape (arquivado no CRAN em 2023): a
+  verossimilhança do β-splitting a partir da topologia (Aldous 1996; usada por
+  Blum & François 2006) e a do DDX para `c` (Rabosky 2006). Bootstrap
+  paramétrico com o próprio simulador para intervalos de confiança, e aviso
+  para árvores pequenas e equilibradas, onde o estimador de β é impreciso (ver a
+  validação). Testar contra o apTreeshape arquivado e contra o DDX do laser
+  arquivado, só no `data-raw/`, fora do pacote.
 - **8. Fração amostrada.** Um argumento para podar pontas ao acaso, porque o γ é
   sensível à amostragem incompleta. A extinção (nascimento e morte) sai do
   escopo, porque é o terreno do TreeSim.
@@ -67,7 +65,8 @@ desenvolvimento 0.1.0.9000.
 ### Baixa prioridade
 
 - **Manter a tabela comparativa do README** atualizada quando TreeSim ou
-  apTreeshape mudarem (hoje cita TreeSim 2.4 e apTreeshape 1.5-0.1).
+  apTreeshape mudarem (hoje cita TreeSim 2.4 e apTreeshape 1.5-0.1, este
+  arquivado no CRAN em 2023).
 - **16. CRAN.** Faz mais sentido depois do aceite do artigo; exige
   `cran-comments.md`, as referências no campo Description no formato
   `<doi:...>` e checks no win-builder e no R-hub.
@@ -78,6 +77,26 @@ desenvolvimento 0.1.0.9000.
 Retirado: **15. Outros modelos de topologia.** O apTreeshape já oferece Yule,
 PDA, Aldous' branching, biased, funções de partição do usuário e o modelo de
 Maliet et al.; em vez de duplicar, basta a integração descrita acima.
+
+## Validação dos estimadores (rodada em 2026-10-26)
+
+`data-raw/validate_estimators.R`, 200 árvores por condição, n = 50, 100 e 200;
+resultados em `data-raw/validation/` (`summary.csv`). Rodou em 4 min, num núcleo,
+depois que a máquina liberou. O apTreeshape 1.5-0.1 foi instalado do arquivo do
+CRAN numa biblioteca separada.
+
+- **β por `apTreeshape::maxlik.betasplit()`.** Para β ≤ −1, praticamente sem viés
+  (≤ 0,15 com n = 50; ≈ 0 com n = 200). Para β ≥ 0, viés positivo e grande
+  variância em árvores pequenas (n = 50, β = 0: média 0,44, REQM 1,38; com β = 3,
+  estimativas no limite superior da busca, 10), que diminuem com n (β = 0:
+  viés 0,06 com n = 200). É o comportamento de um estimador consistente aplicado
+  ao modelo certo: **o gerador de topologias segue o β-splitting.** A
+  imprecisão para árvores equilibradas é do estimador.
+- **`c` pelo DDX.** Viés pequeno e negativo (−0,04 a −0,06 com n = 50; −0,01 a
+  −0,02 com n = 200) e REQM de ≈ 0,2 (n = 50) a ≈ 0,08 (n = 200). O viés vem de
+  o pacote sortear o último intervalo da mesma lei, que o DDX não trata como
+  evento; pode ser corrigido no `fit_shape()` ou removido pelo bootstrap
+  paramétrico.
 
 ## O que a literatura diz sobre estimar β e `c`
 
@@ -109,8 +128,9 @@ Busca feita em 2026-10-26. Referências conferidas nas fontes indicadas.
   máxima verossimilhança a partir da topologia e foi aplicado a um grande
   conjunto de filogenias publicadas por Blum & François (2006,
   doi:10.1080/10635150600889625); está implementado em
-  `apTreeshape::maxlik.betasplit()`. Basta usá-lo (Suggests), não
-  reimplementá-lo.
+  `apTreeshape::maxlik.betasplit()`. Como o apTreeshape foi arquivado no CRAN
+  em 2023, o treeshapesim não pode depender dele; a verossimilhança, que é
+  simples, deve ser reimplementada e citada.
 - **Validade da validação cruzada.** Como `maxlik.betasplit()` implementa a
   verossimilhança do mesmo modelo de Aldous (1996), recuperar o β verdadeiro em
   árvores de `rtopology_beta()` é um teste legítimo de que o gerador está

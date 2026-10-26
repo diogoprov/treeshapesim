@@ -68,7 +68,8 @@ can be computed with [treestats](https://github.com/thijsjanzen/treestats).
 Use TreeSim for trees from specific birth–death models and apTreeshape to model,
 estimate or test topological imbalance. Use treeshapesim when the imbalance and
 the distribution of branching times have to be varied as separate factors. The
-comparison is based on the documentation of TreeSim 2.4 and apTreeshape 1.5-0.1.
+comparison is based on the documentation of TreeSim 2.4 and apTreeshape 1.5-0.1;
+apTreeshape was archived on CRAN in 2023 and is available from the CRAN archive.
 
 ## Citation
 
