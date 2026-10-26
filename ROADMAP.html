@@ -34,7 +34,7 @@
 
 <div id="treeshapesim-estado-e-próximos-passos" class="section level1">
 
-<p>Atualizado em 2026-10-25, depois do merge do PR #3 (<code>main</code> em <code>4a65352</code>, versão de desenvolvimento 0.1.0.9000). A CI do <code>main</code> (R CMD check em macOS, Windows e Ubuntu, e pkgdown) passou.</p>
+<p>Atualizado em 2026-10-26, depois do merge do PR #3, da comparação com TreeSim e apTreeshape (README) e de uma busca na literatura (Consensus, Undermind e Scholar Gateway) sobre estimar os parâmetros de árvores empíricas. Versão de desenvolvimento 0.1.0.9000.</p>
 <div class="section level2">
 <h2 id="feito">Feito<a class="anchor" aria-label="anchor" href="#feito"></a></h2>
 <table class="table"><colgroup><col width="33%"><col width="33%"><col width="33%"></colgroup><thead><tr><th>Item</th>
@@ -104,9 +104,13 @@
 <div class="section level3">
 <h3 id="média-prioridade">Média prioridade<a class="anchor" aria-label="anchor" href="#m%C3%A9dia-prioridade"></a></h3>
 <ul><li>
-<strong>8. Amostragem incompleta e extinção.</strong> Um argumento para a fração amostrada (podar pontas ao acaso) ou um processo de nascimento e morte com poda. O γ é sensível à amostragem incompleta.</li>
+<strong>9. Taxa de especiação definida pelo usuário.</strong> Plano detalhado abaixo.</li>
 <li>
-<strong>9. Taxa de especiação definida pelo usuário.</strong> <code>rate = function(k)</code>, mantendo k^c como padrão.</li>
+<strong>Validação cruzada dos estimadores (agendada).</strong> O script <code>data-raw/validate_estimators.R</code> mede viés e erro de dois estimadores em árvores do pacote: o de β por <code>apTreeshape::maxlik.betasplit()</code> e o de <code>c</code> pelo modelo DDX (ver abaixo). São 7 valores de β e 5 de <code>c</code>, com n = 50, 100 e 200 e 200 árvores cada. A rodada espera a máquina liberar. Recuperar o β com uma implementação independente confirma que o gerador segue o modelo de β-splitting.</li>
+<li>
+<strong>Estimar β e <code>c</code> de árvores empíricas (<code>fit_shape()</code>), depois da validação.</strong> Ver a seção sobre a literatura. Seria um invólucro, com citação, de métodos já publicados, mais um bootstrap paramétrico feito com o próprio simulador.</li>
+<li>
+<strong>8. Fração amostrada.</strong> Um argumento para podar pontas ao acaso, porque o γ é sensível à amostragem incompleta. A extinção (nascimento e morte) sai do escopo, porque é o terreno do TreeSim.</li>
 <li>
 <strong>10. Guardar os parâmetros na árvore.</strong> Gravar <code>beta</code>, <code>c</code> e <code>root_age</code> como atributos do <code>phylo</code> em <code><a href="reference/sim_tree_shape.html">sim_tree_shape()</a></code>; <code><a href="reference/sim_tree_target.html">sim_tree_target()</a></code> já guarda os seus.</li>
 <li>
@@ -115,11 +119,13 @@
 </ol></li>
 <li>
 <strong>Calibração em cache.</strong> Guardar curvas pré-calculadas para tamanhos comuns (por exemplo, 50, 100 e 200 pontas), para evitar a calibração a cada sessão. Exige uma rodada de simulação só para isso.</li>
+<li>
+<strong>Integração com o apTreeshape na vignette.</strong> <code><a href="reference/assign_ages.html">assign_ages()</a></code> aceita qualquer topologia binária; um parágrafo mostrando topologias do apTreeshape (convertidas com <code>as.phylo()</code>) com os tempos de ramificação do treeshapesim.</li>
 </ul></div>
 <div class="section level3">
 <h3 id="baixa-prioridade">Baixa prioridade<a class="anchor" aria-label="anchor" href="#baixa-prioridade"></a></h3>
 <ul><li>
-<strong>15. Outros modelos de topologia</strong>, como o modelo alpha de Ford. As referências ainda não foram conferidas.</li>
+<strong>Manter a tabela comparativa do README</strong> atualizada quando TreeSim ou apTreeshape mudarem (hoje cita TreeSim 2.4 e apTreeshape 1.5-0.1).</li>
 <li>
 <strong>16. CRAN.</strong> Faz mais sentido depois do aceite do artigo; exige <code>cran-comments.md</code>, as referências no campo Description no formato <code>&lt;doi:...&gt;</code> e checks no win-builder e no R-hub.</li>
 <li>
@@ -127,7 +133,54 @@
 <li><strong>18. Revisão no rOpenSci.</strong></li>
 <li>
 <strong>19. Partes em C++</strong>, se o desempenho continuar sendo um problema.</li>
+</ul><p>Retirado: <strong>15. Outros modelos de topologia.</strong> O apTreeshape já oferece Yule, PDA, Aldous’ branching, biased, funções de partição do usuário e o modelo de Maliet et al.; em vez de duplicar, basta a integração descrita acima.</p>
+</div>
+</div>
+<div class="section level2">
+<h2 id="o-que-a-literatura-diz-sobre-estimar-β-e-c">O que a literatura diz sobre estimar β e <code>c</code>
+<a class="anchor" aria-label="anchor" href="#o-que-a-literatura-diz-sobre-estimar-%CE%B2-e-c"></a></h2>
+<p>Busca feita em 2026-10-26. Referências conferidas nas fontes indicadas.</p>
+<ul><li>
+<strong>O estimador de <code>c</code> já existe: é o modelo DDX.</strong> No pacote laser (Rabosky 2006a, <a href="doi:10.1177/117693430600200024" class="uri">doi:10.1177/117693430600200024</a>), a taxa de especiação por linhagem no modelo DDX é r·k^(−x) com k linhagens (conferido no código-fonte de <code>laser::DDX()</code>). No treeshapesim, o intervalo com k linhagens tem taxa total k^(1 + c). Portanto, <strong>c = −x</strong>, e estimar <code>c</code> por máxima verossimilhança é ajustar o DDX. O laser saiu do CRAN, mas o modelo continua sendo usado. Um <code>fit_shape()</code> deve citar o DDX e o laser, e não apresentar a estimação como novidade. Em dados com o último intervalo sorteado da mesma lei (como em <code><a href="reference/intervals_lineage_rate.html">intervals_lineage_rate()</a></code>), um pequeno viés é possível; a validação agendada mede isso.</li>
+<li>
+<strong>Cuidados de interpretação.</strong>
+<ul><li>Escolher entre modelos de diversificação pelo menor AIC infla muito o erro tipo I (Rabosky 2006b, <a href="doi:10.1554/05-424.1" class="uri">doi:10.1554/05-424.1</a>).</li>
+<li>Em modelos de diversidade-dependência, as estimativas podem ser enviesadas, e o teste da razão de verossimilhança e o AIC não são confiáveis; a recomendação é bootstrap paramétrico (Etienne et al. 2016, <a href="doi:10.1111/2041-210x.12565" class="uri">doi:10.1111/2041-210x.12565</a>). O simulador do pacote serve exatamente para esse bootstrap.</li>
+<li>Padrões de ramificação não distinguem diversidade-dependência de dependência do tempo (Pannetier et al. 2020, <a href="doi:10.1111/evo.14124" class="uri">doi:10.1111/evo.14124</a>). Logo, um <code>c</code> estimado descreve a forma da curva de acúmulo de linhagens, não o mecanismo. Isso precisa estar na documentação.</li>
+</ul></li>
+<li>
+<strong>O estimador de β também existe.</strong> O β do modelo de β-splitting é estimado por máxima verossimilhança a partir da topologia e foi aplicado a um grande conjunto de filogenias publicadas por Blum &amp; François (2006, <a href="doi:10.1080/10635150600889625" class="uri">doi:10.1080/10635150600889625</a>); está implementado em <code>apTreeshape::maxlik.betasplit()</code>. Basta usá-lo (Suggests), não reimplementá-lo.</li>
+<li>
+<strong>Validade da validação cruzada.</strong> Como <code>maxlik.betasplit()</code> implementa a verossimilhança do mesmo modelo de Aldous (1996), recuperar o β verdadeiro em árvores de <code><a href="reference/rtopology_beta.html">rtopology_beta()</a></code> é um teste legítimo de que o gerador está correto. No caso do <code>c</code>, comparar com o DDX é um teste de consistência do gerador de intervalos e, ao mesmo tempo, mede o viés do estimador nas árvores do pacote.</li>
+<li>
+<strong>Conclusão.</strong> As duas estimações são válidas e já publicadas. O valor que o treeshapesim acrescenta é juntá-las numa função (β e <code>c</code> de uma árvore empírica, na mesma escala da simulação) e oferecer o bootstrap paramétrico com o próprio gerador, não um método novo.</li>
 </ul></div>
+<div class="section level2">
+<h2 id="plano-do-item-9-taxa-de-especiação-definida-pelo-usuário">Plano do item 9: taxa de especiação definida pelo usuário<a class="anchor" aria-label="anchor" href="#plano-do-item-9-taxa-de-especia%C3%A7%C3%A3o-definida-pelo-usu%C3%A1rio"></a></h2>
+<p><strong>Objetivo.</strong> Permitir qualquer dependência da taxa de especiação por linhagem em relação ao número de linhagens, <code>rate(k)</code>, mantendo os intervalos independentes da topologia (o que separa o pacote do TreeSim).</p>
+<p><strong>Interface.</strong></p>
+<ul><li>
+<code>intervals_lineage_rate(n, c = 0, rate = NULL)</code> e <code>sim_tree_shape(n, beta = 0, c = 0, nsim = 1, root_age = 1, rate = NULL)</code>.</li>
+<li>
+<code>rate</code> é uma função vetorizada de k que devolve a taxa de especiação por linhagem com k linhagens. O intervalo com k linhagens é então exponencial com taxa k·rate(k).</li>
+<li>Com <code>rate = NULL</code>, o código atual roda sem mudança, então os padrões continuam gerando as mesmas árvores, e o teste com valores congelados continua valendo.</li>
+<li>
+<code>rate</code> e <code>c</code> diferente de 0 ao mesmo tempo dão erro (<code>c</code> é o caso particular rate(k) = k^c).</li>
+</ul><p><strong>Validação de <code>rate</code>.</strong> Uma função que, avaliada em 2:n, devolva um vetor do mesmo comprimento, numérico, finito e positivo; caso contrário, erro com mensagem clara (por exemplo, um modelo logístico com K ≤ n dá taxa ≤ 0).</p>
+<p><strong>Documentação.</strong></p>
+<ul><li>Só a forma de rate(k) importa, não a escala: multiplicar a taxa por uma constante não muda a árvore, porque a profundidade é reescalada para <code>root_age</code>.</li>
+<li>Exemplos: rate(k) = k^c (o padrão); rate(k) = 1 − k/K, com K &gt; n (logístico, como o DDL do laser); uma taxa com degrau num certo número de linhagens.</li>
+<li>A mesma ressalva de Pannetier et al. (2020): a forma de rate(k) não identifica o mecanismo.</li>
+<li>
+<code><a href="reference/calibrate_shape.html">calibrate_shape()</a></code>, <code><a href="reference/shape_params.html">shape_params()</a></code> e <code><a href="reference/sim_tree_target.html">sim_tree_target()</a></code> continuam específicos do <code>c</code>; com <code>rate</code>, a calibração é responsabilidade de quem usa. Isso fica dito explicitamente.</li>
+</ul><p><strong>Testes.</strong></p>
+<ul><li>Com rate(k) = k^c, a distribuição do γ coincide com a de <code>c</code> (mesma semente, diferença só de arredondamento; tolerância numérica).</li>
+<li>Com <code>rate = NULL</code>, as árvores são idênticas às atuais (teste congelado existente).</li>
+<li>Erros para funções que não devolvem n − 1 valores positivos e finitos, e para <code>rate</code> junto com <code>c</code> diferente de 0.</li>
+<li>O modelo logístico com K próximo de n dá γ médio negativo (semente fixa, sem limiares frágeis).</li>
+</ul><p><strong>Arquivos.</strong> <code>R/simulate.R</code> (argumento e checagem), testes em <code>tests/testthat/test-simulate.R</code>, um parágrafo na vignette, NEWS e README (uma linha). Sem dependência nova.</p>
+<p><strong>Computação.</strong> Nenhuma rodada pesada; só os testes unitários.</p>
+<p><strong>Esforço estimado.</strong> Cerca de 1 a 2 h, incluindo revisão de código.</p>
 </div>
 <div class="section level2">
 <h2 id="ligação-com-o-artigo">Ligação com o artigo<a class="anchor" aria-label="anchor" href="#liga%C3%A7%C3%A3o-com-o-artigo"></a></h2>
