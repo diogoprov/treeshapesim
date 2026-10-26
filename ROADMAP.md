@@ -21,6 +21,7 @@ desenvolvimento 0.1.0.9000.
 | 11. `tree_shape()` | γ e Colless normalizado (Yule) em R puro, iguais a `ape::gammaStat()` e `treestats::colless(normalization = "yule")`; o treestats continua em Suggests | PR #3 |
 | 13. Validar `assign_ages()` | intervalos positivos e finitos; árvore binária e enraizada | PR #3 |
 | Comparação com outros pacotes | tabela no README (página inicial) com TreeSim e apTreeshape | commit seguinte |
+| Release 0.2.0 | versão 0.2.0 no DESCRIPTION e no NEWS; release no GitHub, que gera o DOI da versão no Zenodo (conceito 10.5281/zenodo.23647260) | release 0.2.0 |
 | `fit_shape()` | β (β-splitting, a partir da topologia) e `c` (modelo DDX do laser, com c = −x) de árvores empíricas, com bootstrap paramétrico, detecção de limites e tolerância de ultrametricidade; conferido contra o apTreeshape e o laser arquivados (diferenças ≤ 3e-5) | PR #4 |
 | Validação dos estimadores | `data-raw/validate_estimators.R`: o gerador segue o β-splitting; o DDX recupera `c` com viés ≤ 0,06 | commit `74fb2a2` |
 | 14. Documentação precisa | a independência de γ e Colless em relação a `c` e β agora é descrita como exata (para um dado n) | PR #3 |
@@ -29,10 +30,6 @@ desenvolvimento 0.1.0.9000.
 
 ### Alta prioridade
 
-- **Release 0.2.0.** O DOI de conceito do Zenodo (10.5281/zenodo.23647260) já
-  está no `inst/CITATION` e no README; a release 0.1.0 (DOI de versão
-  10.5281/zenodo.23647261) é anterior aos PRs #2 e #3. Trocar 0.1.0.9000 por
-  0.2.0 no DESCRIPTION e no NEWS e publicar a release, que gera o DOI da 0.2.0.
 - **Desempenho da topologia (resto do item 5).** Só vale se alguém precisar de
   árvores muito grandes e desbalanceadas. Para não mudar as árvores existentes,
   o caminho seria um gerador novo e opcional (por exemplo, em C++ ou com outro

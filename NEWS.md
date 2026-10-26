@@ -1,4 +1,4 @@
-# treeshapesim (development version)
+# treeshapesim 0.2.0
 
 - `fit_shape()` estimates `beta` (maximum likelihood of the beta-splitting model from the topology) and `c` (maximum likelihood of the DDX model of laser, with `c = -x`) from an empirical tree, with an optional parametric bootstrap; on 30 random trees, `beta` matched the archived apTreeshape (`maxlik.betasplit()`) and `c` matched laser (`DDX()`) to within 3e-5.
 - `sim_tree_target()` draws trees whose gamma statistic and normalized Colless index fall within a tolerance of target values: `beta` and `c` come from calibration curves (`calibrate_shape()`, inverted by `shape_params()`), and topologies and internode intervals are rejected separately, which is equivalent to rejecting whole trees but much more efficient.
