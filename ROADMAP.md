@@ -1,6 +1,6 @@
 # treeshapesim: estado e próximos passos
 
-Atualizado em 2026-11-05, depois dos itens 8, 9, 10, 12 e 17 e da correção de `c` para amostragem incompleta. Última versão publicada:
+Atualizado em 2026-11-05, depois dos itens 8, 9, 10, 12 e 17, da correção de `c` para amostragem incompleta e de `prune_tips()`. Última versão publicada:
 0.2.1; versão de desenvolvimento 0.2.1.9000.
 
 ## Feito
@@ -31,6 +31,7 @@ Atualizado em 2026-11-05, depois dos itens 8, 9, 10, 12 e 17 e da correção de 
 | 17. Cobertura de testes | workflow `test-coverage.yaml` (`covr` e Codecov), `codecov.yml` e badge no README; repositório ativo no Codecov, com o segredo `CODECOV_TOKEN` | versão de desenvolvimento |
 | `fit_shape()` com amostragem incompleta | `sampling_fraction` e `correction_reps`: `c` corrigido por simulação (curva monótona invertida), também no bootstrap; β não é corrigido | versão de desenvolvimento |
 | r-universe | pacote listado em `diogoprov/diogoprov.r-universe.dev` (`packages.json`, branch `main`); a versão 0.2.1 está publicada em diogoprov.r-universe.dev, com badge e instrução de instalação no README | `packages.json` |
+| Extinção não aleatória | `prune_tips()`: um evento de extinção na árvore, aleatório, agrupado na filogenia (`signal`) ou ligado a atributos (`risk`); artigo do site com o comdynamite (`vignettes/articles/comdynamite.Rmd`), fora do `R CMD check` para não criar dependência circular | versão de desenvolvimento |
 | 14. Documentação precisa | a independência de γ e Colless em relação a `c` e β agora é descrita como exata (para um dado n) | PR #3 |
 
 ## A fazer
@@ -39,6 +40,13 @@ Atualizado em 2026-11-05, depois dos itens 8, 9, 10, 12 e 17 e da correção de 
 
 ### Média prioridade
 
+- **Turnover nos intervalos.** `intervals_birth_death(n, turnover)`, para o pull
+  of the present como fator. Só vale se houver pergunta para isso, porque `rate`
+  e `c > 0` já movem o γ. Gernhard (2008, doi:10.1016/j.jtbi.2008.04.005; lido):
+  a forma reconstruída é a do pure birth (Teorema 2.3), e com prior uniforme na
+  origem os tempos de origem e de especiação são estatísticas de ordem de n
+  variáveis i.i.d. (Observação 6.1), o que dá um sorteio direto e reproduz
+  g_k ~ Exp(k) com turnover 0. Falta validar contra o TreeSim.
 - **Calibração em cache.** Guardar curvas pré-calculadas para tamanhos comuns
   (por exemplo, 50, 100 e 200 pontas), para evitar a calibração a cada sessão.
   Exige uma rodada de simulação só para isso.
@@ -178,6 +186,15 @@ Busca feita em 2026-10-26. Referências conferidas nas fontes indicadas.
   treeshapesim acrescenta é juntá-las numa função (β e `c` de uma árvore
   empírica, na mesma escala da simulação) e oferecer o bootstrap paramétrico com
   o próprio gerador, não um método novo.
+
+## Escopo: extinção
+
+Simular nascimento e morte com linhagens extintas sai do escopo, porque é o
+terreno do TreeSim, e o comdynamite não usaria as linhagens extintas. Extinção
+diferente entre linhagens ao longo da história do clado (BiSSE, QuaSSE) também
+fica de fora, porque gera topologia e tempos juntos e perde a separação que é a
+proposta do pacote. O que cabe é o evento sobre a árvore pronta, em
+`prune_tips()`.
 
 ## Ligação com o artigo
 
