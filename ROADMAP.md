@@ -30,6 +30,7 @@ Atualizado em 2026-11-05, depois dos itens 8, 9, 10, 12 e 17 e da correção de 
 | Integração com o comdynamite | seção no README: árvores do treeshapesim como species pools do comdynamite | versão de desenvolvimento |
 | 17. Cobertura de testes | workflow `test-coverage.yaml` (`covr` e Codecov), `codecov.yml` e badge no README; repositório ativo no Codecov, com o segredo `CODECOV_TOKEN` | versão de desenvolvimento |
 | `fit_shape()` com amostragem incompleta | `sampling_fraction` e `correction_reps`: `c` corrigido por simulação (curva monótona invertida), também no bootstrap; β não é corrigido | versão de desenvolvimento |
+| r-universe | pacote listado em `diogoprov/diogoprov.r-universe.dev` (`packages.json`, branch `main`); a versão 0.2.1 está publicada em diogoprov.r-universe.dev, com badge e instrução de instalação no README | `packages.json` |
 | 14. Documentação precisa | a independência de γ e Colless em relação a `c` e β agora é descrita como exata (para um dado n) | PR #3 |
 
 ## A fazer
@@ -47,6 +48,9 @@ Atualizado em 2026-11-05, depois dos itens 8, 9, 10, 12 e 17 e da correção de 
 
 ### Baixa prioridade
 
+- **Conferir o r-universe depois do merge.** Não há submissão a fazer: o pacote
+  já está lá e acompanha a `main`. Falta confirmar que a versão de
+  desenvolvimento (hoje 0.2.1.9000) compilou sem erro no painel de builds.
 - **Calibração com amostragem incompleta.** Só se houver uso para grades de γ com
   amostragem: recalcular a curva γ(c) em árvores podadas. `sim_tree_target()` não
   deve ser estendido, porque a poda quebra a independência em que a rejeição
