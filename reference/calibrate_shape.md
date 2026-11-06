@@ -2,20 +2,20 @@
 
 Estimates, for a given number of tips, the mean gamma statistic as a
 function of `c` and the mean normalized Colless index (see
-[`tree_shape()`](https://diogoprov.github.io/treeshapesim/reference/tree_shape.md))
+[`tree_shape()`](https://provetelab.org/treeshapesim/reference/tree_shape.md))
 as a function of `beta`. Because the topology and the internode
 intervals are drawn independently, each curve is estimated from its own
 process alone: gamma from intervals drawn with
-[`intervals_lineage_rate()`](https://diogoprov.github.io/treeshapesim/reference/intervals_lineage_rate.md)
+[`intervals_lineage_rate()`](https://provetelab.org/treeshapesim/reference/intervals_lineage_rate.md)
 and the Colless index from topologies drawn with
-[`rtopology_beta()`](https://diogoprov.github.io/treeshapesim/reference/rtopology_beta.md),
+[`rtopology_beta()`](https://provetelab.org/treeshapesim/reference/rtopology_beta.md),
 without building trees. The expected values are monotone (gamma
 increases with `c` and the Colless index decreases with `beta`), but the
 estimated means need not be, especially for few tips or few draws, so
 each curve is made monotone by isotonic regression
 ([`stats::isoreg()`](https://rdrr.io/r/stats/isoreg.html)) before it is
 inverted with
-[`shape_params()`](https://diogoprov.github.io/treeshapesim/reference/shape_params.md).
+[`shape_params()`](https://provetelab.org/treeshapesim/reference/shape_params.md).
 
 ## Usage
 
@@ -55,7 +55,7 @@ data frames `colless` (columns `beta`, `colless` and `colless_mean`) and
 `gamma` (columns `c`, `gamma` and `gamma_mean`), where the `_mean`
 columns hold the mean statistic at each value and `colless` and `gamma`
 their monotone fit, which
-[`shape_params()`](https://diogoprov.github.io/treeshapesim/reference/shape_params.md)
+[`shape_params()`](https://provetelab.org/treeshapesim/reference/shape_params.md)
 inverts.
 
 ## Examples

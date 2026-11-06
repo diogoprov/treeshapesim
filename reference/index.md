@@ -5,9 +5,9 @@
 Ultrametric trees with separately controlled imbalance and branching
 times.
 
-- [`sim_tree_shape()`](https://diogoprov.github.io/treeshapesim/reference/sim_tree_shape.md)
+- [`sim_tree_shape()`](https://provetelab.org/treeshapesim/reference/sim_tree_shape.md)
   : Ultrametric trees with given imbalance and branching-time parameters
-- [`sim_tree_target()`](https://diogoprov.github.io/treeshapesim/reference/sim_tree_target.md)
+- [`sim_tree_target()`](https://provetelab.org/treeshapesim/reference/sim_tree_target.md)
   : Simulate trees near target values of gamma and Colless
 
 ## Target shapes and grids
@@ -15,30 +15,30 @@ times.
 Shape statistics, calibration of the parameters and grids of tree
 shapes.
 
-- [`tree_shape()`](https://diogoprov.github.io/treeshapesim/reference/tree_shape.md)
+- [`tree_shape()`](https://provetelab.org/treeshapesim/reference/tree_shape.md)
   : Gamma statistic and Colless index of a tree
-- [`calibrate_shape()`](https://diogoprov.github.io/treeshapesim/reference/calibrate_shape.md)
+- [`calibrate_shape()`](https://provetelab.org/treeshapesim/reference/calibrate_shape.md)
   : Calibrate the shape parameters for a number of tips
-- [`shape_params()`](https://diogoprov.github.io/treeshapesim/reference/shape_params.md)
+- [`shape_params()`](https://provetelab.org/treeshapesim/reference/shape_params.md)
   : Shape parameters that give target mean values of gamma and Colless
-- [`shape_grid()`](https://diogoprov.github.io/treeshapesim/reference/shape_grid.md)
+- [`shape_grid()`](https://provetelab.org/treeshapesim/reference/shape_grid.md)
   : Grid of tree shapes
 
 ## Fit empirical trees
 
 Estimate the shape parameters of a tree on the scale of the simulations.
 
-- [`fit_shape()`](https://diogoprov.github.io/treeshapesim/reference/fit_shape.md)
+- [`fit_shape()`](https://provetelab.org/treeshapesim/reference/fit_shape.md)
   : Estimate the shape parameters of a tree
 
 ## Building blocks
 
 Topology, internode intervals and their combination.
 
-- [`rtopology_beta()`](https://diogoprov.github.io/treeshapesim/reference/rtopology_beta.md)
+- [`rtopology_beta()`](https://provetelab.org/treeshapesim/reference/rtopology_beta.md)
   : Random topology under Aldous' beta-splitting model
-- [`intervals_lineage_rate()`](https://diogoprov.github.io/treeshapesim/reference/intervals_lineage_rate.md)
+- [`intervals_lineage_rate()`](https://provetelab.org/treeshapesim/reference/intervals_lineage_rate.md)
   : Internode intervals of a pure-birth process with lineage-dependent
   rates
-- [`assign_ages()`](https://diogoprov.github.io/treeshapesim/reference/assign_ages.md)
+- [`assign_ages()`](https://provetelab.org/treeshapesim/reference/assign_ages.md)
   : Assign node ages to a topology from internode intervals

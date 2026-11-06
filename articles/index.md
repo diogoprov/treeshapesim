@@ -3,4 +3,4 @@
 ### All vignettes
 
 - [Simulating trees with controlled
-  shape](https://diogoprov.github.io/treeshapesim/articles/treeshapesim.md):
+  shape](https://provetelab.org/treeshapesim/articles/treeshapesim.md):

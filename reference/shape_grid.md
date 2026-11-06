@@ -4,7 +4,7 @@ Crosses levels of the gamma statistic with levels of the normalized
 Colless index and finds the `beta` and `c` that give each combination on
 average, as a design for simulation studies. The levels can be chosen,
 for instance, from quantiles of
-[`tree_shape()`](https://diogoprov.github.io/treeshapesim/reference/tree_shape.md)
+[`tree_shape()`](https://provetelab.org/treeshapesim/reference/tree_shape.md)
 over empirical trees of similar size.
 
 ## Usage
@@ -26,14 +26,14 @@ shape_grid(n, gamma, colless, calibration = NULL, reps = 200)
 - calibration:
 
   Output of
-  [`calibrate_shape()`](https://diogoprov.github.io/treeshapesim/reference/calibrate_shape.md)
+  [`calibrate_shape()`](https://provetelab.org/treeshapesim/reference/calibrate_shape.md)
   for the same `n`; if `NULL`, it is computed with `reps` draws per
   value.
 
 - reps:
 
   Passed to
-  [`calibrate_shape()`](https://diogoprov.github.io/treeshapesim/reference/calibrate_shape.md)
+  [`calibrate_shape()`](https://provetelab.org/treeshapesim/reference/calibrate_shape.md)
   when `calibration` is `NULL`.
 
 ## Value
@@ -41,9 +41,9 @@ shape_grid(n, gamma, colless, calibration = NULL, reps = 200)
 A data frame with one row per combination of levels (`gamma`, `colless`,
 `beta`, `c`), with the calibration in attribute `calibration`. Each row
 can be passed to
-[`sim_tree_target()`](https://diogoprov.github.io/treeshapesim/reference/sim_tree_target.md)
+[`sim_tree_target()`](https://provetelab.org/treeshapesim/reference/sim_tree_target.md)
 (targets) or to
-[`sim_tree_shape()`](https://diogoprov.github.io/treeshapesim/reference/sim_tree_shape.md)
+[`sim_tree_shape()`](https://provetelab.org/treeshapesim/reference/sim_tree_shape.md)
 (parameters).
 
 ## Examples

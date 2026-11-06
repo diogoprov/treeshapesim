@@ -4,7 +4,7 @@ Estimates, by maximum likelihood, the `beta` of Aldous' beta-splitting
 model from the topology and the `c` of the lineage-dependent pure-birth
 process from the branching times, which places an empirical tree on the
 same scale as the trees of
-[`sim_tree_shape()`](https://diogoprov.github.io/treeshapesim/reference/sim_tree_shape.md).
+[`sim_tree_shape()`](https://provetelab.org/treeshapesim/reference/sim_tree_shape.md).
 Optionally, a parametric bootstrap with the package's own generators
 gives percentile intervals.
 
@@ -17,7 +17,9 @@ fit_shape(
   level = 0.95,
   beta_range = c(-1.999, 10),
   c_range = c(-5, 5),
-  tol = .Machine$double.eps^0.5
+  tol = .Machine$double.eps^0.5,
+  sampling_fraction = 1,
+  correction_reps = 100
 )
 ```
 
@@ -48,6 +50,17 @@ fit_shape(
   instance with
   [`phytools::force.ultrametric()`](https://rdrr.io/pkg/phytools/man/force.ultrametric.html)).
 
+- sampling_fraction:
+
+  Fraction of the species of the clade that are in `tree`, a single
+  number greater than 0 and at most 1. Below 1, `c` is corrected for
+  incomplete sampling (see Details).
+
+- correction_reps:
+
+  Number of trees at each value of the grid used in the correction for
+  incomplete sampling.
+
 ## Value
 
 An object of class `shape_fit`: a list with `n`, `beta`, `c`, `r`
@@ -57,16 +70,19 @@ constant, so not comparable with other software), `loglik_c` (profile
 log-likelihood of `c`, equal to the log-likelihood of laser's DDX model
 at its maximum), `beta_at_bound` and `c_at_bound` (estimate at a bound
 of the search interval), `beta_range`, `c_range`, `shape` (output of
-[`tree_shape()`](https://diogoprov.github.io/treeshapesim/reference/tree_shape.md))
+[`tree_shape()`](https://provetelab.org/treeshapesim/reference/tree_shape.md))
 and, with `boot > 0`, `boot` (data frame of bootstrap estimates) and
-`ci` (matrix of percentile intervals).
+`ci` (matrix of percentile intervals). With `sampling_fraction` below 1,
+`c` is the corrected estimate, `r` is `NA`, `loglik_c` refers to the
+uncorrected estimate, and the list also holds `c_uncorrected`,
+`sampling_fraction` and `correction` (data frame with the curve).
 
 ## Details
 
 **beta.** Each internal node with a clade of \\m\\ tips split into \\i\\
 and \\m - i\\ tips contributes the probability of that split under the
 beta-splitting model (see
-[`rtopology_beta()`](https://diogoprov.github.io/treeshapesim/reference/rtopology_beta.md)),
+[`rtopology_beta()`](https://provetelab.org/treeshapesim/reference/rtopology_beta.md)),
 and the log-likelihood is the sum over nodes (Aldous 1996; this is the
 estimator applied by Blum & Francois 2006 and implemented in
 `maxlik.betasplit()` of the archived package apTreeshape). It is
@@ -88,16 +104,32 @@ The estimate describes the shape of the lineage-through-time curve, not
 its cause: branching times alone do not separate diversity-dependent
 from time-dependent diversification (Pannetier et al. 2021).
 
+**Incomplete sampling.** Trees with incomplete sampling give estimates
+of `c` that are too low, because recent splits are missing; the estimate
+of `beta` is little affected and is not corrected. With
+`sampling_fraction` below 1, `c` is corrected by simulation: trees are
+drawn with
+[`sim_tree_shape()`](https://provetelab.org/treeshapesim/reference/sim_tree_shape.md)
+at the estimated `beta`, the same `sampling_fraction` and a grid of `c`
+from 1 below to 3 above the uncorrected estimate, and the mean
+uncorrected estimate at each value (`correction_reps` trees) gives a
+curve, made monotone by isotonic regression and inverted at the estimate
+from `tree`. This assumes that tips are missing at random and that the
+fraction is known; sampling biased towards old or distinct lineages is
+not corrected. The result varies slightly with the seed.
+
 **Bootstrap.** With `boot > 0`, topologies are drawn with
-[`rtopology_beta()`](https://diogoprov.github.io/treeshapesim/reference/rtopology_beta.md)
+[`rtopology_beta()`](https://provetelab.org/treeshapesim/reference/rtopology_beta.md)
 at the estimated `beta` and intervals with
-[`intervals_lineage_rate()`](https://diogoprov.github.io/treeshapesim/reference/intervals_lineage_rate.md)
-at the estimated `c`, and both parameters are re-estimated, following
-the recommendation of a parametric bootstrap for diversification models
-by Etienne et al. (2016). The spread of the bootstrap estimates around
-the point estimate includes the small-sample bias of the estimators,
-and, for `c`, a small additional bias because
-[`intervals_lineage_rate()`](https://diogoprov.github.io/treeshapesim/reference/intervals_lineage_rate.md)
+[`intervals_lineage_rate()`](https://provetelab.org/treeshapesim/reference/intervals_lineage_rate.md)
+at the estimated `c` (with `sampling_fraction` below 1, whole trees with
+[`sim_tree_shape()`](https://provetelab.org/treeshapesim/reference/sim_tree_shape.md),
+and `c` is corrected with the same curve), and both parameters are
+re-estimated, following the recommendation of a parametric bootstrap for
+diversification models by Etienne et al. (2016). The spread of the
+bootstrap estimates around the point estimate includes the small-sample
+bias of the estimators, and, for `c`, a small additional bias because
+[`intervals_lineage_rate()`](https://provetelab.org/treeshapesim/reference/intervals_lineage_rate.md)
 draws the last interval from the same law, whereas the likelihood treats
 it as censored. Percentile intervals need a few hundred replicates.
 
@@ -142,4 +174,12 @@ fit$ci
 #>           2.5%      97.5%
 #> beta -1.102879 -0.5561590
 #> c    -1.046498 -0.7468201
+# a tree with half of the species of the clade
+sampled <- sim_tree_shape(100, c = -0.5, sampling_fraction = 0.5)
+fit_shape(sampled, sampling_fraction = 0.5, correction_reps = 20)
+#> Shape estimates for a tree with 100 tips
+#> c corrected for a sampling fraction of 0.5 (uncorrected: -0.876)
+#>   beta      c 
+#>  1.030 -0.536 
+#> gamma = -6.18 | normalized Colless = -1.06 
 ```

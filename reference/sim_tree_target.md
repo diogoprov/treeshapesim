@@ -1,25 +1,25 @@
 # Simulate trees near target values of gamma and Colless
 
 Draws trees whose gamma statistic and normalized Colless index (see
-[`tree_shape()`](https://diogoprov.github.io/treeshapesim/reference/tree_shape.md))
+[`tree_shape()`](https://provetelab.org/treeshapesim/reference/tree_shape.md))
 fall within a tolerance of target values. The parameters `beta` and `c`
 whose mean statistics equal the targets are found with
-[`calibrate_shape()`](https://diogoprov.github.io/treeshapesim/reference/calibrate_shape.md)
+[`calibrate_shape()`](https://provetelab.org/treeshapesim/reference/calibrate_shape.md)
 and
-[`shape_params()`](https://diogoprov.github.io/treeshapesim/reference/shape_params.md).
+[`shape_params()`](https://provetelab.org/treeshapesim/reference/shape_params.md).
 Topologies are then drawn with
-[`rtopology_beta()`](https://diogoprov.github.io/treeshapesim/reference/rtopology_beta.md)
+[`rtopology_beta()`](https://provetelab.org/treeshapesim/reference/rtopology_beta.md)
 and kept if their Colless index is within `tol` of the target, interval
 sets are drawn with
-[`intervals_lineage_rate()`](https://diogoprov.github.io/treeshapesim/reference/intervals_lineage_rate.md)
+[`intervals_lineage_rate()`](https://provetelab.org/treeshapesim/reference/intervals_lineage_rate.md)
 and kept if their gamma is within `tol` of the target, and the kept
 topologies and interval sets are combined with
-[`assign_ages()`](https://diogoprov.github.io/treeshapesim/reference/assign_ages.md).
+[`assign_ages()`](https://provetelab.org/treeshapesim/reference/assign_ages.md).
 Because the topology and the intervals are independent, rejecting them
 separately gives the same distribution of trees as rejecting whole trees
 on both statistics, with a much higher acceptance rate. Random numbers
 are used in a different order than in
-[`sim_tree_shape()`](https://diogoprov.github.io/treeshapesim/reference/sim_tree_shape.md),
+[`sim_tree_shape()`](https://provetelab.org/treeshapesim/reference/sim_tree_shape.md),
 so the same seed does not give the same trees as that function.
 
 ## Usage
@@ -60,14 +60,14 @@ sim_tree_target(
 - calibration:
 
   Output of
-  [`calibrate_shape()`](https://diogoprov.github.io/treeshapesim/reference/calibrate_shape.md)
+  [`calibrate_shape()`](https://provetelab.org/treeshapesim/reference/calibrate_shape.md)
   for the same `n`; if `NULL`, it is computed with `reps` draws per
   value.
 
 - reps:
 
   Passed to
-  [`calibrate_shape()`](https://diogoprov.github.io/treeshapesim/reference/calibrate_shape.md)
+  [`calibrate_shape()`](https://provetelab.org/treeshapesim/reference/calibrate_shape.md)
   when `calibration` is `NULL`.
 
 - max_tries:

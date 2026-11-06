@@ -14,10 +14,10 @@ negative when branching times are concentrated near the root. The
 Colless index summarizes topological imbalance; normalized against its
 Yule expectation, it is near zero for Yule trees and positive for more
 imbalanced ones.
-[`tree_shape()`](https://diogoprov.github.io/treeshapesim/reference/tree_shape.md)
+[`tree_shape()`](https://provetelab.org/treeshapesim/reference/tree_shape.md)
 returns both.
 
-[`sim_tree_shape()`](https://diogoprov.github.io/treeshapesim/reference/sim_tree_shape.md)
+[`sim_tree_shape()`](https://provetelab.org/treeshapesim/reference/sim_tree_shape.md)
 draws the topology from Aldous’ beta-splitting model (`beta`) and the
 internode intervals from a pure-birth process in which each of the k
 lineages splits at rate k^c (`c`). The two are drawn independently,
@@ -43,9 +43,9 @@ do.call(rbind, shapes)
 
 The mean of each statistic depends on its parameter and on the number of
 tips.
-[`calibrate_shape()`](https://diogoprov.github.io/treeshapesim/reference/calibrate_shape.md)
+[`calibrate_shape()`](https://provetelab.org/treeshapesim/reference/calibrate_shape.md)
 estimates both curves for a given number of tips, and
-[`shape_params()`](https://diogoprov.github.io/treeshapesim/reference/shape_params.md)
+[`shape_params()`](https://provetelab.org/treeshapesim/reference/shape_params.md)
 inverts them. Since each curve is estimated from its own process,
 without building trees, the calibration is fast. Use more draws per
 value (`reps`, 200 by default) for a study; a few are enough here.
@@ -64,7 +64,7 @@ shape_params(cal, gamma = -2, colless = 1)
 
 The parameters give the target values on average, but single trees vary
 around them.
-[`sim_tree_target()`](https://diogoprov.github.io/treeshapesim/reference/sim_tree_target.md)
+[`sim_tree_target()`](https://provetelab.org/treeshapesim/reference/sim_tree_target.md)
 keeps only trees whose statistics fall within a tolerance of the
 targets. Because topology and intervals are independent, it rejects them
 separately, which gives the same distribution of trees as rejecting
@@ -90,10 +90,10 @@ attr(trees, "acceptance")
 ## A grid of tree shapes
 
 For simulation studies,
-[`shape_grid()`](https://diogoprov.github.io/treeshapesim/reference/shape_grid.md)
+[`shape_grid()`](https://provetelab.org/treeshapesim/reference/shape_grid.md)
 crosses levels of both statistics. The levels can come, for instance,
 from quantiles of
-[`tree_shape()`](https://diogoprov.github.io/treeshapesim/reference/tree_shape.md)
+[`tree_shape()`](https://provetelab.org/treeshapesim/reference/tree_shape.md)
 over empirical trees of a similar size; here they are set by hand.
 
 ``` r
@@ -116,9 +116,43 @@ cell_trees <- sim_tree_target(100, gamma = cell$gamma, colless = cell$colless,
                               nsim = 10, calibration = cal)
 ```
 
+## Other rate functions
+
+The power law k^c is one way for the split rate to depend on the number
+of lineages.
+[`sim_tree_shape()`](https://provetelab.org/treeshapesim/reference/sim_tree_shape.md)
+also accepts any other dependence through `rate`, a vectorized function
+of k that returns the per-lineage split rate. The intervals remain
+independent of the topology, so `rate` moves gamma without changing the
+Colless index. Only the shape of the function matters, because the tree
+is rescaled to `root_age`.
+
+``` r
+
+logistic <- function(k) 1 - k / 110    # carrying capacity K > n
+step <- function(k) ifelse(k <= 30, 1, 0.1)
+rates <- list(logistic = sim_tree_shape(100, rate = logistic, nsim = 50),
+              step = sim_tree_shape(100, rate = step, nsim = 50))
+do.call(rbind, lapply(rates, function(trees)
+  colMeans(t(vapply(trees, tree_shape, numeric(2))))))
+#>              gamma    colless
+#> logistic -6.291492 0.02776133
+#> step     -4.449102 0.18076133
+```
+
+[`calibrate_shape()`](https://provetelab.org/treeshapesim/reference/calibrate_shape.md),
+[`shape_params()`](https://provetelab.org/treeshapesim/reference/shape_params.md)
+and
+[`sim_tree_target()`](https://provetelab.org/treeshapesim/reference/sim_tree_target.md)
+work with `c` only, so with `rate` the calibration is left to the user.
+The shape of `rate` describes the lineage-through-time curve and does
+not identify the mechanism behind it: branching patterns cannot
+distinguish diversity-dependent from time-dependent diversification
+(Pannetier et al. 2021).
+
 ## Placing an empirical tree on the same scale
 
-[`fit_shape()`](https://diogoprov.github.io/treeshapesim/reference/fit_shape.md)
+[`fit_shape()`](https://provetelab.org/treeshapesim/reference/fit_shape.md)
 estimates `beta` from the topology and `c` from the branching times by
 maximum likelihood (the beta-splitting model and the DDX model of the R
 package laser, with `c = -x`), and a parametric bootstrap with the
@@ -132,9 +166,9 @@ empirical <- sim_tree_shape(150, beta = -1, c = -0.7)   # stands in for a real t
 fit_shape(empirical, boot = 30)
 #> Shape estimates for a tree with 150 tips
 #>      estimate   2.5%  97.5%
-#> beta   -1.200 -1.360 -0.835
-#> c      -0.678 -0.856 -0.496
-#> gamma = -7.5 | normalized Colless = 7.13
+#> beta   -0.915 -1.120 -0.593
+#> c      -0.748 -0.916 -0.630
+#> gamma = -5.65 | normalized Colless = 1.45
 ```
 
 ## References
@@ -142,6 +176,11 @@ fit_shape(empirical, boot = 30)
 Aldous, D. (1996). Probability distributions on cladograms. In D. Aldous
 & R. Pemantle (Eds.), *Random discrete structures* (pp. 1–18). Springer.
 <https://doi.org/10.1007/978-1-4612-0719-1_1>
+
+Pannetier, T., Martinez, C., Bunnefeld, L., & Etienne, R. S. (2021).
+Branching patterns in phylogenies cannot distinguish diversity-dependent
+diversification from time-dependent diversification. *Evolution*, 75,
+25–38. <https://doi.org/10.1111/evo.14124>
 
 Pybus, O. G., & Harvey, P. H. (2000). Testing macro-evolutionary models
 using incomplete molecular phylogenies. *Proceedings of the Royal

@@ -1,7 +1,7 @@
 # Shape parameters that give target mean values of gamma and Colless
 
 Inverts the monotone curves of
-[`calibrate_shape()`](https://diogoprov.github.io/treeshapesim/reference/calibrate_shape.md)
+[`calibrate_shape()`](https://provetelab.org/treeshapesim/reference/calibrate_shape.md)
 by linear interpolation. Where a curve is flat (tied values of its
 monotone fit), the parameter is the mean of the tied values.
 
@@ -16,12 +16,12 @@ shape_params(calibration, gamma, colless)
 - calibration:
 
   Output of
-  [`calibrate_shape()`](https://diogoprov.github.io/treeshapesim/reference/calibrate_shape.md).
+  [`calibrate_shape()`](https://provetelab.org/treeshapesim/reference/calibrate_shape.md).
 
 - gamma, colless:
 
   Target mean gamma statistic and normalized Colless index (see
-  [`tree_shape()`](https://diogoprov.github.io/treeshapesim/reference/tree_shape.md));
+  [`tree_shape()`](https://provetelab.org/treeshapesim/reference/tree_shape.md));
   vectors that are recycled to a common length, as in
   [`data.frame()`](https://rdrr.io/r/base/data.frame.html).
 
