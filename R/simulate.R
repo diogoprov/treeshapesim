@@ -184,8 +184,10 @@ assign_ages <- function(topo, g) {
 #' sampling_fraction)` tips is drawn, `beta` and `c` (or `rate`) apply to that
 #' tree, and `n` tips are kept at random, so the result still has `n` tips and
 #' root depth `root_age`. Incomplete sampling removes recent splits and so lowers
-#' gamma (Pybus & Harvey 2000), and it changes the Colless index too, so the
-#' realized statistics no longer follow the calibration of [calibrate_shape()].
+#' gamma (Pybus & Harvey 2000), so gamma no longer follows the calibration of
+#' [calibrate_shape()]. After sampling, gamma also depends slightly on the
+#' topology, because the splits that remain depend on it, so the separation
+#' between gamma and the Colless index is exact only for complete trees.
 #' A `rate` function must be valid for the number of tips of the complete tree.
 #'
 #' Very extreme values of `c` (or `rate`) make some intervals negligible relative

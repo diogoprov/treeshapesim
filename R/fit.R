@@ -31,6 +31,9 @@
 #' cause: branching times alone do not separate diversity-dependent from
 #' time-dependent diversification (Pannetier et al. 2021).
 #'
+#' Trees with incomplete sampling give estimates of `c` that are too low,
+#' because recent splits are missing; the estimate of `beta` is little affected.
+#'
 #' \strong{Bootstrap.} With `boot > 0`, topologies are drawn with
 #' [rtopology_beta()] at the estimated `beta` and intervals with
 #' [intervals_lineage_rate()] at the estimated `c`, and both parameters are

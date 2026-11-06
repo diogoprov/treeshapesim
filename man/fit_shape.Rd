@@ -72,6 +72,9 @@ estimate describes the shape of the lineage-through-time curve, not its
 cause: branching times alone do not separate diversity-dependent from
 time-dependent diversification (Pannetier et al. 2021).
 
+Trees with incomplete sampling give estimates of \code{c} that are too low,
+because recent splits are missing; the estimate of \code{beta} is little affected.
+
 \strong{Bootstrap.} With \code{boot > 0}, topologies are drawn with
 \code{\link[=rtopology_beta]{rtopology_beta()}} at the estimated \code{beta} and intervals with
 \code{\link[=intervals_lineage_rate]{intervals_lineage_rate()}} at the estimated \code{c}, and both parameters are
