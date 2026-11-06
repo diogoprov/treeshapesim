@@ -65,22 +65,66 @@ rtopology_beta <- function(n, beta = 0) {
 #' accumulate (gamma < 0); `c > 0` accelerates it (gamma > 0). The final
 #' interval (n lineages, up to the present) is drawn from the same law.
 #'
+#' Any other dependence on the number of lineages can be given with `rate`, a
+#' function of k that returns the per-lineage split rate; the interval with k
+#' lineages is then Exp(k * rate(k)), and `c` is the special case
+#' `rate = function(k) k^c`. Only the shape of `rate` matters: the intervals are
+#' rescaled, so multiplying it by a constant does not change the tree. As with
+#' `c`, the shape of `rate` describes the lineage-through-time curve and does
+#' not identify the mechanism behind it (Pannetier et al. 2021).
+#' [calibrate_shape()], [shape_params()] and [sim_tree_target()] work with `c`
+#' only; with `rate`, the calibration is left to the user.
+#'
 #' @param n Number of tips, a single integer of at least 2.
 #' @param c Lineage dependence of the split rate, a single finite number.
+#' @param rate `NULL` (the default), to use `c`, or a vectorized function of the
+#'   number of lineages k that returns the per-lineage split rate. It must
+#'   return n - 1 positive, finite values for k = 2, ..., n, and cannot be
+#'   combined with a `c` other than 0.
 #' @return Intervals g_2, ..., g_n (length n - 1), scaled to sum 1.
-#' @references Pybus, O. G., & Harvey, P. H. (2000). Testing macro-evolutionary
+#' @references Pannetier, T., Martinez, C., Bunnefeld, L., & Etienne, R. S.
+#'   (2021). Branching patterns in phylogenies cannot distinguish
+#'   diversity-dependent diversification from time-dependent diversification.
+#'   *Evolution*, 75, 25--38. \doi{10.1111/evo.14124}
+#'
+#'   Pybus, O. G., & Harvey, P. H. (2000). Testing macro-evolutionary
 #'   models using incomplete molecular phylogenies. *Proceedings of the Royal
 #'   Society B*, 267, 2267--2272. \doi{10.1098/rspb.2000.1278}
 #' @examples
 #' set.seed(1)
 #' intervals_lineage_rate(10, c = -1)
+#' # logistic slowdown towards a carrying capacity K > n
+#' intervals_lineage_rate(10, rate = function(k) 1 - k / 12)
+#' # the rate drops once there are more than 5 lineages
+#' intervals_lineage_rate(10, rate = function(k) ifelse(k <= 5, 1, 0.1))
 #' @export
-intervals_lineage_rate <- function(n, c = 0) {
+intervals_lineage_rate <- function(n, c = 0, rate = NULL) {
   check_n(n)
   check_c(c)
-  k <- 2:n
-  g <- stats::rexp(n - 1, rate = k^(1 + c))
+  g <- stats::rexp(n - 1, rate = total_rates(n, c, rate))
   g / sum(g)
+}
+
+# total split rates with k = 2, ..., n lineages, after checking `rate`
+total_rates <- function(n, c, rate) {
+  k <- 2:n
+  if (is.null(rate)) {
+    total <- k^(1 + c)
+    if (any(!is.finite(total)) || any(total <= 0)) {
+      stop(sprintf("`c` = %g is too extreme for %d tips: the split rates overflow or underflow.",
+                   c, n), call. = FALSE)
+    }
+    return(total)
+  }
+  if (c != 0) stop("Use either `c` or `rate`, not both.", call. = FALSE)
+  msg <- paste("`rate` must be a vectorized function that returns n - 1",
+               "positive, finite values for k = 2, ..., n.")
+  if (!is.function(rate)) stop(msg, call. = FALSE)
+  r <- rate(k)
+  if (!is.numeric(r) || length(r) != n - 1) stop(msg, call. = FALSE)
+  total <- k * as.vector(r)
+  if (any(!is.finite(total)) || any(total <= 0)) stop(msg, call. = FALSE)
+  total
 }
 
 #' Assign node ages to a topology from internode intervals
@@ -132,16 +176,35 @@ assign_ages <- function(topo, g) {
 #' [intervals_lineage_rate()], and combines them with [assign_ages()]. The
 #' topology and the intervals are drawn independently, the gamma statistic
 #' depends only on the intervals and the Colless index only on the topology, so
-#' for a given `n` the realized gamma depends only on `c` and the realized
-#' Colless index only on `beta`. To draw trees near target values of both
-#' statistics, see [sim_tree_target()].
+#' for a given `n` the realized gamma depends only on `c` (or `rate`) and the
+#' realized Colless index only on `beta`. To draw trees near target values of
+#' both statistics, see [sim_tree_target()].
+#'
+#' With `sampling_fraction` below 1, a complete tree of `round(n /
+#' sampling_fraction)` tips is drawn, `beta` and `c` (or `rate`) apply to that
+#' tree, and `n` tips are kept at random, so the result still has `n` tips and
+#' root depth `root_age`. Incomplete sampling removes recent splits and so lowers
+#' gamma (Pybus & Harvey 2000), and it changes the Colless index too, so the
+#' realized statistics no longer follow the calibration of [calibrate_shape()].
+#' A `rate` function must be valid for the number of tips of the complete tree.
+#'
+#' Very extreme values of `c` (or `rate`) make some intervals negligible relative
+#' to the others, and the corresponding branches round to length zero; a warning
+#' is given when this happens.
 #'
 #' @inheritParams rtopology_beta
 #' @inheritParams intervals_lineage_rate
 #' @param nsim Number of trees.
 #' @param root_age Age of the root (positive).
+#' @param sampling_fraction Fraction of the tips of the complete tree that are
+#'   kept, a single number greater than 0 and at most 1.
 #' @return With `nsim = 1`, a binary, ultrametric `phylo` object with root
 #'   depth `root_age`; otherwise a `multiPhylo` object with `nsim` such trees.
+#'   Attribute `params` holds `beta`, `c` (`NA` with `rate`), `root_age` and
+#'   `sampling_fraction`, and attribute `rate` holds the `rate` function, if any.
+#' @references Pybus, O. G., & Harvey, P. H. (2000). Testing macro-evolutionary
+#'   models using incomplete molecular phylogenies. *Proceedings of the Royal
+#'   Society B*, 267, 2267--2272. \doi{10.1098/rspb.2000.1278}
 #' @section Reproducibility: The same seed gives the same trees on the same
 #'   platform. Between platforms (for instance, arm64 and x86-64), differences
 #'   in the last bit of floating-point functions can change a few draws of the
@@ -151,22 +214,47 @@ assign_ages <- function(topo, g) {
 #' tr <- sim_tree_shape(50, beta = -1, c = -1)
 #' ape::gammaStat(tr)
 #' trees <- sim_tree_shape(50, beta = -1, c = -1, nsim = 10, root_age = 30)
+#' # logistic slowdown towards a carrying capacity of 60 lineages
+#' sim_tree_shape(50, rate = function(k) 1 - k / 60)
+#' # 50 tips sampled from a complete tree of 100
+#' sim_tree_shape(50, sampling_fraction = 0.5)
 #' @export
-sim_tree_shape <- function(n, beta = 0, c = 0, nsim = 1, root_age = 1) {
+sim_tree_shape <- function(n, beta = 0, c = 0, nsim = 1, root_age = 1, rate = NULL,
+                           sampling_fraction = 1) {
   check_n(n)
   check_beta(beta)
   check_c(c)
   check_count(nsim, "nsim")
   check_positive(root_age, "root_age")
+  check_fraction(sampling_fraction)
+  n_full <- round(n / sampling_fraction)
+  check_n(n_full)
+  total_rates(n_full, c, rate)
   one <- function() {
-    tr <- assign_ages(rtopology_beta(n, beta), intervals_lineage_rate(n, c))
+    tr <- assign_ages(rtopology_beta(n_full, beta), intervals_lineage_rate(n_full, c, rate))
+    if (n_full > n) tr <- sample_tips(tr, n)
     tr$edge.length <- tr$edge.length * root_age
     tr
   }
-  if (nsim == 1) return(one())
   trees <- replicate(nsim, one(), simplify = FALSE)
-  class(trees) <- "multiPhylo"
-  trees
+  n_zero <- sum(vapply(trees, function(tr) any(tr$edge.length <= 0), logical(1)))
+  if (n_zero > 0) {
+    warning(sprintf("%d of %d trees have branches of length zero: `c` or `rate` is too extreme.",
+                    n_zero, nsim), call. = FALSE)
+  }
+  out <- if (nsim == 1) trees[[1]] else structure(trees, class = "multiPhylo")
+  attr(out, "params") <- c(beta = beta, c = if (is.null(rate)) c else NA_real_,
+                           root_age = root_age, sampling_fraction = sampling_fraction)
+  attr(out, "rate") <- rate
+  out
+}
+
+# keep n random tips, with root depth 1 and tips relabelled t1, ..., tn
+sample_tips <- function(tree, n) {
+  tree <- ape::drop.tip(tree, sample(tree$tip.label, ape::Ntip(tree) - n))
+  tree$edge.length <- tree$edge.length / max(ape::node.depth.edgelength(tree))
+  tree$tip.label <- paste0("t", seq_len(n))
+  tree
 }
 
 # argument checks shared by the exported functions
@@ -184,6 +272,12 @@ check_beta <- function(beta) {
 check_c <- function(c) {
   if (!is.numeric(c) || length(c) != 1 || !is.finite(c)) {
     stop("`c` must be a single finite number.", call. = FALSE)
+  }
+}
+check_fraction <- function(x) {
+  if (!is.numeric(x) || length(x) != 1 || !is.finite(x) || x <= 0 || x > 1) {
+    stop("`sampling_fraction` must be a single number greater than 0 and at most 1.",
+         call. = FALSE)
   }
 }
 check_count <- function(x, name) {

@@ -48,10 +48,44 @@ trees <- sim_tree_target(100, gamma = -2, colless = 1, nsim = 50, tol = 0.25,
 # a 3 x 3 grid of tree shapes and the parameters of each cell
 grid <- shape_grid(100, gamma = c(-2, -1, 0), colless = c(0, 0.5, 1),
                    calibration = cal)
+
+# any other dependence of the split rate on the number of lineages
+tr <- sim_tree_shape(100, rate = function(k) 1 - k / 110)   # logistic
 ```
 
 See `vignette("treeshapesim")` for a walk-through. Many other tree statistics
 can be computed with [treestats](https://github.com/thijsjanzen/treestats).
+
+## Use with comdynamite
+
+treeshapesim produces the regional species pools of
+[comdynamite](https://github.com/diogoprov/comdynamite), which simulates
+process-based metacommunities with phylogenetic structure. The two packages
+split the work: treeshapesim sets the shape of the tree, and comdynamite takes
+that tree as a fixed input, places traits on it with a chosen phylogenetic signal
+and runs the community dynamics. Any `phylo` object from `sim_tree_shape()` or
+`sim_tree_target()` can be passed directly as the `species` argument of
+comdynamite, so tree shape, phylogenetic signal and dispersal can be varied as
+separate factors in a simulation study. Neither package depends on the other.
+
+```r
+# remotes::install_github("diogoprov/comdynamite")
+library(comdynamite)
+set.seed(1)
+pool <- sim_tree_shape(40, beta = -1, c = -0.5)    # imbalanced, early splits
+sim <- simulate_metacommunity(
+  landscape = landscape_implicit(20),
+  traits    = species_traits(pool, lambda = 1),
+  alpha     = competition_matrix(pool, type = "phylo"),
+  dispersal = 0.01,
+  n_steps   = 1000
+)
+sim$abundance                                      # sites x species
+```
+
+To replicate across shapes, `shape_grid()` gives `beta` and `c` for each
+combination of gamma and Colless, and `sim_tree_target()` draws the pools of each
+cell.
 
 ## How treeshapesim differs from TreeSim and apTreeshape
 
@@ -59,10 +93,10 @@ can be computed with [treestats](https://github.com/thijsjanzen/treestats).
 |---|---|---|---|
 | Purpose | Trees whose imbalance and distribution of branching times vary independently, for simulation studies on tree shape | Trees from birth–death processes | Analysis and simulation of tree topologies |
 | Topology | Aldous' beta-splitting model, with `beta` as a continuous parameter | Not a parameter: it follows from the birth–death process | Yule, PDA, Aldous' branching, biased and user-defined split models (`rtreeshape()`); beta-splitting with a clade age–richness index (`simulate_tree()`, `simulate_yule()`) |
-| Branching times | Pure birth with per-lineage rate k^c, drawn independently of the topology, so gamma can be negative, near zero or positive | Birth–death with constant rates, rate shifts, mass extinctions or density-dependent speciation, conditioned on the number of tips and/or the age | None (`rtreeshape()`), ranks 1 to n − 1 (`simulate_tree()`) or a constant-rate birth–death process (`simulate_yule()`) |
+| Branching times | Pure birth with per-lineage rate k^c or any function of k (`rate`), drawn independently of the topology, so gamma can be negative, near zero or positive | Birth–death with constant rates, rate shifts, mass extinctions or density-dependent speciation, conditioned on the number of tips and/or the age | None (`rtreeshape()`), ranks 1 to n − 1 (`simulate_tree()`) or a constant-rate birth–death process (`simulate_yule()`) |
 | Separate control of imbalance and branching times | Yes: the realized gamma depends only on `c` and the realized Colless index only on `beta` | No: imbalance is not set | Imbalance is set by `beta`; branching times have no shape parameter of their own |
 | Target values of gamma and Colless | Yes: calibration, rejection to a tolerance and grids of shapes (`sim_tree_target()`, `shape_grid()`) | No | No |
-| Extinction, serial sampling, gene trees | No (pure birth, complete sampling) | Yes | Extinction in the ranked-tree models |
+| Extinction, serial sampling, gene trees | No (pure birth), but random incomplete sampling of tips (`sampling_fraction`) | Yes | Extinction in the ranked-tree models |
 | Estimation and tests of tree shape | No | No | Yes (e.g. `maxlik.betasplit()`, `aldous.test()`) |
 
 Use TreeSim for trees from specific birth–death models and apTreeshape to model,

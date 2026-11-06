@@ -1,3 +1,11 @@
+# treeshapesim (development version)
+
+- `sim_tree_shape()` and `intervals_lineage_rate()` gain `rate`, a function of the number of lineages that returns the per-lineage split rate, for any dependence other than k^c (for instance, logistic or stepwise). The intervals remain independent of the topology, and with the default `rate = NULL` the trees are unchanged. `calibrate_shape()`, `shape_params()` and `sim_tree_target()` still work with `c` only.
+- `sim_tree_shape()` gains `sampling_fraction`: it draws a complete tree of `round(n / sampling_fraction)` tips and keeps `n` at random, with root depth `root_age`. The default keeps the same trees.
+- `sim_tree_shape()` stores `beta`, `c`, `root_age` and `sampling_fraction` in attribute `params`, and the `rate` function, if any, in attribute `rate`.
+- `sim_tree_shape()` warns when branches round to length zero, which happens with very negative `c` (for instance, `c = -20` with 100 tips); `c` so extreme that the split rates overflow or underflow now gives a clear error instead of `NA` draws.
+- The README explains the use of trees from treeshapesim as regional pools in comdynamite.
+
 # treeshapesim 0.2.1
 
 - A test of `fit_shape()` used a simulated tree, whose topology differs between arm64 and x86-64 for the same seed; it now reads a fixed tree. `?sim_tree_shape` documents that the same seed gives the same trees on the same platform.
