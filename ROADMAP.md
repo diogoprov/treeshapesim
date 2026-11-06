@@ -28,7 +28,7 @@ Atualizado em 2026-11-05, depois dos itens 8, 9, 10, 12 e 17 e da correção de 
 | 10. Parâmetros na árvore | atributo `params` (`beta`, `c`, `root_age`, `sampling_fraction`) e atributo `rate`, como em `sim_tree_target()` | versão de desenvolvimento |
 | 12. Aviso para `c` extremo | aviso quando há ramos de comprimento zero (c = −20 com 100 pontas já gera); erro claro quando as taxas estouram ou zeram (c = ±400) | versão de desenvolvimento |
 | Integração com o comdynamite | seção no README: árvores do treeshapesim como species pools do comdynamite | versão de desenvolvimento |
-| 17. Cobertura de testes | workflow `test-coverage.yaml` (`covr` e Codecov), `codecov.yml` e badge no README; falta ativar o repositório no Codecov e criar o segredo `CODECOV_TOKEN` | versão de desenvolvimento |
+| 17. Cobertura de testes | workflow `test-coverage.yaml` (`covr` e Codecov), `codecov.yml` e badge no README; repositório ativo no Codecov, com o segredo `CODECOV_TOKEN` | versão de desenvolvimento |
 | `fit_shape()` com amostragem incompleta | `sampling_fraction` e `correction_reps`: `c` corrigido por simulação (curva monótona invertida), também no bootstrap; β não é corrigido | versão de desenvolvimento |
 | 14. Documentação precisa | a independência de γ e Colless em relação a `c` e β agora é descrita como exata (para um dado n) | PR #3 |
 
