@@ -32,14 +32,26 @@ library(comdynamite)
 If all lineages speciate and go extinct at the same constant rates, the shape of
 the reconstructed tree is the same as under pure birth (Gernhard 2008). Such
 extinction changes the branching times, but not the topology. Extinction moves
-the tree away from that expectation when it differs among lineages, for instance
-when the risk is clustered on the phylogeny or linked to a trait. Clustered risk
-has empirical support, but does not always cause more loss of phylogenetic
-diversity than random extinction: the outcome also depends on the shape of the
-tree (Veron et al. 2017). That dependence is what `sim_tree_shape()` can vary
-directly.
+the tree away from that expectation when it differs among lineages.
 
-`prune_tips()` applies one extinction event to a tree. It removes a fixed
+The same contrast organizes the work on the loss of evolutionary history. For a
+randomly evolving clade, Nee and May (1997) showed that about 80% of the tree can
+survive the loss of about 95% of the species, and that choosing the survivors to
+preserve the most history is not much better than choosing them at random. Current
+extinction risk, however, is not phylogenetically random, and its clumped
+distribution puts more higher taxa and more evolutionary history at risk (Purvis
+et al. 2000). In simulations with phylogenetically patterned speciation rates and
+extinction risks, Heard and Mooers (2000) found that risks uncorrelated with
+speciation rates removed only slightly more history than in random trees, whereas
+risks correlated with speciation rates could increase or decrease the loss
+strongly. Clustered risk has empirical support, but does not always cause more
+loss of phylogenetic diversity than random extinction: the shape of the tree also
+matters (Veron et al. 2017). That dependence is what `sim_tree_shape()` can vary
+directly, and comdynamite adds the next question, which is what the losses do to
+communities.
+
+`prune_tips()` applies a single round of extinction to a complete tree, as in Nee
+and May (1997), but the losses need not be random. It removes a fixed
 fraction of the tips, so that scenarios can be compared at the same richness,
 in one of three ways.
 
@@ -138,8 +150,8 @@ the environment, depending on which species were lost.
 
 - The event happens once, at the present. It is not extinction that differs among
   lineages throughout the history of a clade, for which speciation and extinction
-  have to be simulated together (Maddison et al. 2007; Verboom et al. 2020), and
-  which is outside the scope of treeshapesim.
+  have to be simulated together (Maddison et al. 2007; Rabosky 2009; Verboom et
+  al. 2020), and which is outside the scope of treeshapesim.
 - Gamma and the Colless index vary independently only before the event. After it,
   they are outcomes of the design, and `calibrate_shape()` does not apply.
 - `signal` and `risk` describe the pattern of the losses, not their cause.
@@ -154,9 +166,25 @@ the environment, depending on which species were lost.
 Gernhard, T. (2008). The conditioned reconstructed process. *Journal of
 Theoretical Biology*, 253, 769–778. https://doi.org/10.1016/j.jtbi.2008.04.005
 
+Heard, S. B., & Mooers, A. Ø. (2000). Phylogenetically patterned speciation rates
+and extinction risks change the loss of evolutionary history during extinctions.
+*Proceedings of the Royal Society B*, 267, 613–620.
+https://doi.org/10.1098/rspb.2000.1046
+
 Maddison, W. P., Midford, P. E., & Otto, S. P. (2007). Estimating a binary
 character's effect on speciation and extinction. *Systematic Biology*, 56,
 701–710. https://doi.org/10.1080/10635150701607033
+
+Nee, S., & May, R. M. (1997). Extinction and the loss of evolutionary history.
+*Science*, 278, 692–694. https://doi.org/10.1126/science.278.5338.692
+
+Purvis, A., Agapow, P.-M., Gittleman, J. L., & Mace, G. M. (2000). Nonrandom
+extinction and the loss of evolutionary history. *Science*, 288, 328–330.
+https://doi.org/10.1126/science.288.5464.328
+
+Rabosky, D. L. (2009). Heritability of extinction rates links diversification
+patterns in molecular phylogenies and fossils. *Systematic Biology*, 58, 629–640.
+https://doi.org/10.1093/sysbio/syp069
 
 Verboom, G. A., Boucher, F. C., Ackerly, D. D., Wootton, L. M., & Freyman, W. A.
 (2020). Species selection regime and phylogenetic tree shape. *Systematic

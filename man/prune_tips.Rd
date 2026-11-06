@@ -40,10 +40,14 @@ the same as under pure birth (Gernhard 2008), so extinction changes the
 topology only if it differs among lineages. The event acts on the tree as it
 stands, at the present; it does not model extinction that differs among
 lineages throughout the history of the clade, for which speciation and
-extinction have to be simulated together (Maddison et al. 2007; Verboom et al.
-2020). Risk of extinction clustered on the tree does not always lead to more
-loss of phylogenetic diversity than random extinction (Veron et al. 2017), so
-the same \code{fraction} with \code{signal = 0} is the natural control.
+extinction have to be simulated together (Maddison et al. 2007; Rabosky 2009;
+Verboom et al. 2020).
+
+Random extinction removes relatively little evolutionary history (Nee & May
+1997), but extinction risk is clumped on the tree (Purvis et al. 2000), and
+its effect depends on how risk relates to speciation rates (Heard & Mooers
+2000) and on the shape of the tree (Veron et al. 2017). The same \code{fraction}
+with \code{signal = 0} is therefore the natural control.
 
 Unlike \code{sampling_fraction} in \code{\link[=sim_tree_shape]{sim_tree_shape()}}, the tree is not rescaled and
 the tip labels are kept, so that traits stay aligned with the species that
@@ -66,9 +70,25 @@ prune_tips(tr, 0.4, risk = exp(2 * body_size))
 Gernhard, T. (2008). The conditioned reconstructed process. \emph{Journal of
 Theoretical Biology}, 253, 769--778. \doi{10.1016/j.jtbi.2008.04.005}
 
+Heard, S. B., & Mooers, A. O. (2000). Phylogenetically patterned speciation
+rates and extinction risks change the loss of evolutionary history during
+extinctions. \emph{Proceedings of the Royal Society B}, 267, 613--620.
+\doi{10.1098/rspb.2000.1046}
+
 Maddison, W. P., Midford, P. E., & Otto, S. P. (2007). Estimating a binary
 character's effect on speciation and extinction. \emph{Systematic Biology}, 56,
 701--710. \doi{10.1080/10635150701607033}
+
+Nee, S., & May, R. M. (1997). Extinction and the loss of evolutionary
+history. \emph{Science}, 278, 692--694. \doi{10.1126/science.278.5338.692}
+
+Purvis, A., Agapow, P.-M., Gittleman, J. L., & Mace, G. M. (2000). Nonrandom
+extinction and the loss of evolutionary history. \emph{Science}, 288, 328--330.
+\doi{10.1126/science.288.5464.328}
+
+Rabosky, D. L. (2009). Heritability of extinction rates links diversification
+patterns in molecular phylogenies and fossils. \emph{Systematic Biology}, 58,
+629--640. \doi{10.1093/sysbio/syp069}
 
 Verboom, G. A., Boucher, F. C., Ackerly, D. D., Wootton, L. M., & Freyman,
 W. A. (2020). Species selection regime and phylogenetic tree shape.
