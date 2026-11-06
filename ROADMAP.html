@@ -17,6 +17,10 @@
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto"><li class="nav-item"><a class="nav-link" href="articles/treeshapesim.html">Get started</a></li>
 <li class="nav-item"><a class="nav-link" href="reference/index.html">Reference</a></li>
+<li class="nav-item dropdown">
+  <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="articles/comdynamite.html">Tree shape and extinction in metacommunity simulations with comdynamite</a></li>
+  </ul></li>
 <li class="nav-item"><a class="nav-link" href="news/index.html">Changelog</a></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
  <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="search.json"></form></li>
@@ -34,7 +38,7 @@
 
 <div id="treeshapesim-estado-e-próximos-passos" class="section level1">
 
-<p>Atualizado em 2026-11-05, depois dos itens 8, 9, 10, 12 e 17 e da correção de <code>c</code> para amostragem incompleta. Última versão publicada: 0.2.1; versão de desenvolvimento 0.2.1.9000.</p>
+<p>Atualizado em 2026-11-05, depois dos itens 8, 9, 10, 12 e 17, da correção de <code>c</code> para amostragem incompleta e de <code><a href="reference/prune_tips.html">prune_tips()</a></code>. Última versão publicada: 0.2.1; versão de desenvolvimento 0.2.1.9000.</p>
 <div class="section level2">
 <h2 id="feito">Feito<a class="anchor" aria-label="anchor" href="#feito"></a></h2>
 <table class="table"><colgroup><col width="33%"><col width="33%"><col width="33%"></colgroup><thead><tr><th>Item</th>
@@ -132,6 +136,10 @@
 </tr><tr><td>r-universe</td>
 <td>pacote listado em <code>diogoprov/diogoprov.r-universe.dev</code> (<code>packages.json</code>, branch <code>main</code>); a versão 0.2.1 está publicada em diogoprov.r-universe.dev, com badge e instrução de instalação no README</td>
 <td><code>packages.json</code></td>
+</tr><tr><td>Extinção não aleatória</td>
+<td>
+<code><a href="reference/prune_tips.html">prune_tips()</a></code>: um evento de extinção na árvore, aleatório, agrupado na filogenia (<code>signal</code>) ou ligado a atributos (<code>risk</code>); artigo do site com o comdynamite (<code>vignettes/articles/comdynamite.Rmd</code>), fora do <code>R CMD check</code> para não criar dependência circular</td>
+<td>versão de desenvolvimento</td>
 </tr><tr><td>14. Documentação precisa</td>
 <td>a independência de γ e Colless em relação a <code>c</code> e β agora é descrita como exata (para um dado n)</td>
 <td>PR #3</td>
@@ -144,6 +152,8 @@
 <div class="section level3">
 <h3 id="média-prioridade">Média prioridade<a class="anchor" aria-label="anchor" href="#m%C3%A9dia-prioridade"></a></h3>
 <ul><li>
+<strong>Turnover nos intervalos.</strong> <code>intervals_birth_death(n, turnover)</code>, para o pull of the present como fator. Só vale se houver pergunta para isso, porque <code>rate</code> e <code>c &gt; 0</code> já movem o γ. Gernhard (2008, <a href="doi:10.1016/j.jtbi.2008.04.005" class="uri">doi:10.1016/j.jtbi.2008.04.005</a>; lido): a forma reconstruída é a do pure birth (Teorema 2.3), e com prior uniforme na origem os tempos de origem e de especiação são estatísticas de ordem de n variáveis i.i.d. (Observação 6.1), o que dá um sorteio direto e reproduz g_k ~ Exp(k) com turnover 0. Falta validar contra o TreeSim.</li>
+<li>
 <strong>Calibração em cache.</strong> Guardar curvas pré-calculadas para tamanhos comuns (por exemplo, 50, 100 e 200 pontas), para evitar a calibração a cada sessão. Exige uma rodada de simulação só para isso.</li>
 <li>
 <strong>Integração com o apTreeshape na vignette.</strong> <code><a href="reference/assign_ages.html">assign_ages()</a></code> aceita qualquer topologia binária; um parágrafo mostrando topologias do apTreeshape (convertidas com <code>as.phylo()</code>) com os tempos de ramificação do treeshapesim.</li>
@@ -265,6 +275,10 @@
 <li>
 <strong>Conclusão.</strong> As duas estimações são válidas e já publicadas. O valor que o treeshapesim acrescenta é juntá-las numa função (β e <code>c</code> de uma árvore empírica, na mesma escala da simulação) e oferecer o bootstrap paramétrico com o próprio gerador, não um método novo.</li>
 </ul></div>
+<div class="section level2">
+<h2 id="escopo-extinção">Escopo: extinção<a class="anchor" aria-label="anchor" href="#escopo-extin%C3%A7%C3%A3o"></a></h2>
+<p>Simular nascimento e morte com linhagens extintas sai do escopo, porque é o terreno do TreeSim, e o comdynamite não usaria as linhagens extintas. Extinção diferente entre linhagens ao longo da história do clado (BiSSE, QuaSSE) também fica de fora, porque gera topologia e tempos juntos e perde a separação que é a proposta do pacote. O que cabe é o evento sobre a árvore pronta, em <code><a href="reference/prune_tips.html">prune_tips()</a></code>.</p>
+</div>
 <div class="section level2">
 <h2 id="ligação-com-o-artigo">Ligação com o artigo<a class="anchor" aria-label="anchor" href="#liga%C3%A7%C3%A3o-com-o-artigo"></a></h2>
 <ul><li>O <code>pcps-sim</code> usa <code>R/trees.R</code>, que gera as mesmas árvores que <code><a href="reference/sim_tree_shape.html">sim_tree_shape()</a></code> com a mesma semente; o teste com valores congelados protege isso.</li>

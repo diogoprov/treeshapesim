@@ -33,6 +33,13 @@
   same correction. In a validation with 100 tips, the bias fell from
   -0.08 to -0.78 to within 0.03 for sampling fractions of 0.75 to 0.25
   (`data-raw/validate_sampling.R`).
+- [`prune_tips()`](https://provetelab.org/treeshapesim/reference/prune_tips.md)
+  applies one extinction event to a tree: tips are lost at random, in
+  clusters on the tree (a latent liability with Pagel’s lambda,
+  `signal`) or according to a trait (`risk`). The tip labels are kept,
+  so that traits stay aligned with the remaining species.
+- A new article shows trees from treeshapesim, with non-random
+  extinction, as regional pools in comdynamite.
 - Test coverage on Codecov.
 - The README explains the use of trees from treeshapesim as regional
   pools in comdynamite.

@@ -10,6 +10,13 @@ times.
 - [`sim_tree_target()`](https://provetelab.org/treeshapesim/reference/sim_tree_target.md)
   : Simulate trees near target values of gamma and Colless
 
+## Extinction
+
+Remove tips at random, in clusters on the tree or according to a trait.
+
+- [`prune_tips()`](https://provetelab.org/treeshapesim/reference/prune_tips.md)
+  : Remove tips by non-random extinction
+
 ## Target shapes and grids
 
 Shape statistics, calibration of the parameters and grids of tree

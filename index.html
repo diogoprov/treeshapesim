@@ -33,6 +33,12 @@
       <ul class="navbar-nav me-auto">
 <li class="nav-item"><a class="nav-link" href="articles/treeshapesim.html">Get started</a></li>
 <li class="nav-item"><a class="nav-link" href="reference/index.html">Reference</a></li>
+<li class="nav-item dropdown">
+  <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
+<li><a class="dropdown-item" href="articles/comdynamite.html">Tree shape and extinction in metacommunity simulations with comdynamite</a></li>
+  </ul>
+</li>
 <li class="nav-item"><a class="nav-link" href="news/index.html">Changelog</a></li>
       </ul>
 <ul class="navbar-nav">
@@ -100,18 +106,19 @@
 <p>treeshapesim produces the regional species pools of <a href="https://github.com/diogoprov/comdynamite" class="external-link">comdynamite</a>, which simulates process-based metacommunities with phylogenetic structure. The two packages split the work: treeshapesim sets the shape of the tree, and comdynamite takes that tree as a fixed input, places traits on it with a chosen phylogenetic signal and runs the community dynamics. Any <code>phylo</code> object from <code><a href="reference/sim_tree_shape.html">sim_tree_shape()</a></code> or <code><a href="reference/sim_tree_target.html">sim_tree_target()</a></code> can be passed directly as the <code>species</code> argument of comdynamite, so tree shape, phylogenetic signal and dispersal can be varied as separate factors in a simulation study. Neither package depends on the other.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># remotes::install_github("diogoprov/comdynamite")</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">comdynamite</span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://provetelab.org/comdynamite/" class="external-link">comdynamite</a></span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span></span>
 <span><span class="va">pool</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/sim_tree_shape.html">sim_tree_shape</a></span><span class="op">(</span><span class="fl">40</span>, beta <span class="op">=</span> <span class="op">-</span><span class="fl">1</span>, c <span class="op">=</span> <span class="op">-</span><span class="fl">0.5</span><span class="op">)</span>    <span class="co"># imbalanced, early splits</span></span>
-<span><span class="va">sim</span> <span class="op">&lt;-</span> <span class="fu">simulate_metacommunity</span><span class="op">(</span></span>
-<span>  landscape <span class="op">=</span> <span class="fu">landscape_implicit</span><span class="op">(</span><span class="fl">20</span><span class="op">)</span>,</span>
-<span>  traits    <span class="op">=</span> <span class="fu">species_traits</span><span class="op">(</span><span class="va">pool</span>, lambda <span class="op">=</span> <span class="fl">1</span><span class="op">)</span>,</span>
-<span>  alpha     <span class="op">=</span> <span class="fu">competition_matrix</span><span class="op">(</span><span class="va">pool</span>, type <span class="op">=</span> <span class="st">"phylo"</span><span class="op">)</span>,</span>
+<span><span class="va">sim</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://provetelab.org/comdynamite/reference/simulate_metacommunity.html" class="external-link">simulate_metacommunity</a></span><span class="op">(</span></span>
+<span>  landscape <span class="op">=</span> <span class="fu"><a href="https://provetelab.org/comdynamite/reference/landscape_implicit.html" class="external-link">landscape_implicit</a></span><span class="op">(</span><span class="fl">20</span><span class="op">)</span>,</span>
+<span>  traits    <span class="op">=</span> <span class="fu"><a href="https://provetelab.org/comdynamite/reference/species_traits.html" class="external-link">species_traits</a></span><span class="op">(</span><span class="va">pool</span>, lambda <span class="op">=</span> <span class="fl">1</span><span class="op">)</span>,</span>
+<span>  alpha     <span class="op">=</span> <span class="fu"><a href="https://provetelab.org/comdynamite/reference/competition_matrix.html" class="external-link">competition_matrix</a></span><span class="op">(</span><span class="va">pool</span>, type <span class="op">=</span> <span class="st">"phylo"</span><span class="op">)</span>,</span>
 <span>  dispersal <span class="op">=</span> <span class="fl">0.01</span>,</span>
 <span>  n_steps   <span class="op">=</span> <span class="fl">1000</span></span>
 <span><span class="op">)</span></span>
 <span><span class="va">sim</span><span class="op">$</span><span class="va">abundance</span>                                      <span class="co"># sites x species</span></span></code></pre></div>
 <p>To replicate across shapes, <code><a href="reference/shape_grid.html">shape_grid()</a></code> gives <code>beta</code> and <code>c</code> for each combination of gamma and Colless, and <code><a href="reference/sim_tree_target.html">sim_tree_target()</a></code> draws the pools of each cell.</p>
+<p><code><a href="reference/prune_tips.html">prune_tips()</a></code> removes a fraction of the pool before the simulation, at random, in clusters on the tree or according to a trait, to ask how the pattern of extinction changes the communities. The article <a href="https://provetelab.org/treeshapesim/articles/comdynamite.html">Tree shape and extinction in metacommunity simulations with comdynamite</a> works through a factorial design.</p>
 </div>
 <div class="section level2">
 <h2 id="how-treeshapesim-differs-from-treesim-and-aptreeshape">How treeshapesim differs from TreeSim and apTreeshape<a class="anchor" aria-label="anchor" href="#how-treeshapesim-differs-from-treesim-and-aptreeshape"></a>
@@ -163,7 +170,7 @@
 </tr>
 <tr>
 <td>Extinction, serial sampling, gene trees</td>
-<td>No (pure birth), but random incomplete sampling of tips (<code>sampling_fraction</code>)</td>
+<td>No (pure birth), but random incomplete sampling of tips (<code>sampling_fraction</code>) and one extinction event at the tips, random or not (<code><a href="reference/prune_tips.html">prune_tips()</a></code>)</td>
 <td>Yes</td>
 <td>Extinction in the ranked-tree models</td>
 </tr>
