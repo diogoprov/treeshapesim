@@ -4,6 +4,8 @@
 - `sim_tree_shape()` gains `sampling_fraction`: it draws a complete tree of `round(n / sampling_fraction)` tips and keeps `n` at random, with root depth `root_age`. The default keeps the same trees.
 - `sim_tree_shape()` stores `beta`, `c`, `root_age` and `sampling_fraction` in attribute `params`, and the `rate` function, if any, in attribute `rate`.
 - `sim_tree_shape()` warns when branches round to length zero, which happens with very negative `c` (for instance, `c = -20` with 100 tips); `c` so extreme that the split rates overflow or underflow now gives a clear error instead of `NA` draws.
+- `fit_shape()` gains `sampling_fraction` and `correction_reps`: with incomplete sampling, `c` is corrected by simulation, and the bootstrap uses the same correction. In a validation with 100 tips, the bias fell from -0.08 to -0.78 to within 0.03 for sampling fractions of 0.75 to 0.25 (`data-raw/validate_sampling.R`).
+- Test coverage on Codecov.
 - The README explains the use of trees from treeshapesim as regional pools in comdynamite.
 
 # treeshapesim 0.2.1

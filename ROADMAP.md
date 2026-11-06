@@ -1,6 +1,6 @@
 # treeshapesim: estado e próximos passos
 
-Atualizado em 2026-11-05, depois dos itens 8, 9, 10 e 12. Última versão publicada:
+Atualizado em 2026-11-05, depois dos itens 8, 9, 10, 12 e 17 e da correção de `c` para amostragem incompleta. Última versão publicada:
 0.2.1; versão de desenvolvimento 0.2.1.9000.
 
 ## Feito
@@ -28,6 +28,8 @@ Atualizado em 2026-11-05, depois dos itens 8, 9, 10 e 12. Última versão public
 | 10. Parâmetros na árvore | atributo `params` (`beta`, `c`, `root_age`, `sampling_fraction`) e atributo `rate`, como em `sim_tree_target()` | versão de desenvolvimento |
 | 12. Aviso para `c` extremo | aviso quando há ramos de comprimento zero (c = −20 com 100 pontas já gera); erro claro quando as taxas estouram ou zeram (c = ±400) | versão de desenvolvimento |
 | Integração com o comdynamite | seção no README: árvores do treeshapesim como species pools do comdynamite | versão de desenvolvimento |
+| 17. Cobertura de testes | workflow `test-coverage.yaml` (`covr` e Codecov), `codecov.yml` e badge no README; falta ativar o repositório no Codecov e criar o segredo `CODECOV_TOKEN` | versão de desenvolvimento |
+| `fit_shape()` com amostragem incompleta | `sampling_fraction` e `correction_reps`: `c` corrigido por simulação (curva monótona invertida), também no bootstrap; β não é corrigido | versão de desenvolvimento |
 | 14. Documentação precisa | a independência de γ e Colless em relação a `c` e β agora é descrita como exata (para um dado n) | PR #3 |
 
 ## A fazer
@@ -45,13 +47,17 @@ Atualizado em 2026-11-05, depois dos itens 8, 9, 10 e 12. Última versão public
 
 ### Baixa prioridade
 
+- **Calibração com amostragem incompleta.** Só se houver uso para grades de γ com
+  amostragem: recalcular a curva γ(c) em árvores podadas. `sim_tree_target()` não
+  deve ser estendido, porque a poda quebra a independência em que a rejeição
+  separada se apoia (o γ passa a depender um pouco da topologia).
+
 - **Manter a tabela comparativa do README** atualizada quando TreeSim ou
   apTreeshape mudarem (hoje cita TreeSim 2.4 e apTreeshape 1.5-0.1, este
   arquivado no CRAN em 2023).
 - **16. CRAN.** Faz mais sentido depois do aceite do artigo; exige
   `cran-comments.md`, as referências no campo Description no formato
   `<doi:...>` e checks no win-builder e no R-hub.
-- **17. Cobertura de testes** (`covr` e badge).
 - **18. Revisão no rOpenSci.**
 
 Retirado: **15. Outros modelos de topologia.** O apTreeshape já oferece Yule,
@@ -106,6 +112,24 @@ CRAN numa biblioteca separada.
   o pacote sortear o último intervalo da mesma lei, que o DDX não trata como
   evento; pode ser corrigido no `fit_shape()` ou removido pelo bootstrap
   paramétrico.
+
+## Correção de `c` para amostragem incompleta (rodada em 2026-11-05)
+
+`data-raw/validate_sampling.R`: n = 100, β = 0, 40 árvores por condição,
+`correction_reps = 50`; resultados em `data-raw/validation/sampling_summary.csv`.
+Levou 12 min em 4 núcleos, cerca de 4 s por ajuste.
+
+| fração | `c` verdadeiro | viés sem correção | viés corrigido | REQM sem correção | REQM corrigida |
+|---|---:|---:|---:|---:|---:|
+| 0,75 | 0 | −0,08 | 0,03 | 0,14 | 0,10 |
+| 0,75 | −1 | −0,16 | 0,03 | 0,19 | 0,10 |
+| 0,5 | 0 | −0,22 | 0,00 | 0,25 | 0,09 |
+| 0,5 | −1 | −0,42 | 0,00 | 0,44 | 0,09 |
+| 0,25 | 0 | −0,40 | 0,00 | 0,41 | 0,06 |
+| 0,25 | −1 | −0,78 | −0,01 | 0,78 | 0,07 |
+
+Não foram testados outros tamanhos, β ≠ 0, nem a cobertura dos intervalos do
+bootstrap. A correção supõe pontas ausentes ao acaso e fração conhecida.
 
 ## O que a literatura diz sobre estimar β e `c`
 

@@ -13,7 +13,7 @@ Description: Simulates rooted, binary, ultrametric trees in which
     Colless index only on the topology, beta mainly controls imbalance and
     c mainly controls gamma.
 License: MIT + file LICENSE
-URL: https://diogoprov.github.io/treeshapesim/,
+URL: https://provetelab.org/treeshapesim/,
     https://github.com/diogoprov/treeshapesim
 BugReports: https://github.com/diogoprov/treeshapesim/issues
 Imports:

@@ -31,13 +31,23 @@
 #' cause: branching times alone do not separate diversity-dependent from
 #' time-dependent diversification (Pannetier et al. 2021).
 #'
-#' Trees with incomplete sampling give estimates of `c` that are too low,
-#' because recent splits are missing; the estimate of `beta` is little affected.
+#' \strong{Incomplete sampling.} Trees with incomplete sampling give estimates
+#' of `c` that are too low, because recent splits are missing; the estimate of
+#' `beta` is little affected and is not corrected. With `sampling_fraction`
+#' below 1, `c` is corrected by simulation: trees are drawn with
+#' [sim_tree_shape()] at the estimated `beta`, the same `sampling_fraction` and
+#' a grid of `c` from 1 below to 3 above the uncorrected estimate, and the mean
+#' uncorrected estimate at each value (`correction_reps` trees) gives a curve,
+#' made monotone by isotonic regression and inverted at the estimate from `tree`.
+#' This assumes that tips are missing at random and that the fraction is known;
+#' sampling biased towards old or distinct lineages is not corrected. The result
+#' varies slightly with the seed.
 #'
 #' \strong{Bootstrap.} With `boot > 0`, topologies are drawn with
 #' [rtopology_beta()] at the estimated `beta` and intervals with
-#' [intervals_lineage_rate()] at the estimated `c`, and both parameters are
-#' re-estimated, following the recommendation of a parametric bootstrap for
+#' [intervals_lineage_rate()] at the estimated `c` (with `sampling_fraction`
+#' below 1, whole trees with [sim_tree_shape()], and `c` is corrected with the
+#' same curve), and both parameters are re-estimated, following the recommendation of a parametric bootstrap for
 #' diversification models by Etienne et al. (2016). The spread of the bootstrap
 #' estimates around the point estimate includes the small-sample bias of the
 #' estimators, and, for `c`, a small additional bias because
@@ -55,6 +65,11 @@
 #'   [ape::is.ultrametric()] (scaled range of root-to-tip distances). Trees with
 #'   rounded branch lengths may need a larger value, or can be made ultrametric
 #'   first (for instance with `phytools::force.ultrametric()`).
+#' @param sampling_fraction Fraction of the species of the clade that are in
+#'   `tree`, a single number greater than 0 and at most 1. Below 1, `c` is
+#'   corrected for incomplete sampling (see Details).
+#' @param correction_reps Number of trees at each value of the grid used in the
+#'   correction for incomplete sampling.
 #' @return An object of class `shape_fit`: a list with `n`, `beta`, `c`, `r`
 #'   (speciation rate per lineage at one lineage, in the time units of the
 #'   tree), `loglik_beta` (log-likelihood of `beta` up to an additive constant,
@@ -63,7 +78,10 @@
 #'   `beta_at_bound` and `c_at_bound` (estimate at a bound of the search
 #'   interval), `beta_range`, `c_range`, `shape` (output of [tree_shape()]) and,
 #'   with `boot > 0`, `boot` (data frame of bootstrap estimates) and `ci`
-#'   (matrix of percentile intervals).
+#'   (matrix of percentile intervals). With `sampling_fraction` below 1, `c` is
+#'   the corrected estimate, `r` is `NA`, `loglik_c` refers to the uncorrected
+#'   estimate, and the list also holds `c_uncorrected`, `sampling_fraction` and
+#'   `correction` (data frame with the curve).
 #' @references
 #' Aldous, D. (1996). Probability distributions on cladograms. In D. Aldous &
 #' R. Pemantle (Eds.), *Random discrete structures* (pp. 1--18). Springer.
@@ -91,9 +109,13 @@
 #' fit_shape(tr)
 #' fit <- fit_shape(tr, boot = 50)
 #' fit$ci
+#' # a tree with half of the species of the clade
+#' sampled <- sim_tree_shape(100, c = -0.5, sampling_fraction = 0.5)
+#' fit_shape(sampled, sampling_fraction = 0.5, correction_reps = 20)
 #' @export
 fit_shape <- function(tree, boot = 0, level = 0.95, beta_range = c(-1.999, 10),
-                      c_range = c(-5, 5), tol = .Machine$double.eps^0.5) {
+                      c_range = c(-5, 5), tol = .Machine$double.eps^0.5,
+                      sampling_fraction = 1, correction_reps = 100) {
   if (!inherits(tree, "phylo") || !ape::is.binary(tree) || !ape::is.rooted(tree) ||
       ape::Ntip(tree) < 4) {
     stop("`tree` must be a binary, rooted `phylo` object with at least 4 tips.",
@@ -116,6 +138,8 @@ fit_shape <- function(tree, boot = 0, level = 0.95, beta_range = c(-1.999, 10),
   check_range(beta_range, "beta_range")
   check_range(c_range, "c_range")
   if (beta_range[1] <= -2) stop("`beta_range` must lie above -2.", call. = FALSE)
+  check_fraction(sampling_fraction)
+  check_count(correction_reps, "correction_reps")
 
   n <- ape::Ntip(tree)
   splits <- split_sizes(tree)
@@ -126,10 +150,27 @@ fit_shape <- function(tree, boot = 0, level = 0.95, beta_range = c(-1.999, 10),
               loglik_c = fc$loglik, beta_at_bound = fb$at_bound,
               c_at_bound = fc$at_bound, beta_range = beta_range, c_range = c_range,
               shape = tree_shape(tree))
+  sampled <- sampling_fraction < 1
+  if (sampled) {
+    curve <- sampling_curve(n, fb$beta, fc$c, sampling_fraction, c_range, correction_reps)
+    out$c_uncorrected <- fc$c
+    out$c <- invert_curve(curve, fc$c)
+    out$r <- NA_real_
+    out$c_at_bound <- at_bound(out$c, range(curve$c))
+    out$sampling_fraction <- sampling_fraction
+    out$correction <- curve
+  }
   if (boot > 0) {
     draws <- t(vapply(seq_len(boot), function(b) {
-      c(beta = fit_beta(split_sizes(rtopology_beta(n, fb$beta)), beta_range)$beta,
-        c = fit_c(intervals_lineage_rate(n, fc$c), c_range)$c)
+      if (sampled) {
+        tr <- suppressWarnings(sim_tree_shape(n, fb$beta, out$c,
+                                              sampling_fraction = sampling_fraction))
+        c(beta = fit_beta(split_sizes(tr), beta_range)$beta,
+          c = invert_curve(curve, fit_c(tree_intervals(tr), c_range)$c))
+      } else {
+        c(beta = fit_beta(split_sizes(rtopology_beta(n, fb$beta)), beta_range)$beta,
+          c = fit_c(intervals_lineage_rate(n, fc$c), c_range)$c)
+      }
     }, numeric(2)))
     probs <- c((1 - level) / 2, 1 - (1 - level) / 2)
     out$boot <- as.data.frame(draws)
@@ -142,6 +183,11 @@ fit_shape <- function(tree, boot = 0, level = 0.95, beta_range = c(-1.999, 10),
 #' @export
 print.shape_fit <- function(x, digits = 3, ...) {
   cat("Shape estimates for a tree with", x$n, "tips\n")
+  sampled <- !is.null(x$sampling_fraction)
+  if (sampled) {
+    cat("c corrected for a sampling fraction of ", x$sampling_fraction,
+        " (uncorrected: ", format(x$c_uncorrected, digits = digits), ")\n", sep = "")
+  }
   est <- c(beta = x$beta, c = x$c)
   if (!is.null(x$ci)) {
     tab <- cbind(estimate = est, x$ci)
@@ -155,7 +201,9 @@ print.shape_fit <- function(x, digits = 3, ...) {
         "bound of `beta_range`: the topology is extremely",
         if (upper) "balanced" else "imbalanced", "for this model.\n")
   }
-  if (isTRUE(x$c_at_bound)) {
+  if (isTRUE(x$c_at_bound) && sampled) {
+    cat("c is at the limit of the correction for sampling: treat it as unreliable.\n")
+  } else if (isTRUE(x$c_at_bound)) {
     cat("c is at a bound of `c_range`: widen it, or the branching times carry",
         "little information (few tips).\n")
   }
@@ -225,6 +273,21 @@ fit_c <- function(g, c_range) {
   list(c = opt$maximum, loglik = opt$objective,
        r = (n - 2) / sum((2:n)^(1 + opt$maximum) * g),
        at_bound = at_bound(opt$maximum, c_range))
+}
+
+# mean uncorrected estimate of c in sampled trees, over a grid of true c
+sampling_curve <- function(n, beta, c_hat, sampling_fraction, c_range, reps) {
+  grid <- unique(pmin(pmax(c_hat + seq(-1, 3, by = 0.5), c_range[1]), c_range[2]))
+  estimate <- function(v) {
+    tr <- suppressWarnings(sim_tree_shape(n, beta, v, sampling_fraction = sampling_fraction))
+    fit_c(tree_intervals(tr), c_range)$c
+  }
+  mean_c <- vapply(grid, function(v) mean(replicate(reps, estimate(v))), 0)
+  data.frame(c = grid, uncorrected = stats::isoreg(grid, mean_c)$yf)
+}
+
+invert_curve <- function(curve, x) {
+  stats::approx(curve$uncorrected, curve$c, xout = x, rule = 2, ties = mean)$y
 }
 
 check_range <- function(x, name) {

@@ -2,8 +2,9 @@
 
 <!-- badges: start -->
 [![r-universe](https://diogoprov.r-universe.dev/badges/treeshapesim)](https://diogoprov.r-universe.dev/treeshapesim)
-[![pkgdown](https://github.com/diogoprov/treeshapesim/actions/workflows/pkgdown.yaml/badge.svg)](https://diogoprov.github.io/treeshapesim/)
+[![pkgdown](https://github.com/diogoprov/treeshapesim/actions/workflows/pkgdown.yaml/badge.svg)](https://provetelab.org/treeshapesim/)
 [![R-CMD-check](https://github.com/diogoprov/treeshapesim/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/diogoprov/treeshapesim/actions/workflows/R-CMD-check.yaml)
+[![Codecov test coverage](https://codecov.io/gh/diogoprov/treeshapesim/graph/badge.svg)](https://app.codecov.io/gh/diogoprov/treeshapesim)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.23647260.svg)](https://doi.org/10.5281/zenodo.23647260)
 <!-- badges: end -->
 
@@ -21,7 +22,7 @@ The gamma statistic depends only on the internode intervals and the Colless
 index only on the topology, so `beta` mainly moves the Colless index and `c`
 mainly moves gamma.
 
-Documentation: <https://diogoprov.github.io/treeshapesim/>
+Documentation: <https://provetelab.org/treeshapesim/>
 
 ## Installation
 

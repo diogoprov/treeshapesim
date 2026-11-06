@@ -10,7 +10,9 @@ fit_shape(
   level = 0.95,
   beta_range = c(-1.999, 10),
   c_range = c(-5, 5),
-  tol = .Machine$double.eps^0.5
+  tol = .Machine$double.eps^0.5,
+  sampling_fraction = 1,
+  correction_reps = 100
 )
 }
 \arguments{
@@ -28,6 +30,13 @@ and \code{c}.}
 \code{\link[ape:is.ultrametric]{ape::is.ultrametric()}} (scaled range of root-to-tip distances). Trees with
 rounded branch lengths may need a larger value, or can be made ultrametric
 first (for instance with \code{phytools::force.ultrametric()}).}
+
+\item{sampling_fraction}{Fraction of the species of the clade that are in
+\code{tree}, a single number greater than 0 and at most 1. Below 1, \code{c} is
+corrected for incomplete sampling (see Details).}
+
+\item{correction_reps}{Number of trees at each value of the grid used in the
+correction for incomplete sampling.}
 }
 \value{
 An object of class \code{shape_fit}: a list with \code{n}, \code{beta}, \code{c}, \code{r}
@@ -38,7 +47,10 @@ of \code{c}, equal to the log-likelihood of laser's DDX model at its maximum),
 \code{beta_at_bound} and \code{c_at_bound} (estimate at a bound of the search
 interval), \code{beta_range}, \code{c_range}, \code{shape} (output of \code{\link[=tree_shape]{tree_shape()}}) and,
 with \code{boot > 0}, \code{boot} (data frame of bootstrap estimates) and \code{ci}
-(matrix of percentile intervals).
+(matrix of percentile intervals). With \code{sampling_fraction} below 1, \code{c} is
+the corrected estimate, \code{r} is \code{NA}, \code{loglik_c} refers to the uncorrected
+estimate, and the list also holds \code{c_uncorrected}, \code{sampling_fraction} and
+\code{correction} (data frame with the curve).
 }
 \description{
 Estimates, by maximum likelihood, the \code{beta} of Aldous' beta-splitting model
@@ -72,13 +84,23 @@ estimate describes the shape of the lineage-through-time curve, not its
 cause: branching times alone do not separate diversity-dependent from
 time-dependent diversification (Pannetier et al. 2021).
 
-Trees with incomplete sampling give estimates of \code{c} that are too low,
-because recent splits are missing; the estimate of \code{beta} is little affected.
+\strong{Incomplete sampling.} Trees with incomplete sampling give estimates
+of \code{c} that are too low, because recent splits are missing; the estimate of
+\code{beta} is little affected and is not corrected. With \code{sampling_fraction}
+below 1, \code{c} is corrected by simulation: trees are drawn with
+\code{\link[=sim_tree_shape]{sim_tree_shape()}} at the estimated \code{beta}, the same \code{sampling_fraction} and
+a grid of \code{c} from 1 below to 3 above the uncorrected estimate, and the mean
+uncorrected estimate at each value (\code{correction_reps} trees) gives a curve,
+made monotone by isotonic regression and inverted at the estimate from \code{tree}.
+This assumes that tips are missing at random and that the fraction is known;
+sampling biased towards old or distinct lineages is not corrected. The result
+varies slightly with the seed.
 
 \strong{Bootstrap.} With \code{boot > 0}, topologies are drawn with
 \code{\link[=rtopology_beta]{rtopology_beta()}} at the estimated \code{beta} and intervals with
-\code{\link[=intervals_lineage_rate]{intervals_lineage_rate()}} at the estimated \code{c}, and both parameters are
-re-estimated, following the recommendation of a parametric bootstrap for
+\code{\link[=intervals_lineage_rate]{intervals_lineage_rate()}} at the estimated \code{c} (with \code{sampling_fraction}
+below 1, whole trees with \code{\link[=sim_tree_shape]{sim_tree_shape()}}, and \code{c} is corrected with the
+same curve), and both parameters are re-estimated, following the recommendation of a parametric bootstrap for
 diversification models by Etienne et al. (2016). The spread of the bootstrap
 estimates around the point estimate includes the small-sample bias of the
 estimators, and, for \code{c}, a small additional bias because
@@ -92,6 +114,9 @@ tr <- sim_tree_shape(200, beta = -1, c = -0.8)
 fit_shape(tr)
 fit <- fit_shape(tr, boot = 50)
 fit$ci
+# a tree with half of the species of the clade
+sampled <- sim_tree_shape(100, c = -0.5, sampling_fraction = 0.5)
+fit_shape(sampled, sampling_fraction = 0.5, correction_reps = 20)
 }
 \references{
 Aldous, D. (1996). Probability distributions on cladograms. In D. Aldous &
