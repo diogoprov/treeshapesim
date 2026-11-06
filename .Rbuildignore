@@ -9,3 +9,4 @@
 ^data-raw$
 ^ROADMAP\.md$
 ^codecov\.yml$
+^vignettes/articles$

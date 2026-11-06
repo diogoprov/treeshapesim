@@ -88,6 +88,12 @@ To replicate across shapes, `shape_grid()` gives `beta` and `c` for each
 combination of gamma and Colless, and `sim_tree_target()` draws the pools of each
 cell.
 
+`prune_tips()` removes a fraction of the pool before the simulation, at random,
+in clusters on the tree or according to a trait, to ask how the pattern of
+extinction changes the communities. The article
+[Tree shape and extinction in metacommunity simulations with comdynamite](https://provetelab.org/treeshapesim/articles/comdynamite.html)
+works through a factorial design.
+
 ## How treeshapesim differs from TreeSim and apTreeshape
 
 | | treeshapesim | TreeSim | apTreeshape |
@@ -97,7 +103,7 @@ cell.
 | Branching times | Pure birth with per-lineage rate k^c or any function of k (`rate`), drawn independently of the topology, so gamma can be negative, near zero or positive | Birth–death with constant rates, rate shifts, mass extinctions or density-dependent speciation, conditioned on the number of tips and/or the age | None (`rtreeshape()`), ranks 1 to n − 1 (`simulate_tree()`) or a constant-rate birth–death process (`simulate_yule()`) |
 | Separate control of imbalance and branching times | Yes: the realized gamma depends only on `c` and the realized Colless index only on `beta` | No: imbalance is not set | Imbalance is set by `beta`; branching times have no shape parameter of their own |
 | Target values of gamma and Colless | Yes: calibration, rejection to a tolerance and grids of shapes (`sim_tree_target()`, `shape_grid()`) | No | No |
-| Extinction, serial sampling, gene trees | No (pure birth), but random incomplete sampling of tips (`sampling_fraction`) | Yes | Extinction in the ranked-tree models |
+| Extinction, serial sampling, gene trees | No (pure birth), but random incomplete sampling of tips (`sampling_fraction`) and one extinction event at the tips, random or not (`prune_tips()`) | Yes | Extinction in the ranked-tree models |
 | Estimation and tests of tree shape | No | No | Yes (e.g. `maxlik.betasplit()`, `aldous.test()`) |
 
 Use TreeSim for trees from specific birth–death models and apTreeshape to model,
