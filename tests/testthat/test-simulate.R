@@ -107,3 +107,108 @@ test_that("nsim and root_age", {
   expect_error(sim_tree_shape(10, root_age = -1), "`root_age`")
   expect_error(assign_ages(rtopology_beta(5), c(1, 1, 1, -1)), "`g`")
 })
+
+test_that("rate = k^c gives the intervals of c", {
+  set.seed(10)
+  a <- intervals_lineage_rate(40, c = -0.7)
+  set.seed(10)
+  b <- intervals_lineage_rate(40, rate = function(k) k^-0.7)
+  expect_equal(a, b, tolerance = 1e-12)
+  set.seed(11)
+  t1 <- sim_tree_shape(40, beta = -1, c = 0.4)
+  set.seed(11)
+  t2 <- sim_tree_shape(40, beta = -1, rate = function(k) k^0.4)
+  expect_identical(t1$edge, t2$edge)
+  expect_equal(t1$edge.length, t2$edge.length, tolerance = 1e-12)
+})
+
+test_that("rate = NULL keeps the trees and only the shape of rate matters", {
+  set.seed(12)
+  a <- sim_tree_shape(30, -0.5, 0.2)
+  set.seed(12)
+  expect_identical(sim_tree_shape(30, -0.5, 0.2, rate = NULL), a)
+  logistic <- function(k) 1 - k / 35
+  set.seed(13)
+  g1 <- intervals_lineage_rate(30, rate = logistic)
+  set.seed(13)
+  g2 <- intervals_lineage_rate(30, rate = function(k) 50 * logistic(k))
+  expect_equal(g1, g2, tolerance = 1e-12)
+})
+
+test_that("rate works with nsim and root_age and gives valid trees", {
+  set.seed(14)
+  trees <- sim_tree_shape(25, nsim = 3, root_age = 10,
+                          rate = function(k) ifelse(k <= 10, 1, 0.1))
+  expect_s3_class(trees, "multiPhylo")
+  expect_true(ape::is.ultrametric(trees[[3]]))
+  expect_equal(max(ape::node.depth.edgelength(trees[[3]])), 10, tolerance = 1e-10)
+  expect_length(intervals_lineage_rate(2, rate = function(k) k), 1)
+})
+
+test_that("a logistic rate with K close to n gives negative gamma", {
+  set.seed(15)
+  gam <- replicate(100, ape::gammaStat(sim_tree_shape(50, rate = function(k) 1 - k / 55)))
+  expect_lt(mean(gam), 0)
+})
+
+test_that("invalid rate functions are rejected", {
+  expect_error(sim_tree_shape(10, c = -1, rate = function(k) k), "not both")
+  expect_error(intervals_lineage_rate(10, c = 1, rate = function(k) k), "not both")
+  expect_error(sim_tree_shape(10, rate = 2), "`rate`")
+  expect_error(sim_tree_shape(10, rate = function(k) 1), "`rate`")
+  expect_error(sim_tree_shape(10, rate = function(k) rep("a", length(k))), "`rate`")
+  expect_error(sim_tree_shape(10, rate = function(k) 1 - k / 10), "`rate`") # K <= n
+  expect_error(sim_tree_shape(10, rate = function(k) rep(NA_real_, length(k))), "`rate`")
+  expect_error(sim_tree_shape(10, rate = function(k) rep(Inf, length(k))), "`rate`")
+  expect_error(intervals_lineage_rate(10, rate = function(k) -k), "`rate`")
+})
+
+test_that("the parameters are stored in the trees", {
+  set.seed(16)
+  tr <- sim_tree_shape(20, beta = -1, c = -0.5, root_age = 5)
+  expect_equal(attr(tr, "params"),
+               c(beta = -1, c = -0.5, root_age = 5, sampling_fraction = 1))
+  expect_null(attr(tr, "rate"))
+  trees <- sim_tree_shape(20, c = 0.5, nsim = 2)
+  expect_s3_class(trees, "multiPhylo")
+  expect_equal(attr(trees, "params")[["c"]], 0.5)
+  f <- function(k) 1 / k
+  tr <- sim_tree_shape(20, rate = f)
+  expect_true(is.na(attr(tr, "params")[["c"]]))
+  expect_identical(attr(tr, "rate"), f)
+})
+
+test_that("extreme c gives a warning or a clear error", {
+  set.seed(17)
+  expect_warning(tr <- sim_tree_shape(100, c = -50), "length zero")
+  expect_true(any(tr$edge.length == 0))
+  expect_warning(sim_tree_shape(100, c = -50, nsim = 2), "2 of 2 trees")
+  expect_no_warning(sim_tree_shape(100, c = -1))
+  expect_error(sim_tree_shape(100, c = 400), "too extreme")
+  expect_error(sim_tree_shape(100, c = -400), "too extreme")
+  expect_error(intervals_lineage_rate(100, c = 400), "too extreme")
+})
+
+test_that("sampling_fraction keeps n tips of a larger tree", {
+  set.seed(18)
+  tr <- sim_tree_shape(30, beta = -1, c = -0.5, root_age = 7, sampling_fraction = 0.3)
+  expect_equal(ape::Ntip(tr), 30)
+  expect_true(ape::is.binary(tr))
+  expect_true(ape::is.ultrametric(tr))
+  expect_equal(max(ape::node.depth.edgelength(tr)), 7, tolerance = 1e-10)
+  expect_setequal(tr$tip.label, paste0("t", 1:30))
+  expect_equal(attr(tr, "params")[["sampling_fraction"]], 0.3)
+  expect_equal(ape::Ntip(sim_tree_shape(2, sampling_fraction = 0.1)), 2)
+  # the default draws the same trees, and sampling lowers gamma
+  set.seed(19)
+  a <- sim_tree_shape(30, -0.5, 0.2)
+  set.seed(19)
+  expect_equal(sim_tree_shape(30, -0.5, 0.2, sampling_fraction = 1), a)
+  gam <- replicate(100, ape::gammaStat(sim_tree_shape(50, sampling_fraction = 0.25)))
+  expect_lt(mean(gam), -0.5)
+  # a rate must hold for the complete tree
+  expect_error(sim_tree_shape(10, rate = function(k) 1 - k / 15, sampling_fraction = 0.5),
+               "`rate`")
+  expect_error(sim_tree_shape(10, sampling_fraction = 0), "`sampling_fraction`")
+  expect_error(sim_tree_shape(10, sampling_fraction = 1.5), "`sampling_fraction`")
+})

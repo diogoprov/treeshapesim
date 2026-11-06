@@ -4,12 +4,17 @@
 \alias{intervals_lineage_rate}
 \title{Internode intervals of a pure-birth process with lineage-dependent rates}
 \usage{
-intervals_lineage_rate(n, c = 0)
+intervals_lineage_rate(n, c = 0, rate = NULL)
 }
 \arguments{
 \item{n}{Number of tips, a single integer of at least 2.}
 
 \item{c}{Lineage dependence of the split rate, a single finite number.}
+
+\item{rate}{\code{NULL} (the default), to use \code{c}, or a vectorized function of the
+number of lineages k that returns the per-lineage split rate. It must
+return n - 1 positive, finite values for k = 2, ..., n, and cannot be
+combined with a \code{c} other than 0.}
 }
 \value{
 Intervals g_2, ..., g_n (length n - 1), scaled to sum 1.
@@ -20,11 +25,31 @@ Exp(k^(1 + c)). \code{c = 0} is Yule; \code{c < 0} slows diversification as line
 accumulate (gamma < 0); \code{c > 0} accelerates it (gamma > 0). The final
 interval (n lineages, up to the present) is drawn from the same law.
 }
+\details{
+Any other dependence on the number of lineages can be given with \code{rate}, a
+function of k that returns the per-lineage split rate; the interval with k
+lineages is then Exp(k * rate(k)), and \code{c} is the special case
+\code{rate = function(k) k^c}. Only the shape of \code{rate} matters: the intervals are
+rescaled, so multiplying it by a constant does not change the tree. As with
+\code{c}, the shape of \code{rate} describes the lineage-through-time curve and does
+not identify the mechanism behind it (Pannetier et al. 2021).
+\code{\link[=calibrate_shape]{calibrate_shape()}}, \code{\link[=shape_params]{shape_params()}} and \code{\link[=sim_tree_target]{sim_tree_target()}} work with \code{c}
+only; with \code{rate}, the calibration is left to the user.
+}
 \examples{
 set.seed(1)
 intervals_lineage_rate(10, c = -1)
+# logistic slowdown towards a carrying capacity K > n
+intervals_lineage_rate(10, rate = function(k) 1 - k / 12)
+# the rate drops once there are more than 5 lineages
+intervals_lineage_rate(10, rate = function(k) ifelse(k <= 5, 1, 0.1))
 }
 \references{
+Pannetier, T., Martinez, C., Bunnefeld, L., & Etienne, R. S.
+(2021). Branching patterns in phylogenies cannot distinguish
+diversity-dependent diversification from time-dependent diversification.
+\emph{Evolution}, 75, 25--38. \doi{10.1111/evo.14124}
+
 Pybus, O. G., & Harvey, P. H. (2000). Testing macro-evolutionary
 models using incomplete molecular phylogenies. \emph{Proceedings of the Royal
 Society B}, 267, 2267--2272. \doi{10.1098/rspb.2000.1278}

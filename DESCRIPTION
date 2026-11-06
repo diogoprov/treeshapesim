@@ -1,7 +1,7 @@
 Package: treeshapesim
 Title: Simulate Trees with Separately Controlled Imbalance and Branching
     Times
-Version: 0.2.1
+Version: 0.2.1.9000
 Authors@R: 
     person("Diogo B.", "Provete", , "dbprovete@gmail.com", role = c("aut", "cre"))
 Description: Simulates rooted, binary, ultrametric trees in which
@@ -13,7 +13,7 @@ Description: Simulates rooted, binary, ultrametric trees in which
     Colless index only on the topology, beta mainly controls imbalance and
     c mainly controls gamma.
 License: MIT + file LICENSE
-URL: https://diogoprov.github.io/treeshapesim/,
+URL: https://provetelab.org/treeshapesim/,
     https://github.com/diogoprov/treeshapesim
 BugReports: https://github.com/diogoprov/treeshapesim/issues
 Imports:

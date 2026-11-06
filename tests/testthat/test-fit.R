@@ -85,3 +85,33 @@ test_that("small trees, bounds and rounded branch lengths", {
   expect_error(fit_shape(tr), "ultrametric")
   expect_s3_class(fit_shape(tr, tol = 1e-3), "shape_fit")
 })
+
+test_that("sampling_fraction corrects c for incomplete sampling", {
+  set.seed(36)
+  tr <- sim_tree_shape(150, beta = -1, c = 0, sampling_fraction = 0.4)
+  plain <- fit_shape(tr)
+  f <- fit_shape(tr, sampling_fraction = 0.4, correction_reps = 20)
+  expect_equal(f$c_uncorrected, plain$c)
+  expect_equal(f$beta, plain$beta)
+  expect_gt(f$c, plain$c)
+  expect_lt(abs(f$c), abs(plain$c))
+  expect_true(is.na(f$r))
+  expect_named(f$correction, c("c", "uncorrected"))
+  expect_false(is.unsorted(f$correction$uncorrected))
+  expect_output(print(f), "sampling fraction of 0.4")
+  # sampling_fraction = 1 changes nothing and draws no random numbers
+  expect_null(plain$correction)
+  expect_null(plain$sampling_fraction)
+  expect_false(is.na(plain$r))
+})
+
+test_that("the bootstrap uses the correction for sampling", {
+  set.seed(37)
+  tr <- sim_tree_shape(60, c = -0.5, sampling_fraction = 0.5)
+  f <- fit_shape(tr, boot = 10, sampling_fraction = 0.5, correction_reps = 10)
+  expect_equal(dim(f$boot), c(10L, 2L))
+  expect_true(all(is.finite(f$ci)))
+  expect_error(fit_shape(tr, sampling_fraction = 0), "`sampling_fraction`")
+  expect_error(fit_shape(tr, sampling_fraction = 0.5, correction_reps = 0),
+               "`correction_reps`")
+})
