@@ -94,23 +94,32 @@ extinction changes the communities. The article
 [Tree shape and extinction in metacommunity simulations with comdynamite](https://provetelab.org/treeshapesim/articles/comdynamite.html)
 works through a factorial design.
 
-## How treeshapesim differs from TreeSim and apTreeshape
+## How treeshapesim differs from TreeSim, TreeSimGM and apTreeshape
 
-| | treeshapesim | TreeSim | apTreeshape |
-|---|---|---|---|
-| Purpose | Trees whose imbalance and distribution of branching times vary independently, for simulation studies on tree shape | Trees from birth–death processes | Analysis and simulation of tree topologies |
-| Topology | Aldous' beta-splitting model, with `beta` as a continuous parameter | Not a parameter: it follows from the birth–death process | Yule, PDA, Aldous' branching, biased and user-defined split models (`rtreeshape()`); beta-splitting with a clade age–richness index (`simulate_tree()`, `simulate_yule()`) |
-| Branching times | Pure birth with per-lineage rate k^c or any function of k (`rate`), drawn independently of the topology, so gamma can be negative, near zero or positive | Birth–death with constant rates, rate shifts, mass extinctions or density-dependent speciation, conditioned on the number of tips and/or the age | None (`rtreeshape()`), ranks 1 to n − 1 (`simulate_tree()`) or a constant-rate birth–death process (`simulate_yule()`) |
-| Separate control of imbalance and branching times | Yes: the realized gamma depends only on `c` and the realized Colless index only on `beta` | No: imbalance is not set | Imbalance is set by `beta`; branching times have no shape parameter of their own |
-| Target values of gamma and Colless | Yes: calibration, rejection to a tolerance and grids of shapes (`sim_tree_target()`, `shape_grid()`) | No | No |
-| Extinction, serial sampling, gene trees | No (pure birth), but random incomplete sampling of tips (`sampling_fraction`) and one extinction event at the tips, random or not (`prune_tips()`) | Yes | Extinction in the ranked-tree models |
-| Estimation and tests of tree shape | No | No | Yes (e.g. `maxlik.betasplit()`, `aldous.test()`) |
+| | treeshapesim | TreeSim | TreeSimGM | apTreeshape |
+|---|---|---|---|---|
+| Purpose | Trees whose imbalance and distribution of branching times vary independently, for simulation studies on tree shape | Trees from birth–death processes | Trees from a general Bellman–Harris model of speciation and extinction, with lineage-specific shifts | Analysis and simulation of tree topologies |
+| Topology | Aldous' beta-splitting model, with `beta` as a continuous parameter | Not a parameter: it follows from the birth–death process | Not a parameter: it follows from the waiting times, the speciation mode (symmetric or asymmetric) and the shifts | Yule, PDA, Aldous' branching, biased and user-defined split models (`rtreeshape()`); beta-splitting with a clade age–richness index (`simulate_tree()`, `simulate_yule()`) |
+| Branching times | Pure birth with per-lineage rate k^c or any function of k (`rate`), drawn independently of the topology, so gamma can be negative, near zero or positive | Birth–death with constant rates, rate shifts, mass extinctions or density-dependent speciation, conditioned on the number of tips and/or the age | Any distribution of the waiting times to speciation and to extinction (for instance, age-dependent), rescaled in lineages with shifts; conditioned on the number of tips (`sim.taxa()`, optionally with GSA) or the age (`sim.age()`) | None (`rtreeshape()`), ranks 1 to n − 1 (`simulate_tree()`) or a constant-rate birth–death process (`simulate_yule()`) |
+| Separate control of imbalance and branching times | Yes: the realized gamma depends only on `c` and the realized Colless index only on `beta` | No: imbalance is not set | No: one process produces both | Imbalance is set by `beta`; branching times have no shape parameter of their own |
+| Target values of gamma and Colless | Yes: calibration, rejection to a tolerance and grids of shapes (`sim_tree_target()`, `shape_grid()`) | No | No | No |
+| Extinction, serial sampling, gene trees | No (pure birth), but random incomplete sampling of tips (`sampling_fraction`) and one extinction event at the tips, random or not (`prune_tips()`) | Yes | Extinction, with or without the extinct lineages (`complete`), and incomplete sampling, at random or in proportion to pendant branch lengths; no serial sampling or gene trees | Extinction in the ranked-tree models |
+| Estimation and tests of tree shape | Estimation of `beta` and `c` from an empirical tree, with a parametric bootstrap (`fit_shape()`); no tests | No | No | Yes (e.g. `maxlik.betasplit()`, `aldous.test()`) |
 
-Use TreeSim for trees from specific birth–death models and apTreeshape to model,
-estimate or test topological imbalance. Use treeshapesim when the imbalance and
-the distribution of branching times have to be varied as separate factors. The
-comparison is based on the documentation of TreeSim 2.4 and apTreeshape 1.5-0.1;
+Use TreeSim for trees from specific birth–death models, TreeSimGM for models
+with other waiting-time distributions or with speciation and extinction rates
+that shift between lineages (Hagen & Stadler 2018), and apTreeshape to model,
+estimate or test topological imbalance. In TreeSim and TreeSimGM the shape of the
+tree is an outcome of the diversification model, so imbalance and branching times
+change together. Use treeshapesim when the imbalance and the distribution of
+branching times have to be varied as separate factors. The comparison is based on
+the documentation of TreeSim 2.4, TreeSimGM 2.5 and apTreeshape 1.5-0.1;
 apTreeshape was archived on CRAN in 2023 and is available from the CRAN archive.
+
+Hagen, O., & Stadler, T. (2018). TreeSimGM: Simulating phylogenetic trees under
+general Bellman–Harris models with lineage-specific shifts of speciation and
+extinction in R. *Methods in Ecology and Evolution*, 9, 754–760.
+https://doi.org/10.1111/2041-210X.12917
 
 ## Citation
 

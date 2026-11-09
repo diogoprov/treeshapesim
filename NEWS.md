@@ -8,6 +8,7 @@
 - `prune_tips()` applies one extinction event to a tree: tips are lost at random, in clusters on the tree (a latent liability with Pagel's lambda, `signal`) or according to a trait (`risk`). The tip labels are kept, so that traits stay aligned with the remaining species.
 - A new article shows trees from treeshapesim, with non-random extinction, as regional pools in comdynamite.
 - Test coverage on Codecov.
+- The README compares treeshapesim with TreeSimGM too, and lists `fit_shape()` as estimation of tree shape.
 - The README explains the use of trees from treeshapesim as regional pools in comdynamite.
 
 # treeshapesim 0.2.1
