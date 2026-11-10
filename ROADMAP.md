@@ -64,9 +64,9 @@ Atualizado em 2026-11-05, depois dos itens 8, 9, 10, 12 e 17, da correção de `
   deve ser estendido, porque a poda quebra a independência em que a rejeição
   separada se apoia (o γ passa a depender um pouco da topologia).
 
-- **Manter a tabela comparativa do README** atualizada quando TreeSim ou
-  apTreeshape mudarem (hoje cita TreeSim 2.4 e apTreeshape 1.5-0.1, este
-  arquivado no CRAN em 2023).
+- **Manter a tabela comparativa do README** atualizada quando TreeSim, TreeSimGM
+  ou apTreeshape mudarem (hoje cita TreeSim 2.4, TreeSimGM 2.5 e apTreeshape
+  1.5-0.1, este arquivado no CRAN em 2023).
 - **16. CRAN.** Faz mais sentido depois do aceite do artigo; exige
   `cran-comments.md`, as referências no campo Description no formato
   `<doi:...>` e checks no win-builder e no R-hub.
