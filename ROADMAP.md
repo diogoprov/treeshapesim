@@ -73,9 +73,9 @@ correção de `c` para amostragem incompleta e de
   rejeição separada se apoia (o γ passa a depender um pouco da
   topologia).
 
-- **Manter a tabela comparativa do README** atualizada quando TreeSim ou
-  apTreeshape mudarem (hoje cita TreeSim 2.4 e apTreeshape 1.5-0.1, este
-  arquivado no CRAN em 2023).
+- **Manter a tabela comparativa do README** atualizada quando TreeSim,
+  TreeSimGM ou apTreeshape mudarem (hoje cita TreeSim 2.4, TreeSimGM 2.5
+  e apTreeshape 1.5-0.1, este arquivado no CRAN em 2023).
 
 - **16. CRAN.** Faz mais sentido depois do aceite do artigo; exige
   `cran-comments.md`, as referências no campo Description no formato

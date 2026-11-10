@@ -4,7 +4,7 @@ pkgdown_sha: ~
 articles:
   articles/comdynamite: comdynamite.html
   treeshapesim: treeshapesim.html
-last_built: 2026-11-06T05:02Z
+last_built: 2026-11-10T01:34Z
 urls:
   reference: https://provetelab.org/treeshapesim/reference
   article: https://provetelab.org/treeshapesim/articles

@@ -41,6 +41,9 @@
 - A new article shows trees from treeshapesim, with non-random
   extinction, as regional pools in comdynamite.
 - Test coverage on Codecov.
+- The README compares treeshapesim with TreeSimGM too, and lists
+  [`fit_shape()`](https://provetelab.org/treeshapesim/reference/fit_shape.md)
+  as estimation of tree shape.
 - The README explains the use of trees from treeshapesim as regional
   pools in comdynamite.
 
