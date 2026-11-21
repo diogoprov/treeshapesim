@@ -50,7 +50,7 @@ sim_tree_target(
 
 - nsim:
 
-  Number of trees.
+  Number of trees, a single positive integer.
 
 - tol:
 
@@ -72,11 +72,12 @@ sim_tree_target(
 
 - max_tries:
 
-  Maximum number of topologies, and of interval sets, drawn.
+  Maximum number of topologies, and of interval sets, drawn, a single
+  positive integer.
 
 - root_age:
 
-  Age of the root.
+  Age of the root, a single positive number.
 
 ## Value
 

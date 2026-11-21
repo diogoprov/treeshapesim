@@ -50,7 +50,7 @@ dependence is what
 can vary directly, and comdynamite adds the next question, which is what
 the losses do to communities.
 
-[`prune_tips()`](https://provetelab.org/treeshapesim/reference/prune_tips.md)
+[`extinct_tips()`](https://provetelab.org/treeshapesim/reference/extinct_tips.md)
 applies a single round of extinction to a complete tree, as in Nee and
 May (1997), but the losses need not be random. It removes a fixed
 fraction of the tips, so that scenarios can be compared at the same
@@ -63,9 +63,9 @@ tree <- sim_tree_shape(60, beta = -1.5)
 traits <- species_traits(tree, lambda = 1)
 risk <- setNames(exp(3 * as.numeric(scale(traits$optimum))), rownames(traits))
 
-random <- prune_tips(tree, 0.4, signal = 0)     # the control
-clustered <- prune_tips(tree, 0.4, signal = 1)  # close relatives lost together
-linked <- prune_tips(tree, 0.4, risk = risk)    # species with high optima at risk
+random <- extinct_tips(tree, 0.4, signal = 0)     # the control
+clustered <- extinct_tips(tree, 0.4, signal = 1)  # close relatives lost together
+linked <- extinct_tips(tree, 0.4, risk = risk)    # species with high optima at risk
 head(attr(linked, "lost"))
 #> [1] "t54" "t1"  "t59" "t58" "t10" "t12"
 ```
@@ -107,9 +107,9 @@ one_run <- function(beta, scenario, n = 60, fraction = 0.4) {
   risk <- setNames(exp(3 * as.numeric(scale(traits$optimum))), rownames(traits))
   pool <- switch(scenario,
     none      = tree,
-    random    = prune_tips(tree, fraction, signal = 0),
-    clustered = prune_tips(tree, fraction, signal = 1),
-    linked    = prune_tips(tree, fraction, risk = risk))
+    random    = extinct_tips(tree, fraction, signal = 0),
+    clustered = extinct_tips(tree, fraction, signal = 1),
+    linked    = extinct_tips(tree, fraction, risk = risk))
   landscape <- landscape_implicit(20)
   sim <- simulate_metacommunity(landscape, traits[pool$tip.label, ],
                                 competition_matrix(pool, type = "phylo"),

@@ -77,20 +77,23 @@ tips.</p></dd>
 
 
 <dt id="arg-boot">boot<a class="anchor" aria-label="anchor" href="#arg-boot"></a></dt>
-<dd><p>Number of parametric bootstrap replicates (0 for none).</p></dd>
+<dd><p>Number of parametric bootstrap replicates, a single
+non-negative integer (0, the default, for none).</p></dd>
 
 
 <dt id="arg-level">level<a class="anchor" aria-label="anchor" href="#arg-level"></a></dt>
-<dd><p>Coverage of the bootstrap percentile intervals.</p></dd>
+<dd><p>Coverage of the bootstrap percentile intervals, a single number
+between 0 and 1.</p></dd>
 
 
 <dt id="arg-beta-range-c-range">beta_range, c_range<a class="anchor" aria-label="anchor" href="#arg-beta-range-c-range"></a></dt>
 <dd><p>Search intervals for <code>beta</code> (lower bound above -2)
-and <code>c</code>.</p></dd>
+and <code>c</code>: numeric vectors of two increasing finite values.</p></dd>
 
 
 <dt id="arg-tol">tol<a class="anchor" aria-label="anchor" href="#arg-tol"></a></dt>
-<dd><p>Tolerance of the ultrametricity check, as in
+<dd><p>Tolerance of the ultrametricity check, a single non-negative
+number, as in
 <code><a href="https://rdrr.io/pkg/ape/man/is.ultrametric.html" class="external-link">ape::is.ultrametric()</a></code> (scaled range of root-to-tip distances). Trees with
 rounded branch lengths may need a larger value, or can be made ultrametric
 first (for instance with <code><a href="https://rdrr.io/pkg/phytools/man/force.ultrametric.html" class="external-link">phytools::force.ultrametric()</a></code>).</p></dd>
@@ -104,7 +107,7 @@ corrected for incomplete sampling (see Details).</p></dd>
 
 <dt id="arg-correction-reps">correction_reps<a class="anchor" aria-label="anchor" href="#arg-correction-reps"></a></dt>
 <dd><p>Number of trees at each value of the grid used in the
-correction for incomplete sampling.</p></dd>
+correction for incomplete sampling, a single positive integer.</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -115,7 +118,9 @@ tree), <code>loglik_beta</code> (log-likelihood of <code>beta</code> up to an ad
 so not comparable with other software), <code>loglik_c</code> (profile log-likelihood
 of <code>c</code>, equal to the log-likelihood of laser's DDX model at its maximum),
 <code>beta_at_bound</code> and <code>c_at_bound</code> (estimate at a bound of the search
-interval), <code>beta_range</code>, <code>c_range</code>, <code>shape</code> (output of <code><a href="tree_shape.html">tree_shape()</a></code>) and,
+interval), <code>beta_range</code>, <code>c_range</code>, <code>shape</code> (output of <code><a href="tree_shape.html">tree_shape()</a></code>),
+<code>optimizer</code> (list with the <code>algorithm</code>, its <code>tol</code> and the number of
+<code>evaluations</code> of each log-likelihood) and,
 with <code>boot &gt; 0</code>, <code>boot</code> (data frame of bootstrap estimates) and <code>ci</code>
 (matrix of percentile intervals). With <code>sampling_fraction</code> below 1, <code>c</code> is
 the corrected estimate, <code>r</code> is <code>NA</code>, <code>loglik_c</code> refers to the uncorrected
@@ -167,6 +172,14 @@ estimators, and, for <code>c</code>, a small additional bias because
 <code><a href="intervals_lineage_rate.html">intervals_lineage_rate()</a></code> draws the last interval from the same law,
 whereas the likelihood treats it as censored. Percentile intervals need a
 few hundred replicates.</p>
+<p><strong>Optimization.</strong> Each parameter is estimated separately with
+<code><a href="https://rdrr.io/r/stats/optimize.html" class="external-link">stats::optimize()</a></code>, a golden-section search with successive parabolic
+interpolation over the bounded interval <code>beta_range</code> or <code>c_range</code>, with a
+tolerance of <code>1e-6</code> on the parameter. The search needs no starting value
+and assumes a single maximum within the interval; an estimate at a bound is
+flagged (<code>beta_at_bound</code>, <code>c_at_bound</code>). The name of the algorithm, the
+tolerance and the number of evaluations of each log-likelihood are returned
+in <code>optimizer</code>.</p>
     </div>
     <div class="section level2">
     <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a></h2>

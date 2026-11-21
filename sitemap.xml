@@ -1,5 +1,7 @@
 <urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
 <url><loc>https://provetelab.org/treeshapesim/404.html</loc></url>
+<url><loc>https://provetelab.org/treeshapesim/CODE_OF_CONDUCT.html</loc></url>
+<url><loc>https://provetelab.org/treeshapesim/CONTRIBUTING.html</loc></url>
 <url><loc>https://provetelab.org/treeshapesim/LICENSE-text.html</loc></url>
 <url><loc>https://provetelab.org/treeshapesim/LICENSE.html</loc></url>
 <url><loc>https://provetelab.org/treeshapesim/ROADMAP.html</loc></url>
@@ -11,10 +13,10 @@
 <url><loc>https://provetelab.org/treeshapesim/news/index.html</loc></url>
 <url><loc>https://provetelab.org/treeshapesim/reference/assign_ages.html</loc></url>
 <url><loc>https://provetelab.org/treeshapesim/reference/calibrate_shape.html</loc></url>
+<url><loc>https://provetelab.org/treeshapesim/reference/extinct_tips.html</loc></url>
 <url><loc>https://provetelab.org/treeshapesim/reference/fit_shape.html</loc></url>
 <url><loc>https://provetelab.org/treeshapesim/reference/index.html</loc></url>
 <url><loc>https://provetelab.org/treeshapesim/reference/intervals_lineage_rate.html</loc></url>
-<url><loc>https://provetelab.org/treeshapesim/reference/prune_tips.html</loc></url>
 <url><loc>https://provetelab.org/treeshapesim/reference/rtopology_beta.html</loc></url>
 <url><loc>https://provetelab.org/treeshapesim/reference/shape_grid.html</loc></url>
 <url><loc>https://provetelab.org/treeshapesim/reference/shape_params.html</loc></url>

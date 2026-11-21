@@ -46,7 +46,8 @@ calibrate_shape(
 
 - reps:
 
-  Number of topologies or interval sets per value.
+  Number of topologies or interval sets per value, a single positive
+  integer.
 
 ## Value
 

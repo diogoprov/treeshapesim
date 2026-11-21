@@ -93,7 +93,7 @@ gives `beta` and `c` for each combination of gamma and Colless, and
 [`sim_tree_target()`](https://provetelab.org/treeshapesim/reference/sim_tree_target.md)
 draws the pools of each cell.
 
-[`prune_tips()`](https://provetelab.org/treeshapesim/reference/prune_tips.md)
+[`extinct_tips()`](https://provetelab.org/treeshapesim/reference/extinct_tips.md)
 removes a fraction of the pool before the simulation, at random, in
 clusters on the tree or according to a trait, to ask how the pattern of
 extinction changes the communities. The article [Tree shape and
@@ -110,7 +110,7 @@ works through a factorial design.
 | Branching times | Pure birth with per-lineage rate k^c or any function of k (`rate`), drawn independently of the topology, so gamma can be negative, near zero or positive | Birth–death with constant rates, rate shifts, mass extinctions or density-dependent speciation, conditioned on the number of tips and/or the age | Any distribution of the waiting times to speciation and to extinction (for instance, age-dependent), rescaled in lineages with shifts; conditioned on the number of tips (`sim.taxa()`, optionally with GSA) or the age (`sim.age()`) | None (`rtreeshape()`), ranks 1 to n − 1 (`simulate_tree()`) or a constant-rate birth–death process (`simulate_yule()`) |
 | Separate control of imbalance and branching times | Yes: the realized gamma depends only on `c` and the realized Colless index only on `beta` | No: imbalance is not set | No: one process produces both | Imbalance is set by `beta`; branching times have no shape parameter of their own |
 | Target values of gamma and Colless | Yes: calibration, rejection to a tolerance and grids of shapes ([`sim_tree_target()`](https://provetelab.org/treeshapesim/reference/sim_tree_target.md), [`shape_grid()`](https://provetelab.org/treeshapesim/reference/shape_grid.md)) | No | No | No |
-| Extinction, serial sampling, gene trees | No (pure birth), but random incomplete sampling of tips (`sampling_fraction`) and one extinction event at the tips, random or not ([`prune_tips()`](https://provetelab.org/treeshapesim/reference/prune_tips.md)) | Yes | Extinction, with or without the extinct lineages (`complete`), and incomplete sampling, at random or in proportion to pendant branch lengths; no serial sampling or gene trees | Extinction in the ranked-tree models |
+| Extinction, serial sampling, gene trees | No (pure birth), but random incomplete sampling of tips (`sampling_fraction`) and one extinction event at the tips, random or not ([`extinct_tips()`](https://provetelab.org/treeshapesim/reference/extinct_tips.md)) | Yes | Extinction, with or without the extinct lineages (`complete`), and incomplete sampling, at random or in proportion to pendant branch lengths; no serial sampling or gene trees | Extinction in the ranked-tree models |
 | Estimation and tests of tree shape | Estimation of `beta` and `c` from an empirical tree, with a parametric bootstrap ([`fit_shape()`](https://provetelab.org/treeshapesim/reference/fit_shape.md)); no tests | No | No | Yes (e.g. `maxlik.betasplit()`, `aldous.test()`) |
 
 Use TreeSim for trees from specific birth–death models, TreeSimGM for
@@ -129,6 +129,37 @@ Hagen, O., & Stadler, T. (2018). TreeSimGM: Simulating phylogenetic
 trees under general Bellman–Harris models with lineage-specific shifts
 of speciation and extinction in R. *Methods in Ecology and Evolution*,
 9, 754–760. <https://doi.org/10.1111/2041-210X.12917>
+
+## Development status
+
+treeshapesim is in active development, and its interface is experimental
+(version 0.x): function names and arguments may still change, and every
+change is listed in [NEWS](https://provetelab.org/treeshapesim/NEWS.md).
+The core simulators
+([`sim_tree_shape()`](https://provetelab.org/treeshapesim/reference/sim_tree_shape.md),
+[`rtopology_beta()`](https://provetelab.org/treeshapesim/reference/rtopology_beta.md),
+[`intervals_lineage_rate()`](https://provetelab.org/treeshapesim/reference/intervals_lineage_rate.md),
+[`assign_ages()`](https://provetelab.org/treeshapesim/reference/assign_ages.md))
+are expected to be stable. Planned work is in
+[ROADMAP.md](https://provetelab.org/treeshapesim/ROADMAP.md).
+
+The package follows the [rOpenSci packaging
+guide](https://devguide.ropensci.org) and the general and
+probability-distribution [statistical software
+standards](https://stats-devguide.ropensci.org); compliance with each
+standard is documented with [srr](https://docs.ropensci.org/srr/) tags
+in the code (`srr::srr_report()`).
+
+## Contributing
+
+Bug reports and suggestions are welcome in the [issue
+tracker](https://github.com/diogoprov/treeshapesim/issues); see the
+[contributing
+guide](https://provetelab.org/treeshapesim/CONTRIBUTING.md) for how to
+propose changes and run the extended tests. Please note that this
+package is released with a [Contributor Code of
+Conduct](https://provetelab.org/treeshapesim/CODE_OF_CONDUCT.md). By
+contributing to this project, you agree to abide by its terms.
 
 ## Citation
 
@@ -166,7 +197,7 @@ times.
 
 Remove tips at random, in clusters on the tree or according to a trait.
 
-- [`prune_tips()`](https://provetelab.org/treeshapesim/reference/prune_tips.md)
+- [`extinct_tips()`](https://provetelab.org/treeshapesim/reference/extinct_tips.md)
   : Remove tips by non-random extinction
 
 ## Target shapes and grids

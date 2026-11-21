@@ -44,11 +44,11 @@ sim_tree_shape(
 
 - nsim:
 
-  Number of trees.
+  Number of trees, a single positive integer.
 
 - root_age:
 
-  Age of the root (positive).
+  Age of the root, a single positive number.
 
 - rate:
 

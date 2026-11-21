@@ -31,19 +31,23 @@ fit_shape(
 
 - boot:
 
-  Number of parametric bootstrap replicates (0 for none).
+  Number of parametric bootstrap replicates, a single non-negative
+  integer (0, the default, for none).
 
 - level:
 
-  Coverage of the bootstrap percentile intervals.
+  Coverage of the bootstrap percentile intervals, a single number
+  between 0 and 1.
 
 - beta_range, c_range:
 
-  Search intervals for `beta` (lower bound above -2) and `c`.
+  Search intervals for `beta` (lower bound above -2) and `c`: numeric
+  vectors of two increasing finite values.
 
 - tol:
 
-  Tolerance of the ultrametricity check, as in
+  Tolerance of the ultrametricity check, a single non-negative number,
+  as in
   [`ape::is.ultrametric()`](https://rdrr.io/pkg/ape/man/is.ultrametric.html)
   (scaled range of root-to-tip distances). Trees with rounded branch
   lengths may need a larger value, or can be made ultrametric first (for
@@ -59,7 +63,7 @@ fit_shape(
 - correction_reps:
 
   Number of trees at each value of the grid used in the correction for
-  incomplete sampling.
+  incomplete sampling, a single positive integer.
 
 ## Value
 
@@ -70,12 +74,14 @@ constant, so not comparable with other software), `loglik_c` (profile
 log-likelihood of `c`, equal to the log-likelihood of laser's DDX model
 at its maximum), `beta_at_bound` and `c_at_bound` (estimate at a bound
 of the search interval), `beta_range`, `c_range`, `shape` (output of
-[`tree_shape()`](https://provetelab.org/treeshapesim/reference/tree_shape.md))
-and, with `boot > 0`, `boot` (data frame of bootstrap estimates) and
-`ci` (matrix of percentile intervals). With `sampling_fraction` below 1,
-`c` is the corrected estimate, `r` is `NA`, `loglik_c` refers to the
-uncorrected estimate, and the list also holds `c_uncorrected`,
-`sampling_fraction` and `correction` (data frame with the curve).
+[`tree_shape()`](https://provetelab.org/treeshapesim/reference/tree_shape.md)),
+`optimizer` (list with the `algorithm`, its `tol` and the number of
+`evaluations` of each log-likelihood) and, with `boot > 0`, `boot` (data
+frame of bootstrap estimates) and `ci` (matrix of percentile intervals).
+With `sampling_fraction` below 1, `c` is the corrected estimate, `r` is
+`NA`, `loglik_c` refers to the uncorrected estimate, and the list also
+holds `c_uncorrected`, `sampling_fraction` and `correction` (data frame
+with the curve).
 
 ## Details
 
@@ -132,6 +138,16 @@ bias of the estimators, and, for `c`, a small additional bias because
 [`intervals_lineage_rate()`](https://provetelab.org/treeshapesim/reference/intervals_lineage_rate.md)
 draws the last interval from the same law, whereas the likelihood treats
 it as censored. Percentile intervals need a few hundred replicates.
+
+**Optimization.** Each parameter is estimated separately with
+[`stats::optimize()`](https://rdrr.io/r/stats/optimize.html), a
+golden-section search with successive parabolic interpolation over the
+bounded interval `beta_range` or `c_range`, with a tolerance of `1e-6`
+on the parameter. The search needs no starting value and assumes a
+single maximum within the interval; an estimate at a bound is flagged
+(`beta_at_bound`, `c_at_bound`). The name of the algorithm, the
+tolerance and the number of evaluations of each log-likelihood are
+returned in `optimizer`.
 
 ## References
 

@@ -38,7 +38,7 @@
 
 <div id="treeshapesim-estado-e-próximos-passos" class="section level1">
 
-<p>Atualizado em 2026-11-05, depois dos itens 8, 9, 10, 12 e 17, da correção de <code>c</code> para amostragem incompleta e de <code><a href="reference/prune_tips.html">prune_tips()</a></code>. Última versão publicada: 0.2.1; versão de desenvolvimento 0.2.1.9000.</p>
+<p>Atualizado em 2026-11-05, depois dos itens 8, 9, 10, 12 e 17, da correção de <code>c</code> para amostragem incompleta e de <code>prune_tips()</code>. Última versão publicada: 0.2.1; versão de desenvolvimento 0.2.1.9000.</p>
 <div class="section level2">
 <h2 id="feito">Feito<a class="anchor" aria-label="anchor" href="#feito"></a></h2>
 <table class="table"><colgroup><col width="33%"><col width="33%"><col width="33%"></colgroup><thead><tr><th>Item</th>
@@ -138,7 +138,11 @@
 <td><code>packages.json</code></td>
 </tr><tr><td>Extinção não aleatória</td>
 <td>
-<code><a href="reference/prune_tips.html">prune_tips()</a></code>: um evento de extinção na árvore, aleatório, agrupado na filogenia (<code>signal</code>) ou ligado a atributos (<code>risk</code>); artigo do site com o comdynamite (<code>vignettes/articles/comdynamite.Rmd</code>), fora do <code>R CMD check</code> para não criar dependência circular</td>
+<code><a href="reference/extinct_tips.html">extinct_tips()</a></code> (antes <code>prune_tips()</code>, renomeada pelo conflito de nome com o treesliceR): um evento de extinção na árvore, aleatório, agrupado na filogenia (<code>signal</code>) ou ligado a atributos (<code>risk</code>); artigo do site com o comdynamite (<code>vignettes/articles/comdynamite.Rmd</code>), fora do <code>R CMD check</code> para não criar dependência circular</td>
+<td>versão de desenvolvimento</td>
+</tr><tr><td>Padrões da rOpenSci</td>
+<td>dev guide: CONTRIBUTING, Code of Conduct, ORCID, badges de status e lifecycle, codemeta.json; statistical software (geral + Probability Distributions) documentados com <code>srr</code> (74 cumpridos, 27 N/A), testes de correção, recuperação, ruído e casos-limite, testes estendidos com <code>TREESHAPESIM_EXTENDED_TESTS</code>; <code><a href="reference/fit_shape.html">fit_shape()</a></code> devolve <code>optimizer</code>
+</td>
 <td>versão de desenvolvimento</td>
 </tr><tr><td>14. Documentação precisa</td>
 <td>a independência de γ e Colless em relação a <code>c</code> e β agora é descrita como exata (para um dado n)</td>
@@ -148,7 +152,9 @@
 <h2 id="a-fazer">A fazer<a class="anchor" aria-label="anchor" href="#a-fazer"></a></h2>
 <div class="section level3">
 <h3 id="alta-prioridade">Alta prioridade<a class="anchor" aria-label="anchor" href="#alta-prioridade"></a></h3>
-</div>
+<ul><li>
+<strong>Pendências do goodpractice.</strong> Complexidade ciclomática ainda acima de 15 em algumas funções (as checagens de argumentos contam como ramos) e linhas longas em <code>data-raw/</code>, que fica fora do pacote. Não bloqueiam, mas o revisor vai ver.</li>
+</ul></div>
 <div class="section level3">
 <h3 id="média-prioridade">Média prioridade<a class="anchor" aria-label="anchor" href="#m%C3%A9dia-prioridade"></a></h3>
 <ul><li>
@@ -277,7 +283,7 @@
 </ul></div>
 <div class="section level2">
 <h2 id="escopo-extinção">Escopo: extinção<a class="anchor" aria-label="anchor" href="#escopo-extin%C3%A7%C3%A3o"></a></h2>
-<p>Simular nascimento e morte com linhagens extintas sai do escopo, porque é o terreno do TreeSim, e o comdynamite não usaria as linhagens extintas. Extinção diferente entre linhagens ao longo da história do clado (BiSSE, QuaSSE) também fica de fora, porque gera topologia e tempos juntos e perde a separação que é a proposta do pacote. O que cabe é o evento sobre a árvore pronta, em <code><a href="reference/prune_tips.html">prune_tips()</a></code>.</p>
+<p>Simular nascimento e morte com linhagens extintas sai do escopo, porque é o terreno do TreeSim, e o comdynamite não usaria as linhagens extintas. Extinção diferente entre linhagens ao longo da história do clado (BiSSE, QuaSSE) também fica de fora, porque gera topologia e tempos juntos e perde a separação que é a proposta do pacote. O que cabe é o evento sobre a árvore pronta, em <code><a href="reference/extinct_tips.html">extinct_tips()</a></code>.</p>
 </div>
 <div class="section level2">
 <h2 id="ligação-com-o-artigo">Ligação com o artigo<a class="anchor" aria-label="anchor" href="#liga%C3%A7%C3%A3o-com-o-artigo"></a></h2>

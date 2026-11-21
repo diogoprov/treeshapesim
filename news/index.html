@@ -49,8 +49,13 @@
 <li>
 <code><a href="../reference/fit_shape.html">fit_shape()</a></code> gains <code>sampling_fraction</code> and <code>correction_reps</code>: with incomplete sampling, <code>c</code> is corrected by simulation, and the bootstrap uses the same correction. In a validation with 100 tips, the bias fell from -0.08 to -0.78 to within 0.03 for sampling fractions of 0.75 to 0.25 (<code>data-raw/validate_sampling.R</code>).</li>
 <li>
-<code><a href="../reference/prune_tips.html">prune_tips()</a></code> applies one extinction event to a tree: tips are lost at random, in clusters on the tree (a latent liability with Pagel’s lambda, <code>signal</code>) or according to a trait (<code>risk</code>). The tip labels are kept, so that traits stay aligned with the remaining species.</li>
+<code><a href="../reference/extinct_tips.html">extinct_tips()</a></code> applies one extinction event to a tree: tips are lost at random, in clusters on the tree (a latent liability with Pagel’s lambda, <code>signal</code>) or according to a trait (<code>risk</code>). The tip labels are kept, so that traits stay aligned with the remaining species. It was first added as <code>prune_tips()</code> and renamed before release, because treesliceR exports a function with that name.</li>
 <li>A new article shows trees from treeshapesim, with non-random extinction, as regional pools in comdynamite.</li>
+<li>The package follows the rOpenSci packaging guide and the general and probability-distribution statistical software standards, documented with srr tags (<code>srr::srr_report()</code>): a contributing guide, a Code of Conduct, a codemeta.json file, ORCID, status and lifecycle badges, and a package help page with definitions of terms, the novelty of the algorithms and a life cycle statement.</li>
+<li>
+<code><a href="../reference/fit_shape.html">fit_shape()</a></code> returns <code>optimizer</code>, with the name of the algorithm, its tolerance and the number of evaluations of each log-likelihood.</li>
+<li>Branch lengths that are missing, infinite or negative are now an error in <code><a href="../reference/fit_shape.html">fit_shape()</a></code> and <code><a href="../reference/extinct_tips.html">extinct_tips()</a></code>, and whole-number arguments are checked with a tolerance.</li>
+<li>New tests of split probabilities and likelihoods against explicit formulas, of alternative search intervals and optimizers, of noise, edge conditions and parameter recovery; extended tests run with <code>TREESHAPESIM_EXTENDED_TESTS="true"</code>.</li>
 <li>Test coverage on Codecov.</li>
 <li>The README compares treeshapesim with TreeSimGM too, and lists <code><a href="../reference/fit_shape.html">fit_shape()</a></code> as estimation of tree shape.</li>
 <li>The README explains the use of trees from treeshapesim as regional pools in comdynamite.</li>

@@ -14,7 +14,7 @@ times.
 
 Remove tips at random, in clusters on the tree or according to a trait.
 
-- [`prune_tips()`](https://provetelab.org/treeshapesim/reference/prune_tips.md)
+- [`extinct_tips()`](https://provetelab.org/treeshapesim/reference/extinct_tips.md)
   : Remove tips by non-random extinction
 
 ## Target shapes and grids
