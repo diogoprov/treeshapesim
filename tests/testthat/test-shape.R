@@ -10,7 +10,8 @@ test_that("tree_shape matches ape and treestats", {
     expect_equal(gamma_intervals(g), s[["gamma"]], tolerance = 1e-10)
     expect_identical(colless_yule(tp), s[["colless"]])
     if (requireNamespace("treestats", quietly = TRUE)) {
-      expect_equal(s[["colless"]], treestats::colless(tr, normalization = "yule"),
+      expect_equal(s[["colless"]],
+                   treestats::colless(tr, normalization = "yule"),
                    tolerance = 1e-10)
     }
   }

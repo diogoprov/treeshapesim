@@ -7,8 +7,8 @@
 #' clustered the losses are: `signal = 0` is random extinction, and with
 #' `signal = 1` close relatives tend to be lost together, up to whole clades.
 #'
-#' Under a homogeneous birth-death process the shape of the reconstructed tree is
-#' the same as under pure birth (Gernhard 2008), so extinction changes the
+#' Under a homogeneous birth-death process the shape of the reconstructed tree
+#' is the same as under pure birth (Gernhard 2008), so extinction changes the
 #' topology only if it differs among lineages. The event acts on the tree as it
 #' stands, at the present; it does not model extinction that differs among
 #' lineages throughout the history of the clade, for which speciation and
@@ -21,21 +21,21 @@
 #' 2000) and on the shape of the tree (Veron et al. 2017). The same `fraction`
 #' with `signal = 0` is therefore the natural control.
 #'
-#' Unlike `sampling_fraction` in [sim_tree_shape()], the tree is not rescaled and
-#' the tip labels are kept, so that traits stay aligned with the species that
-#' remain. If a whole daughter clade of the root is lost, the root of the
+#' Unlike `sampling_fraction` in [sim_tree_shape()], the tree is not rescaled
+#' and the tip labels are kept, so that traits stay aligned with the species
+#' that remain. If a whole daughter clade of the root is lost, the root of the
 #' remaining tree is younger. The separation between gamma and the Colless index
 #' holds before the event, not after it, and [calibrate_shape()] does not apply
 #' to the remaining tree.
 #'
 #' @param tree A binary, rooted `phylo` object with branch lengths.
 #' @param fraction Fraction of the tips that are lost, a single number greater
-#'   than 0 and less than 1. `round(fraction * Ntip(tree))` tips are removed, and
-#'   at least two must remain.
-#' @param risk `NULL`, or a numeric vector of non-negative weights named with the
-#'   tip labels of `tree`. Tips are drawn without replacement with probability
-#'   proportional to `risk`. To link extinction to a trait, use for instance
-#'   `exp(b * trait)`.
+#'   than 0 and less than 1. `round(fraction * Ntip(tree))` tips are removed,
+#'   and at least two must remain.
+#' @param risk `NULL`, or a numeric vector of non-negative weights named with
+#'   the tip labels of `tree`. Tips are drawn without replacement with
+#'   probability proportional to `risk`. To link extinction to a trait, use
+#'   for instance `exp(b * trait)`.
 #' @param signal Pagel's lambda of the latent liability, a single number from 0
 #'   to 1, used when `risk` is `NULL`. The tips with the highest liability are
 #'   lost.

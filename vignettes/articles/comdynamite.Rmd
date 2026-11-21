@@ -61,9 +61,12 @@ tree <- sim_tree_shape(60, beta = -1.5)
 traits <- species_traits(tree, lambda = 1)
 risk <- setNames(exp(3 * as.numeric(scale(traits$optimum))), rownames(traits))
 
-random <- extinct_tips(tree, 0.4, signal = 0)     # the control
-clustered <- extinct_tips(tree, 0.4, signal = 1)  # close relatives lost together
-linked <- extinct_tips(tree, 0.4, risk = risk)    # species with high optima at risk
+# the control
+random <- extinct_tips(tree, 0.4, signal = 0)
+# close relatives lost together
+clustered <- extinct_tips(tree, 0.4, signal = 1)
+# species with high optima at risk
+linked <- extinct_tips(tree, 0.4, risk = risk)
 head(attr(linked, "lost"))
 ```
 

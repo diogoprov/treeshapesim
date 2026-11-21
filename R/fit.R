@@ -38,7 +38,8 @@
 #' [sim_tree_shape()] at the estimated `beta`, the same `sampling_fraction` and
 #' a grid of `c` from 1 below to 3 above the uncorrected estimate, and the mean
 #' uncorrected estimate at each value (`correction_reps` trees) gives a curve,
-#' made monotone by isotonic regression and inverted at the estimate from `tree`.
+#' made monotone by isotonic regression and inverted at the estimate from
+#' `tree`.
 #' This assumes that tips are missing at random and that the fraction is known;
 #' sampling biased towards old or distinct lineages is not corrected. The result
 #' varies slightly with the seed.
@@ -47,8 +48,9 @@
 #' [rtopology_beta()] at the estimated `beta` and intervals with
 #' [intervals_lineage_rate()] at the estimated `c` (with `sampling_fraction`
 #' below 1, whole trees with [sim_tree_shape()], and `c` is corrected with the
-#' same curve), and both parameters are re-estimated, following the recommendation of a parametric bootstrap for
-#' diversification models by Etienne et al. (2016). The spread of the bootstrap
+#' same curve), and both parameters are re-estimated, following the
+#' recommendation of a parametric bootstrap for diversification models by
+#' Etienne et al. (2016). The spread of the bootstrap
 #' estimates around the point estimate includes the small-sample bias of the
 #' estimators, and, for `c`, a small additional bias because
 #' [intervals_lineage_rate()] draws the last interval from the same law,
@@ -146,9 +148,10 @@ fit_shape <- function(tree, boot = 0, level = 0.95, beta_range = c(-1.999, 10),
   g <- tree_intervals(tree)
   fb <- fit_beta(splits, beta_range)
   fc <- fit_c(g, c_range)
-  out <- list(n = n, beta = fb$beta, c = fc$c, r = fc$r, loglik_beta = fb$loglik,
-              loglik_c = fc$loglik, beta_at_bound = fb$at_bound,
-              c_at_bound = fc$at_bound, beta_range = beta_range, c_range = c_range,
+  out <- list(n = n, beta = fb$beta, c = fc$c, r = fc$r,
+              loglik_beta = fb$loglik, loglik_c = fc$loglik,
+              beta_at_bound = fb$at_bound, c_at_bound = fc$at_bound,
+              beta_range = beta_range, c_range = c_range,
               shape = tree_shape(tree),
               optimizer = list(algorithm = optimizer_name, tol = optimizer_tol,
                                evaluations = c(beta = fb$evaluations,
@@ -181,7 +184,8 @@ print.shape_fit <- function(x, digits = 3, ...) {
   sampled <- !is.null(x$sampling_fraction)
   if (sampled) {
     cat("c corrected for a sampling fraction of ", x$sampling_fraction,
-        " (uncorrected: ", format(x$c_uncorrected, digits = digits), ")\n", sep = "")
+        " (uncorrected: ", format(x$c_uncorrected, digits = digits), ")\n",
+        sep = "")
   }
   est <- c(beta = x$beta, c = x$c)
   if (!is.null(x$ci)) {
@@ -204,7 +208,8 @@ print.shape_fit <- function(x, digits = 3, ...) {
         "little information (few tips).\n")
   }
   cat("gamma =", format(x$shape[["gamma"]], digits = digits),
-      "| normalized Colless =", format(x$shape[["colless"]], digits = digits), "\n")
+      "| normalized Colless =", format(x$shape[["colless"]], digits = digits),
+      "\n")
   invisible(x)
 }
 
@@ -216,7 +221,8 @@ print.shape_fit <- function(x, digits = 3, ...) {
 #' @srrstats {PD3.2} The optimizer, its tolerance and the search intervals are
 #'   fixed here and documented in [fit_shape()].
 #' @noRd
-optimizer_name <- "stats::optimize (golden-section search, parabolic interpolation)"
+optimizer_name <- paste("stats::optimize (golden-section search,",
+                        "parabolic interpolation)")
 optimizer_tol <- 1e-6
 
 #' Check the arguments of fit_shape()
@@ -234,7 +240,9 @@ check_fit_args <- function(tree, boot, level, beta_range, c_range, tol,
                lower = 0, upper = 1, open = c(TRUE, TRUE))
   check_range(beta_range, "beta_range")
   check_range(c_range, "c_range")
-  if (beta_range[1] <= -2) stop("`beta_range` must lie above -2.", call. = FALSE)
+  if (beta_range[1] <= -2) {
+    stop("`beta_range` must lie above -2.", call. = FALSE)
+  }
   check_fraction(sampling_fraction)
   check_count(correction_reps, "correction_reps")
 }
@@ -252,7 +260,7 @@ check_ultrametric <- function(tree, tol) {
 #' Parametric bootstrap estimates of beta and c
 #'
 #' @param boot Number of replicates.
-#' @param n Number of tips.
+#' @param n Number of tips of the observed tree, as in `sampling_curve()`.
 #' @param beta,c_hat Estimates used to simulate (uncorrected `c`).
 #' @param c_sim Value of `c` used to simulate whole sampled trees (corrected).
 #' @param curve Correction curve, or `NULL` without sampling.
@@ -266,8 +274,9 @@ boot_draws <- function(boot, n, beta, c_hat, c_sim, beta_range, c_range,
                                beta_range)$beta,
                c = fit_c(intervals_lineage_rate(n, c_hat), c_range)$c))
     }
-    tr <- suppressWarnings(sim_tree_shape(n, beta, c_sim,
-                                          sampling_fraction = sampling_fraction))
+    tr <- suppressWarnings(
+      sim_tree_shape(n, beta, c_sim, sampling_fraction = sampling_fraction)
+    )
     c(beta = fit_beta(split_sizes(tr), beta_range)$beta,
       c = invert_curve(curve, fit_c(tree_intervals(tr), c_range)$c))
   }
@@ -409,8 +418,9 @@ sampling_curve <- function(n, beta, c_hat, sampling_fraction, c_range, reps) {
   grid <- unique(pmin(pmax(c_hat + seq(-1, 3, by = 0.5), c_range[1]),
                       c_range[2]))
   estimate <- function(v) {
-    tr <- suppressWarnings(sim_tree_shape(n, beta, v,
-                                          sampling_fraction = sampling_fraction))
+    tr <- suppressWarnings(
+      sim_tree_shape(n, beta, v, sampling_fraction = sampling_fraction)
+    )
     fit_c(tree_intervals(tr), c_range)$c
   }
   mean_c <- vapply(grid, function(v) mean(replicate(reps, estimate(v))), 0)

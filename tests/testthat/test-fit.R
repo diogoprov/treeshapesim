@@ -9,14 +9,15 @@ test_that("fit_shape recovers the parameters of large trees", {
   expect_identical(f$shape, tree_shape(tr))
 })
 
-test_that("estimates are stable (values checked against apTreeshape and laser)", {
+test_that("estimates are stable (checked against apTreeshape and laser)", {
   # beta matched apTreeshape::maxlik.betasplit() and c matched laser::DDX()
   # to within 3e-5 on 30 random trees (both packages archived on CRAN). The
   # tree is read from a file, because simulated topologies can differ between
   # platforms for the same seed (see ?sim_tree_shape).
   tr <- ape::read.tree(test_path("fixtures", "tree80.nwk"))
   f <- fit_shape(tr, tol = 1e-8)
-  expect_equal(c(f$beta, f$c, f$r), c(-1.2207825020, -0.4522262078, 13.0757228117),
+  expect_equal(c(f$beta, f$c, f$r),
+               c(-1.2207825020, -0.4522262078, 13.0757228117),
                tolerance = 1e-5)
 })
 
@@ -26,9 +27,11 @@ test_that("the profiled r maximizes the DDX likelihood", {
   n <- length(g) + 1
   full <- function(p) {
     r <- exp(p[1]); x <- p[2]; ev <- 2:(n - 1)
-    sum(log(ev)) + (n - 2) * log(r) - x * sum(log(ev)) - r * sum((2:n)^(1 - x) * g)
+    sum(log(ev)) + (n - 2) * log(r) - x * sum(log(ev)) -
+      r * sum((2:n)^(1 - x) * g)
   }
-  opt <- stats::optim(c(0, 0), full, control = list(fnscale = -1, reltol = 1e-12))
+  opt <- stats::optim(c(0, 0), full,
+                      control = list(fnscale = -1, reltol = 1e-12))
   fc <- fit_c(g, c(-5, 5))
   expect_equal(fc$c, -opt$par[2], tolerance = 1e-4)
   expect_equal(fc$loglik, opt$value, tolerance = 1e-6)
@@ -56,7 +59,8 @@ test_that("fit_shape checks its arguments", {
   set.seed(34)
   tr <- sim_tree_shape(20)
   expect_error(fit_shape(ape::unroot(tr)), "rooted")
-  expect_error(fit_shape(ape::di2multi(ape::collapse.singles(tr), tol = 0.05)), "binary")
+  poly <- ape::di2multi(ape::collapse.singles(tr), tol = 0.05)
+  expect_error(fit_shape(poly), "binary")
   expect_error(fit_shape(sim_tree_shape(3)), "at least 4")
   no_len <- tr
   no_len$edge.length <- NULL
@@ -79,7 +83,8 @@ test_that("small trees, bounds and rounded branch lengths", {
   expect_output(print(narrow), "c is at a bound")
   # the lower bound of beta_range is reported as such, whatever its sign
   cat_tree <- ape::compute.brlen(ape::stree(10, "left"), method = "Grafen")
-  expect_output(print(fit_shape(cat_tree, beta_range = c(0.5, 10))), "lower bound")
+  expect_output(print(fit_shape(cat_tree, beta_range = c(0.5, 10))),
+                "lower bound")
   # rounded branch lengths need a larger tolerance
   tr <- sim_tree_shape(100, root_age = 100)
   tr$edge.length <- round(tr$edge.length, 3)
@@ -110,7 +115,7 @@ test_that("the bootstrap uses the correction for sampling", {
   set.seed(37)
   tr <- sim_tree_shape(60, c = -0.5, sampling_fraction = 0.5)
   f <- fit_shape(tr, boot = 10, sampling_fraction = 0.5, correction_reps = 10)
-  expect_equal(dim(f$boot), c(10L, 2L))
+  expect_identical(dim(f$boot), c(10L, 2L))
   expect_true(all(is.finite(f$ci)))
   expect_error(fit_shape(tr, sampling_fraction = 0), "`sampling_fraction`")
   expect_error(fit_shape(tr, sampling_fraction = 0.5, correction_reps = 0),

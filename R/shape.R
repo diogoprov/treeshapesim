@@ -36,7 +36,9 @@ colless_yule <- function(topo) {
   tips_below <- ape::node.depth(topo, method = 1)
   internal <- n + seq_len(topo$Nnode)
   kids <- split(topo$edge[, 2], factor(topo$edge[, 1], levels = internal))
-  ic <- sum(vapply(kids, function(k) abs(tips_below[k[1]] - tips_below[k[2]]), 0))
+  ic <- sum(vapply(kids, function(k) {
+    abs(tips_below[k[1]] - tips_below[k[2]])
+  }, 0))
   euler <- -digamma(1)
   (ic - n * log(n) - n * (euler - 1 - log(2))) / n
 }

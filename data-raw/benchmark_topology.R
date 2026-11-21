@@ -15,7 +15,8 @@ out_dir <- file.path("data-raw", "benchmark")
 dir.create(out_dir, showWarnings = FALSE, recursive = TRUE)
 
 rtopology_cpp <- function(n, beta) {
-  tree <- list(edge = rtopology_edges_cpp(as.integer(n), beta), Nnode = as.integer(n) - 1L,
+  tree <- list(edge = rtopology_edges_cpp(as.integer(n), beta),
+               Nnode = as.integer(n) - 1L,
                tip.label = paste0("t", seq_len(n)))
   class(tree) <- "phylo"
   attr(tree, "order") <- "cladewise"
@@ -42,8 +43,9 @@ res <- do.call(rbind, lapply(seq_len(nrow(grid)), function(row) {
     t_ages <- elapsed(assign_ages(tp_r, g))
     c(r = t_r, cpp = t_cpp, ages = t_ages)
   }, numeric(3)))
-  message(sprintf("n = %5d, beta = %4.1f: R %.3f s, C++ %.3f s, ages %.3f s", n, b,
-                  stats::median(times[, "r"]), stats::median(times[, "cpp"]),
+  message(sprintf("n = %5d, beta = %4.1f: R %.3f s, C++ %.3f s, ages %.3f s",
+                  n, b, stats::median(times[, "r"]),
+                  stats::median(times[, "cpp"]),
                   stats::median(times[, "ages"])))
   data.frame(n = n, beta = b, topology_r = stats::median(times[, "r"]),
              topology_cpp = stats::median(times[, "cpp"]),
@@ -51,8 +53,10 @@ res <- do.call(rbind, lapply(seq_len(nrow(grid)), function(row) {
 }))
 res$speedup <- res$topology_r / res$topology_cpp
 utils::write.csv(res, file.path(out_dir, "topology.csv"), row.names = FALSE)
-writeLines(c(paste("load average at start:", paste(Sys.getenv("TSS_LOAD"), collapse = "")),
+load_avg <- paste(Sys.getenv("TSS_LOAD"), collapse = "")
+sys_info <- Sys.info()[c("sysname", "release", "machine")]
+writeLines(c(paste("load average at start:", load_avg),
              utils::capture.output(utils::sessionInfo()),
-             utils::capture.output(print(Sys.info()[c("sysname", "release", "machine")]))),
+             utils::capture.output(print(sys_info))),
            file.path(out_dir, "session.txt"))
 print(res, row.names = FALSE, digits = 3)

@@ -23,7 +23,7 @@ test_that("parameter recovery over many seeds (extended)", {
   }
 })
 
-test_that("the error of the estimates decreases with the number of tips (extended)", {
+test_that("the estimation error decreases with the number of tips (extended)", {
   # G5.7
   skip_extended()
   rmse <- vapply(c(50, 200, 800), function(n) {

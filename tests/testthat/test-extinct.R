@@ -8,20 +8,23 @@ test_that("extinct_tips removes the requested fraction and keeps the labels", {
   set.seed(40)
   tr <- sim_tree_shape(50, beta = -1, c = -0.5, root_age = 10)
   p <- extinct_tips(tr, 0.3, signal = 0.5)
-  expect_equal(ape::Ntip(p), 35)
+  expect_identical(ape::Ntip(p), 35L)
   expect_length(attr(p, "lost"), 15)
   expect_setequal(c(p$tip.label, attr(p, "lost")), tr$tip.label)
   expect_true(ape::is.binary(p))
   expect_true(ape::is.ultrametric(p))
   # the tree is not rescaled: distances between survivors are unchanged
   sp <- p$tip.label
-  expect_equal(ape::cophenetic.phylo(p)[sp, sp], ape::cophenetic.phylo(tr)[sp, sp])
+  expect_equal(ape::cophenetic.phylo(p)[sp, sp],
+               ape::cophenetic.phylo(tr)[sp, sp], tolerance = 1e-12)
 })
 
 test_that("signal clusters the losses on the tree", {
   set.seed(41)
   tr <- sim_tree_shape(80)
-  m <- function(s) mean(replicate(100, mpd_lost(tr, extinct_tips(tr, 0.3, signal = s))))
+  m <- function(s) {
+    mean(replicate(100, mpd_lost(tr, extinct_tips(tr, 0.3, signal = s))))
+  }
   expect_lt(m(1), m(0))
 })
 
@@ -31,8 +34,8 @@ test_that("the liability has the covariance of Pagel's lambda", {
   x <- replicate(20000, tip_liability(tr, 0.5))
   target <- ape::vcv.phylo(tr) * 0.5
   diag(target) <- 1
-  expect_equal(unname(stats::cov(t(x))), unname(target[rownames(x), rownames(x)]),
-               tolerance = 0.05)
+  expect_equal(unname(stats::cov(t(x))),
+               unname(target[rownames(x), rownames(x)]), tolerance = 0.05)
   # lambda = 0 gives independent tips
   x0 <- replicate(5000, tip_liability(tr, 0))
   off <- stats::cor(t(x0))[upper.tri(diag(6))]
@@ -43,7 +46,9 @@ test_that("risk links extinction to a trait", {
   set.seed(43)
   tr <- sim_tree_shape(60)
   trait <- stats::setNames(stats::rnorm(60), tr$tip.label)
-  lost <- replicate(100, attr(extinct_tips(tr, 0.25, risk = exp(2 * trait)), "lost"))
+  lost <- replicate(100, {
+    attr(extinct_tips(tr, 0.25, risk = exp(2 * trait)), "lost")
+  })
   expect_gt(mean(trait[lost]), mean(trait) + 0.5)
   # the order of the names does not matter, and zero risk protects a tip
   safe <- tr$tip.label[1:10]
