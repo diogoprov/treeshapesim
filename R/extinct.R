@@ -84,9 +84,8 @@
 #' @export
 extinct_tips <- function(tree, fraction, risk = NULL, signal = 1) {
   check_tree(tree, min_tips = 3, lengths = TRUE)
-  if (!is_number(fraction) || fraction <= 0 || fraction >= 1) {
-    stop("`fraction` must be a single number between 0 and 1.", call. = FALSE)
-  }
+  check_number(fraction, "`fraction` must be a single number between 0 and 1.",
+               lower = 0, upper = 1, open = c(TRUE, TRUE))
   tips <- tree$tip.label
   n_lost <- round(fraction * length(tips))
   if (n_lost < 1 || length(tips) - n_lost < 2) {
@@ -122,10 +121,15 @@ lost_by_liability <- function(tree, n_lost, signal) {
 #'   `risk`.
 #' @noRd
 lost_by_risk <- function(tips, n_lost, risk) {
-  ok <- is.numeric(risk) && !is.null(names(risk)) &&
-    setequal(names(risk), tips) && anyDuplicated(names(risk)) == 0 &&
-    all(is.finite(risk)) && all(risk >= 0)
-  if (!ok) {
+  check_risk(risk, tips, n_lost)
+  sample(tips, n_lost, prob = as.numeric(risk[tips]))
+}
+
+#' Check that risk holds one non-negative value per tip, named by tip
+#'
+#' @noRd
+check_risk <- function(risk, tips, n_lost) {
+  if (!is_finite_numeric(risk) || !named_by(risk, tips) || any(risk < 0)) {
     stop("`risk` must hold one non-negative, finite value per tip, named with ",
          "the tip labels.", call. = FALSE)
   }
@@ -133,7 +137,10 @@ lost_by_risk <- function(tips, n_lost, risk) {
     stop("`risk` must be positive for at least as many tips as are lost.",
          call. = FALSE)
   }
-  sample(tips, n_lost, prob = as.numeric(risk[tips]))
+}
+named_by <- function(x, labels) {
+  !is.null(names(x)) && setequal(names(x), labels) &&
+    anyDuplicated(names(x)) == 0
 }
 
 #' Brownian liability at the tips under Pagel's lambda
