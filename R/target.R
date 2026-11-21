@@ -90,28 +90,35 @@ shape_params <- function(calibration, gamma, colless) {
   if (!inherits(calibration, "shape_calibration")) {
     stop("`calibration` must come from calibrate_shape().", call. = FALSE)
   }
-  if (!is.numeric(gamma) || !is.numeric(colless) || length(gamma) == 0 ||
-      length(colless) == 0 || !all(is.finite(gamma)) ||
-      !all(is.finite(colless))) {
+  if (!is_finite_numeric(gamma) || !is_finite_numeric(colless)) {
     stop("`gamma` and `colless` must be finite numbers.", call. = FALSE)
   }
   out <- data.frame(gamma = gamma, colless = colless)
-  invert <- function(stat, value, target, what) {
-    o <- order(stat)
-    res <- stats::approx(stat[o], value[o], xout = target, rule = 1, ties = mean)$y
-    if (anyNA(res)) {
-      stop(sprintf(paste("target %s outside the calibrated range [%.3g, %.3g];",
-                         "widen the values of %s in calibrate_shape()."),
-                   what, min(stat), max(stat),
-                   if (what == "gamma") "`c`" else "`beta`"),
-           call. = FALSE)
-    }
-    res
-  }
-  out$beta <- invert(calibration$colless$colless, calibration$colless$beta,
-                     out$colless, "colless")
-  out$c <- invert(calibration$gamma$gamma, calibration$gamma$c, out$gamma, "gamma")
+  out$beta <- invert_stat(calibration$colless$colless,
+                          calibration$colless$beta, out$colless, "colless")
+  out$c <- invert_stat(calibration$gamma$gamma, calibration$gamma$c,
+                       out$gamma, "gamma")
   out
+}
+
+#' Invert a calibration curve by linear interpolation
+#'
+#' @param stat,value Mean statistic and the parameter value that gives it.
+#' @param target Target values of the statistic.
+#' @param what `"gamma"` or `"colless"`, for the error message.
+#' @return The parameter values for `target`; an error outside the curve.
+#' @noRd
+invert_stat <- function(stat, value, target, what) {
+  o <- order(stat)
+  res <- stats::approx(stat[o], value[o], xout = target, rule = 1, ties = mean)$y
+  if (anyNA(res)) {
+    param <- c(gamma = "`c`", colless = "`beta`")[[what]]
+    stop(sprintf(paste("target %s outside the calibrated range [%.3g, %.3g];",
+                       "widen the values of %s in calibrate_shape()."),
+                 what, min(stat), max(stat), param),
+         call. = FALSE)
+  }
+  res
 }
 
 #' Simulate trees near target values of gamma and Colless
@@ -166,11 +173,7 @@ sim_tree_target <- function(n, gamma, colless, nsim = 1, tol = 0.5,
   check_count(nsim, "nsim")
   check_count(max_tries, "max_tries")
   check_positive(root_age, "root_age")
-  if (!is.numeric(tol) || !length(tol) %in% 1:2 || !all(is.finite(tol)) ||
-      any(tol <= 0)) {
-    stop("`tol` must hold one or two positive numbers.", call. = FALSE)
-  }
-  tol <- rep(tol, length.out = 2)
+  tol <- check_tol(tol)
   calibration <- get_calibration(calibration, n, reps)
   par <- shape_params(calibration, gamma = gamma, colless = colless)
   topo <- draw_kept(function() rtopology_beta(n, par$beta), colless_yule,
@@ -184,6 +187,29 @@ sim_tree_target <- function(n, gamma, colless, nsim = 1, tol = 0.5,
                     k, nsim, max_tries), call. = FALSE)
   }
   if (k == 0) stop("no tree within the tolerance.", call. = FALSE)
+  combine_kept(topo, ints, k, nsim, root_age, par)
+}
+
+#' Check the tolerance of sim_tree_target()
+#'
+#' @return `tol` recycled to length 2 (gamma, Colless).
+#' @noRd
+check_tol <- function(tol) {
+  if (!is_finite_numeric(tol) || length(tol) > 2 || any(tol <= 0)) {
+    stop("`tol` must hold one or two positive numbers.", call. = FALSE)
+  }
+  rep(tol, length.out = 2)
+}
+
+#' Combine kept topologies and interval sets into trees
+#'
+#' @param topo,ints Outputs of draw_kept() for topologies and intervals.
+#' @param k Number of trees to build.
+#' @param par Parameters from shape_params().
+#' @return A `phylo` (`nsim = 1`) or `multiPhylo` object with attributes
+#'   `shape`, `params` and `acceptance`.
+#' @noRd
+combine_kept <- function(topo, ints, k, nsim, root_age, par) {
   trees <- lapply(seq_len(k), function(i) {
     tr <- assign_ages(topo$kept[[i]], ints$kept[[i]])
     tr$edge.length <- tr$edge.length * root_age

@@ -11,6 +11,7 @@
 - `fit_shape()` returns `optimizer`, with the name of the algorithm, its tolerance and the number of evaluations of each log-likelihood.
 - Branch lengths that are missing, infinite or negative are now an error in `fit_shape()` and `extinct_tips()`, and whole-number arguments are checked with a tolerance.
 - New tests of split probabilities and likelihoods against explicit formulas, of alternative search intervals and optimizers, of noise, edge conditions and parameter recovery; extended tests run with `TREESHAPESIM_EXTENDED_TESTS="true"`.
+- Argument checks are gathered in internal helpers, so that no function has cyclomatic complexity above 10; error messages and results are unchanged.
 - Test coverage on Codecov.
 - The README compares treeshapesim with TreeSimGM too, and lists `fit_shape()` as estimation of tree shape.
 - The README explains the use of trees from treeshapesim as regional pools in comdynamite.

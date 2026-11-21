@@ -127,24 +127,30 @@ intervals_lineage_rate <- function(n, c = 0, rate = NULL) {
 #'   rejected with an error.
 #' @noRd
 total_rates <- function(n, c, rate) {
-  k <- 2:n
-  if (is.null(rate)) {
-    total <- k^(1 + c)
-    if (!all(is.finite(total)) || any(total <= 0)) {
-      stop(sprintf(paste("`c` = %g is too extreme for %d tips: the split rates",
-                         "overflow or underflow."), c, n), call. = FALSE)
-    }
-    return(total)
-  }
+  if (is.null(rate)) return(rates_from_c(n, c))
   if (abs(c) > 0) stop("Use either `c` or `rate`, not both.", call. = FALSE)
+  rates_from_function(n, rate)
+}
+rates_from_c <- function(n, c) {
+  total <- (2:n)^(1 + c)
+  if (!all_positive(total)) {
+    stop(sprintf(paste("`c` = %g is too extreme for %d tips: the split rates",
+                       "overflow or underflow."), c, n), call. = FALSE)
+  }
+  total
+}
+rates_from_function <- function(n, rate) {
   msg <- paste("`rate` must be a vectorized function that returns n - 1",
                "positive, finite values for k = 2, ..., n.")
   if (!is.function(rate)) stop(msg, call. = FALSE)
-  r <- rate(k)
+  r <- rate(2:n)
   if (!is.numeric(r) || length(r) != n - 1) stop(msg, call. = FALSE)
-  total <- k * as.vector(r)
-  if (!all(is.finite(total)) || any(total <= 0)) stop(msg, call. = FALSE)
+  total <- (2:n) * as.vector(r)
+  if (!all_positive(total)) stop(msg, call. = FALSE)
   total
+}
+all_positive <- function(x) {
+  all(is.finite(x)) && all(x > 0)
 }
 
 #' Assign node ages to a topology from internode intervals
@@ -165,7 +171,7 @@ total_rates <- function(n, c, rate) {
 assign_ages <- function(topo, g) {
   check_tree(topo, name = "topo")
   n <- ape::Ntip(topo)
-  if (!is.numeric(g) || length(g) != n - 1 || !all(is.finite(g)) || any(g <= 0)) {
+  if (!is_finite_numeric(g, n - 1) || any(g <= 0)) {
     stop("`g` must hold Ntip(topo) - 1 positive, finite intervals.", call. = FALSE)
   }
   ages_sorted <- rev(cumsum(rev(g)))      # ages of the n - 1 splits, oldest first
@@ -283,72 +289,4 @@ sample_tips <- function(tree, n) {
   tree$edge.length <- tree$edge.length / max(ape::node.depth.edgelength(tree))
   tree$tip.label <- paste0("t", seq_len(n))
   tree
-}
-
-#' Argument checks shared by the exported functions
-#'
-#' `is_number()` is `TRUE` for a single finite number; `is_whole()` compares
-#' with the nearest integer within a tolerance, not with `==`.
-#'
-#' @srrstats {G2.0, G2.1, G2.2} Single-valued numeric arguments are checked for
-#'   length, type and finiteness, so vectors are rejected where one value is
-#'   expected.
-#' @srrstats {G2.13, G2.14, G2.14a, G2.15, G2.16} Missing (`NA`) and undefined
-#'   (`NaN`, `Inf`) values are rejected with an error in every numeric argument
-#'   and in branch lengths; no function imputes or drops them, because a tree
-#'   with a missing branch length has no defined shape.
-#' @srrstats {G3.0} Integer checks use a tolerance rather than equality of
-#'   floating-point numbers.
-#' @noRd
-is_number <- function(x) {
-  is.numeric(x) && length(x) == 1 && is.finite(x)
-}
-is_whole <- function(x) {
-  abs(x - round(x)) < sqrt(.Machine$double.eps)
-}
-check_tree <- function(tree, min_tips = 2, lengths = FALSE, name = "tree") {
-  ok <- inherits(tree, "phylo") && ape::Ntip(tree) >= min_tips &&
-    ape::is.binary(tree) && ape::is.rooted(tree)
-  if (!ok) {
-    stop(sprintf("`%s` must be a binary, rooted `phylo` object with at least %d tips.",
-                 name, min_tips), call. = FALSE)
-  }
-  if (lengths && (is.null(tree$edge.length) ||
-                    !all(is.finite(tree$edge.length)) ||
-                    any(tree$edge.length < 0))) {
-    stop(sprintf("`%s` must have non-negative, finite branch lengths.", name),
-         call. = FALSE)
-  }
-}
-check_n <- function(n) {
-  if (!is_number(n) || n < 2 || !is_whole(n) || n > .Machine$integer.max) {
-    stop("`n` must be a single integer of at least 2.", call. = FALSE)
-  }
-}
-check_beta <- function(beta) {
-  if (!is_number(beta) || beta <= -2) {
-    stop("`beta` must be a single finite number greater than -2.", call. = FALSE)
-  }
-}
-check_c <- function(c) {
-  if (!is_number(c)) {
-    stop("`c` must be a single finite number.", call. = FALSE)
-  }
-}
-check_fraction <- function(x) {
-  if (!is_number(x) || x <= 0 || x > 1) {
-    stop("`sampling_fraction` must be a single number greater than 0 and at most 1.",
-         call. = FALSE)
-  }
-}
-check_count <- function(x, name) {
-  if (!is_number(x) || x < 1 || !is_whole(x)) {
-    stop(sprintf("`%s` must be a single positive integer.", name), call. = FALSE)
-  }
-}
-check_positive <- function(x, name) {
-  if (!is_number(x) || x <= 0) {
-    stop(sprintf("`%s` must be a single positive, finite number.", name),
-         call. = FALSE)
-  }
 }

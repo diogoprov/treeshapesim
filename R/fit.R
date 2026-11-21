@@ -226,24 +226,27 @@ optimizer_tol <- 1e-6
 check_fit_args <- function(tree, boot, level, beta_range, c_range, tol,
                            sampling_fraction, correction_reps) {
   check_tree(tree, min_tips = 4, lengths = TRUE)
-  if (!is_number(tol) || tol < 0) {
-    stop("`tol` must be a single non-negative number.", call. = FALSE)
-  }
-  if (!ape::is.ultrametric(tree, tol = tol)) {
-    stop("`tree` must be ultrametric (increase `tol` for rounded branch ",
-         "lengths, or use e.g. phytools::force.ultrametric()).", call. = FALSE)
-  }
-  if (!is_number(boot) || boot < 0 || !is_whole(boot)) {
-    stop("`boot` must be a single non-negative integer.", call. = FALSE)
-  }
-  if (!is_number(level) || level <= 0 || level >= 1) {
-    stop("`level` must be a single number between 0 and 1.", call. = FALSE)
-  }
+  check_number(tol, "`tol` must be a single non-negative number.", lower = 0)
+  check_ultrametric(tree, tol)
+  check_number(boot, "`boot` must be a single non-negative integer.",
+               lower = 0, whole = TRUE)
+  check_number(level, "`level` must be a single number between 0 and 1.",
+               lower = 0, upper = 1, open = c(TRUE, TRUE))
   check_range(beta_range, "beta_range")
   check_range(c_range, "c_range")
   if (beta_range[1] <= -2) stop("`beta_range` must lie above -2.", call. = FALSE)
   check_fraction(sampling_fraction)
   check_count(correction_reps, "correction_reps")
+}
+
+#' Check that a tree is ultrametric within a tolerance
+#'
+#' @noRd
+check_ultrametric <- function(tree, tol) {
+  if (!ape::is.ultrametric(tree, tol = tol)) {
+    stop("`tree` must be ultrametric (increase `tol` for rounded branch ",
+         "lengths, or use e.g. phytools::force.ultrametric()).", call. = FALSE)
+  }
 }
 
 #' Parametric bootstrap estimates of beta and c
@@ -420,14 +423,4 @@ sampling_curve <- function(n, beta, c_hat, sampling_fraction, c_range, reps) {
 #' @noRd
 invert_curve <- function(curve, x) {
   stats::approx(curve$uncorrected, curve$c, xout = x, rule = 2, ties = mean)$y
-}
-
-#' Check a search interval
-#'
-#' @noRd
-check_range <- function(x, name) {
-  if (!is.numeric(x) || length(x) != 2 || !all(is.finite(x)) || x[1] >= x[2]) {
-    stop(sprintf("`%s` must hold two increasing finite numbers.", name),
-         call. = FALSE)
-  }
 }
