@@ -1,6 +1,8 @@
 # treeshapesim <img src="man/figures/logo.png" align="right" height="139" alt="treeshapesim hex sticker" />
 
 <!-- badges: start -->
+[![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
+[![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 [![r-universe](https://diogoprov.r-universe.dev/badges/treeshapesim)](https://diogoprov.r-universe.dev/treeshapesim)
 [![pkgdown](https://github.com/diogoprov/treeshapesim/actions/workflows/pkgdown.yaml/badge.svg)](https://provetelab.org/treeshapesim/)
 [![R-CMD-check](https://github.com/diogoprov/treeshapesim/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/diogoprov/treeshapesim/actions/workflows/R-CMD-check.yaml)
@@ -120,6 +122,29 @@ Hagen, O., & Stadler, T. (2018). TreeSimGM: Simulating phylogenetic trees under
 general Bellman–Harris models with lineage-specific shifts of speciation and
 extinction in R. *Methods in Ecology and Evolution*, 9, 754–760.
 https://doi.org/10.1111/2041-210X.12917
+
+## Development status
+
+treeshapesim is in active development, and its interface is experimental
+(version 0.x): function names and arguments may still change, and every change
+is listed in [NEWS](NEWS.md). The core simulators (`sim_tree_shape()`,
+`rtopology_beta()`, `intervals_lineage_rate()`, `assign_ages()`) are expected to
+be stable. Planned work is in [ROADMAP.md](ROADMAP.md).
+
+The package follows the [rOpenSci packaging guide](https://devguide.ropensci.org)
+and the general and probability-distribution [statistical software
+standards](https://stats-devguide.ropensci.org); compliance with each standard is
+documented with [srr](https://docs.ropensci.org/srr/) tags in the code
+(`srr::srr_report()`).
+
+## Contributing
+
+Bug reports and suggestions are welcome in the
+[issue tracker](https://github.com/diogoprov/treeshapesim/issues); see the
+[contributing guide](.github/CONTRIBUTING.md) for how to propose changes and run
+the extended tests. Please note that this package is released with a
+[Contributor Code of Conduct](.github/CODE_OF_CONDUCT.md). By contributing to
+this project, you agree to abide by its terms.
 
 ## Citation
 

@@ -21,15 +21,16 @@
 #' tree_shape(sim_tree_shape(100, beta = -1, c = -1))
 #' @export
 tree_shape <- function(tree) {
-  if (!inherits(tree, "phylo") || !ape::is.binary(tree) || !ape::is.rooted(tree) ||
-      ape::Ntip(tree) < 3) {
-    stop("`tree` must be a binary, rooted `phylo` object with at least 3 tips.",
-         call. = FALSE)
-  }
+  check_tree(tree, min_tips = 3)
   c(gamma = ape::gammaStat(tree), colless = colless_yule(tree))
 }
 
-# Colless index of a binary topology, normalized against its Yule expectation
+#' Colless index normalized against its Yule expectation
+#'
+#' @param topo A binary topology (`phylo` object).
+#' @return The normalized Colless index (the `"yule"` normalization of
+#'   `treestats::colless()`).
+#' @noRd
 colless_yule <- function(topo) {
   n <- ape::Ntip(topo)
   tips_below <- ape::node.depth(topo, method = 1)
@@ -40,9 +41,13 @@ colless_yule <- function(topo) {
   (ic - n * log(n) - n * (euler - 1 - log(2))) / n
 }
 
-# Gamma statistic from the internode intervals g_2, ..., g_n of
-# intervals_lineage_rate() (the same value as ape::gammaStat() on any tree with
-# these intervals)
+#' Gamma statistic from internode intervals
+#'
+#' @param g Internode intervals `g_2, ..., g_n`, as from
+#'   [intervals_lineage_rate()].
+#' @return The same value as [ape::gammaStat()] on any tree with these
+#'   intervals.
+#' @noRd
 gamma_intervals <- function(g) {
   n <- length(g) + 1
   k <- 2:n

@@ -19,14 +19,17 @@ fit_shape(
 \item{tree}{A binary, rooted, ultrametric \code{phylo} object with at least four
 tips.}
 
-\item{boot}{Number of parametric bootstrap replicates (0 for none).}
+\item{boot}{Number of parametric bootstrap replicates, a single
+non-negative integer (0, the default, for none).}
 
-\item{level}{Coverage of the bootstrap percentile intervals.}
+\item{level}{Coverage of the bootstrap percentile intervals, a single number
+between 0 and 1.}
 
 \item{beta_range, c_range}{Search intervals for \code{beta} (lower bound above -2)
-and \code{c}.}
+and \code{c}: numeric vectors of two increasing finite values.}
 
-\item{tol}{Tolerance of the ultrametricity check, as in
+\item{tol}{Tolerance of the ultrametricity check, a single non-negative
+number, as in
 \code{\link[ape:is.ultrametric]{ape::is.ultrametric()}} (scaled range of root-to-tip distances). Trees with
 rounded branch lengths may need a larger value, or can be made ultrametric
 first (for instance with \code{phytools::force.ultrametric()}).}
@@ -36,7 +39,7 @@ first (for instance with \code{phytools::force.ultrametric()}).}
 corrected for incomplete sampling (see Details).}
 
 \item{correction_reps}{Number of trees at each value of the grid used in the
-correction for incomplete sampling.}
+correction for incomplete sampling, a single positive integer.}
 }
 \value{
 An object of class \code{shape_fit}: a list with \code{n}, \code{beta}, \code{c}, \code{r}
@@ -45,7 +48,9 @@ tree), \code{loglik_beta} (log-likelihood of \code{beta} up to an additive const
 so not comparable with other software), \code{loglik_c} (profile log-likelihood
 of \code{c}, equal to the log-likelihood of laser's DDX model at its maximum),
 \code{beta_at_bound} and \code{c_at_bound} (estimate at a bound of the search
-interval), \code{beta_range}, \code{c_range}, \code{shape} (output of \code{\link[=tree_shape]{tree_shape()}}) and,
+interval), \code{beta_range}, \code{c_range}, \code{shape} (output of \code{\link[=tree_shape]{tree_shape()}}),
+\code{optimizer} (list with the \code{algorithm}, its \code{tol} and the number of
+\code{evaluations} of each log-likelihood) and,
 with \code{boot > 0}, \code{boot} (data frame of bootstrap estimates) and \code{ci}
 (matrix of percentile intervals). With \code{sampling_fraction} below 1, \code{c} is
 the corrected estimate, \code{r} is \code{NA}, \code{loglik_c} refers to the uncorrected
@@ -107,6 +112,15 @@ estimators, and, for \code{c}, a small additional bias because
 \code{\link[=intervals_lineage_rate]{intervals_lineage_rate()}} draws the last interval from the same law,
 whereas the likelihood treats it as censored. Percentile intervals need a
 few hundred replicates.
+
+\strong{Optimization.} Each parameter is estimated separately with
+\code{\link[stats:optimize]{stats::optimize()}}, a golden-section search with successive parabolic
+interpolation over the bounded interval \code{beta_range} or \code{c_range}, with a
+tolerance of \code{1e-6} on the parameter. The search needs no starting value
+and assumes a single maximum within the interval; an estimate at a bound is
+flagged (\code{beta_at_bound}, \code{c_at_bound}). The name of the algorithm, the
+tolerance and the number of evaluations of each log-likelihood are returned
+in \code{optimizer}.
 }
 \examples{
 set.seed(1)

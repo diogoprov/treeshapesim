@@ -22,9 +22,9 @@ values give more imbalanced trees.}
 
 \item{c}{Lineage dependence of the split rate, a single finite number.}
 
-\item{nsim}{Number of trees.}
+\item{nsim}{Number of trees, a single positive integer.}
 
-\item{root_age}{Age of the root (positive).}
+\item{root_age}{Age of the root, a single positive number.}
 
 \item{rate}{\code{NULL} (the default), to use \code{c}, or a vectorized function of the
 number of lineages k that returns the per-lineage split rate. It must

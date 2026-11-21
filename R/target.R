@@ -16,7 +16,8 @@
 #' @param beta Values of `beta` at which the Colless index is estimated (at
 #'   least two).
 #' @param c Values of `c` at which gamma is estimated (at least two).
-#' @param reps Number of topologies or interval sets per value.
+#' @param reps Number of topologies or interval sets per value, a single
+#'   positive integer.
 #' @return An object of class `shape_calibration`: a list with `n`, `reps` and
 #'   the data frames `colless` (columns `beta`, `colless` and `colless_mean`)
 #'   and `gamma` (columns `c`, `gamma` and `gamma_mean`), where the `_mean`
@@ -31,7 +32,9 @@ calibrate_shape <- function(n, beta = c(-1.95, -1.8, -1.6, -1.4, -1.2, -1, -0.75
                                         -0.5, 0, 0.5, 1, 2, 4, 8),
                             c = seq(-2, 1, by = 0.25), reps = 200) {
   check_n(n)
-  if (n < 4) stop("`n` must be at least 4 to calibrate the Colless index.", call. = FALSE)
+  if (n < 4) {
+    stop("`n` must be at least 4 to calibrate the Colless index.", call. = FALSE)
+  }
   beta <- sort(unique(beta))
   c <- sort(unique(c))
   if (length(beta) < 2 || length(c) < 2) {
@@ -56,7 +59,8 @@ calibrate_shape <- function(n, beta = c(-1.95, -1.8, -1.6, -1.4, -1.2, -1, -0.75
 
 #' @export
 print.shape_calibration <- function(x, ...) {
-  cat("Shape calibration for n = ", x$n, " tips (", x$reps, " draws per value)\n", sep = "")
+  cat("Shape calibration for n = ", x$n, " tips (", x$reps,
+      " draws per value)\n", sep = "")
   cat("  mean gamma from", format(min(x$gamma$gamma), digits = 3), "to",
       format(max(x$gamma$gamma), digits = 3), "for c in [",
       min(x$gamma$c), ",", max(x$gamma$c), "]\n")
@@ -87,7 +91,8 @@ shape_params <- function(calibration, gamma, colless) {
     stop("`calibration` must come from calibrate_shape().", call. = FALSE)
   }
   if (!is.numeric(gamma) || !is.numeric(colless) || length(gamma) == 0 ||
-      length(colless) == 0 || any(!is.finite(gamma)) || any(!is.finite(colless))) {
+      length(colless) == 0 || !all(is.finite(gamma)) ||
+      !all(is.finite(colless))) {
     stop("`gamma` and `colless` must be finite numbers.", call. = FALSE)
   }
   out <- data.frame(gamma = gamma, colless = colless)
@@ -95,8 +100,10 @@ shape_params <- function(calibration, gamma, colless) {
     o <- order(stat)
     res <- stats::approx(stat[o], value[o], xout = target, rule = 1, ties = mean)$y
     if (anyNA(res)) {
-      stop(sprintf("target %s outside the calibrated range [%.3g, %.3g]; widen the values of %s in calibrate_shape().",
-                   what, min(stat), max(stat), if (what == "gamma") "`c`" else "`beta`"),
+      stop(sprintf(paste("target %s outside the calibrated range [%.3g, %.3g];",
+                         "widen the values of %s in calibrate_shape()."),
+                   what, min(stat), max(stat),
+                   if (what == "gamma") "`c`" else "`beta`"),
            call. = FALSE)
     }
     res
@@ -124,23 +131,24 @@ shape_params <- function(calibration, gamma, colless) {
 #' that function.
 #'
 #' @inheritParams rtopology_beta
-#' @inheritParams shape_params
+#' @inheritParams sim_tree_shape
 #' @param gamma,colless Target gamma statistic and normalized Colless index
 #'   (single values).
-#' @param nsim Number of trees.
 #' @param tol Tolerance around the targets: one value for both statistics, or
 #'   two values for gamma and Colless, in this order.
 #' @param calibration Output of [calibrate_shape()] for the same `n`; if `NULL`,
 #'   it is computed with `reps` draws per value.
 #' @param reps Passed to [calibrate_shape()] when `calibration` is `NULL`.
-#' @param max_tries Maximum number of topologies, and of interval sets, drawn.
-#' @param root_age Age of the root.
+#' @param max_tries Maximum number of topologies, and of interval sets, drawn,
+#'   a single positive integer.
 #' @return With `nsim = 1`, a `phylo` object; otherwise a `multiPhylo` object
 #'   (also when fewer trees than `nsim` are found).
 #'   Attributes: `shape` (realized gamma and Colless of each tree), `params`
 #'   (`beta` and `c` used) and `acceptance` (proportion of topologies and of
 #'   interval sets kept). If fewer than `nsim` trees are found within
 #'   `max_tries`, the trees found are returned with a warning.
+#' @srrstats {G2.0a, G2.1a} Expected lengths and types are given for every
+#'   argument.
 #' @examples
 #' set.seed(1)
 #' cal <- calibrate_shape(50, reps = 50)
@@ -148,69 +156,84 @@ shape_params <- function(calibration, gamma, colless) {
 #'                          calibration = cal)
 #' attr(trees, "shape")
 #' @export
-sim_tree_target <- function(n, gamma, colless, nsim = 1, tol = 0.5, calibration = NULL,
-                            reps = 200, max_tries = 1000 * nsim, root_age = 1) {
+sim_tree_target <- function(n, gamma, colless, nsim = 1, tol = 0.5,
+                            calibration = NULL, reps = 200,
+                            max_tries = 1000 * nsim, root_age = 1) {
   check_n(n)
-  if (!is.numeric(gamma) || length(gamma) != 1 || !is.finite(gamma) ||
-      !is.numeric(colless) || length(colless) != 1 || !is.finite(colless)) {
+  if (!is_number(gamma) || !is_number(colless)) {
     stop("`gamma` and `colless` must be single finite numbers.", call. = FALSE)
   }
   check_count(nsim, "nsim")
   check_count(max_tries, "max_tries")
   check_positive(root_age, "root_age")
-  if (!is.numeric(tol) || !length(tol) %in% 1:2 || any(!is.finite(tol)) || any(tol <= 0)) {
+  if (!is.numeric(tol) || !length(tol) %in% 1:2 || !all(is.finite(tol)) ||
+      any(tol <= 0)) {
     stop("`tol` must hold one or two positive numbers.", call. = FALSE)
   }
   tol <- rep(tol, length.out = 2)
-  if (is.null(calibration)) {
-    calibration <- calibrate_shape(n, reps = reps)
-  } else if (!inherits(calibration, "shape_calibration") || calibration$n != n) {
-    stop("`calibration` must come from calibrate_shape() with the same `n`.", call. = FALSE)
-  }
+  calibration <- get_calibration(calibration, n, reps)
   par <- shape_params(calibration, gamma = gamma, colless = colless)
-
-  topologies <- list()
-  colless_kept <- numeric(0)
-  tries_topology <- 0
-  while (length(topologies) < nsim && tries_topology < max_tries) {
-    tries_topology <- tries_topology + 1
-    tp <- rtopology_beta(n, par$beta)
-    s <- colless_yule(tp)
-    if (abs(s - colless) <= tol[2]) {
-      topologies[[length(topologies) + 1]] <- tp
-      colless_kept <- c(colless_kept, s)
-    }
-  }
-  intervals <- list()
-  gamma_kept <- numeric(0)
-  tries_intervals <- 0
-  while (length(intervals) < nsim && tries_intervals < max_tries) {
-    tries_intervals <- tries_intervals + 1
-    g <- intervals_lineage_rate(n, par$c)
-    s <- gamma_intervals(g)
-    if (abs(s - gamma) <= tol[1]) {
-      intervals[[length(intervals) + 1]] <- g
-      gamma_kept <- c(gamma_kept, s)
-    }
-  }
-  k <- min(length(topologies), length(intervals))
+  topo <- draw_kept(function() rtopology_beta(n, par$beta), colless_yule,
+                    colless, tol[2], nsim, max_tries)
+  ints <- draw_kept(function() intervals_lineage_rate(n, par$c),
+                    gamma_intervals, gamma, tol[1], nsim, max_tries)
+  k <- min(length(topo$kept), length(ints$kept))
   if (k < nsim) {
-    warning(sprintf("only %d of %d trees within the tolerance after %d tries; increase `max_tries` or `tol`.",
+    warning(sprintf(paste("only %d of %d trees within the tolerance after %d",
+                          "tries; increase `max_tries` or `tol`."),
                     k, nsim, max_tries), call. = FALSE)
   }
   if (k == 0) stop("no tree within the tolerance.", call. = FALSE)
   trees <- lapply(seq_len(k), function(i) {
-    tr <- assign_ages(topologies[[i]], intervals[[i]])
+    tr <- assign_ages(topo$kept[[i]], ints$kept[[i]])
     tr$edge.length <- tr$edge.length * root_age
     tr
   })
   out <- if (nsim == 1) trees[[1]] else structure(trees, class = "multiPhylo")
-  attr(out, "shape") <- data.frame(gamma = gamma_kept[seq_len(k)],
-                                   colless = colless_kept[seq_len(k)])
+  attr(out, "shape") <- data.frame(gamma = ints$stat[seq_len(k)],
+                                   colless = topo$stat[seq_len(k)])
   attr(out, "params") <- c(beta = par$beta, c = par$c)
-  attr(out, "acceptance") <- c(topology = length(topologies) / tries_topology,
-                               intervals = length(intervals) / tries_intervals)
+  attr(out, "acceptance") <- c(topology = topo$acceptance,
+                               intervals = ints$acceptance)
   out
+}
+
+#' Draw objects until enough are within a tolerance of a target statistic
+#'
+#' @param draw Function with no arguments that draws one object.
+#' @param stat Function that computes the statistic of an object.
+#' @param target,tol Target value and tolerance.
+#' @param nsim,max_tries Number of objects wanted and maximum number of draws.
+#' @return A list with the `kept` objects, their `stat` and the `acceptance`
+#'   rate.
+#' @noRd
+draw_kept <- function(draw, stat, target, tol, nsim, max_tries) {
+  kept <- list()
+  values <- numeric(0)
+  tries <- 0
+  while (length(kept) < nsim && tries < max_tries) {
+    tries <- tries + 1
+    x <- draw()
+    s <- stat(x)
+    if (abs(s - target) <= tol) {
+      kept[[length(kept) + 1]] <- x
+      values <- c(values, s)
+    }
+  }
+  list(kept = kept, stat = values, acceptance = length(kept) / tries)
+}
+
+#' Check a calibration, or compute one
+#'
+#' @return `calibration`, or the output of [calibrate_shape()] if it is `NULL`.
+#' @noRd
+get_calibration <- function(calibration, n, reps) {
+  if (is.null(calibration)) return(calibrate_shape(n, reps = reps))
+  if (!inherits(calibration, "shape_calibration") || calibration$n != n) {
+    stop("`calibration` must come from calibrate_shape() with the same `n`.",
+         call. = FALSE)
+  }
+  calibration
 }
 
 #' Grid of tree shapes
@@ -233,11 +256,7 @@ sim_tree_target <- function(n, gamma, colless, nsim = 1, tol = 0.5, calibration 
 #' @export
 shape_grid <- function(n, gamma, colless, calibration = NULL, reps = 200) {
   check_n(n)
-  if (is.null(calibration)) {
-    calibration <- calibrate_shape(n, reps = reps)
-  } else if (!inherits(calibration, "shape_calibration") || calibration$n != n) {
-    stop("`calibration` must come from calibrate_shape() with the same `n`.", call. = FALSE)
-  }
+  calibration <- get_calibration(calibration, n, reps)
   grid <- expand.grid(gamma = gamma, colless = colless)
   out <- shape_params(calibration, gamma = grid$gamma, colless = grid$colless)
   attr(out, "calibration") <- calibration

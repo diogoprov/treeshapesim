@@ -6,7 +6,7 @@ test_that("fit_shape recovers the parameters of large trees", {
   expect_lt(abs(f$beta + 1), 0.3)
   expect_lt(abs(f$c + 0.8), 0.2)
   expect_false(f$beta_at_bound)
-  expect_equal(f$shape, tree_shape(tr))
+  expect_identical(f$shape, tree_shape(tr))
 })
 
 test_that("estimates are stable (values checked against apTreeshape and laser)", {
@@ -46,8 +46,8 @@ test_that("a caterpillar tree puts beta at the lower bound", {
 test_that("the bootstrap gives intervals", {
   set.seed(33)
   f <- fit_shape(sim_tree_shape(60, -1, -0.5), boot = 20, level = 0.9)
-  expect_equal(dim(f$boot), c(20L, 2L))
-  expect_equal(rownames(f$ci), c("beta", "c"))
+  expect_identical(dim(f$boot), c(20L, 2L))
+  expect_identical(rownames(f$ci), c("beta", "c"))
   expect_true(all(f$ci[, 1] <= f$ci[, 2]))
   expect_output(print(f), "estimate")
 })
@@ -60,7 +60,7 @@ test_that("fit_shape checks its arguments", {
   expect_error(fit_shape(sim_tree_shape(3)), "at least 4")
   no_len <- tr
   no_len$edge.length <- NULL
-  expect_error(fit_shape(no_len), "ultrametric")
+  expect_error(fit_shape(no_len), "branch lengths")
   expect_error(fit_shape(ape::rtree(20)), "ultrametric")
   expect_error(fit_shape(tr, boot = -1), "`boot`")
   expect_error(fit_shape(tr, level = 1), "`level`")
@@ -71,7 +71,8 @@ test_that("fit_shape checks its arguments", {
 test_that("small trees, bounds and rounded branch lengths", {
   set.seed(35)
   small <- fit_shape(sim_tree_shape(4))
-  expect_true(is.finite(small$beta) && is.finite(small$c))
+  expect_true(is.finite(small$beta))
+  expect_true(is.finite(small$c))
   # a narrow c_range is hit and reported
   narrow <- fit_shape(sim_tree_shape(50, c = -1.5), c_range = c(-0.5, 0.5))
   expect_true(narrow$c_at_bound)
@@ -91,8 +92,8 @@ test_that("sampling_fraction corrects c for incomplete sampling", {
   tr <- sim_tree_shape(150, beta = -1, c = 0, sampling_fraction = 0.4)
   plain <- fit_shape(tr)
   f <- fit_shape(tr, sampling_fraction = 0.4, correction_reps = 20)
-  expect_equal(f$c_uncorrected, plain$c)
-  expect_equal(f$beta, plain$beta)
+  expect_identical(f$c_uncorrected, plain$c)
+  expect_identical(f$beta, plain$beta)
   expect_gt(f$c, plain$c)
   expect_lt(abs(f$c), abs(plain$c))
   expect_true(is.na(f$r))

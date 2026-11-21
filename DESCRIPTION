@@ -3,7 +3,8 @@ Title: Simulate Trees with Separately Controlled Imbalance and Branching
     Times
 Version: 0.2.1.9000
 Authors@R: 
-    person("Diogo B.", "Provete", , "dbprovete@gmail.com", role = c("aut", "cre"))
+    person("Diogo B.", "Provete", , "dbprovete@gmail.com", role = c("aut", "cre"),
+           comment = c(ORCID = "0000-0002-0097-0651"))
 Description: Simulates rooted, binary, ultrametric trees in which
     topological imbalance and the distribution of branching times are set
     by separate parameters. The topology is drawn from Aldous'

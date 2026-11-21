@@ -22,7 +22,7 @@ sim_tree_target(
 \item{gamma, colless}{Target gamma statistic and normalized Colless index
 (single values).}
 
-\item{nsim}{Number of trees.}
+\item{nsim}{Number of trees, a single positive integer.}
 
 \item{tol}{Tolerance around the targets: one value for both statistics, or
 two values for gamma and Colless, in this order.}
@@ -32,9 +32,10 @@ it is computed with \code{reps} draws per value.}
 
 \item{reps}{Passed to \code{\link[=calibrate_shape]{calibrate_shape()}} when \code{calibration} is \code{NULL}.}
 
-\item{max_tries}{Maximum number of topologies, and of interval sets, drawn.}
+\item{max_tries}{Maximum number of topologies, and of interval sets, drawn,
+a single positive integer.}
 
-\item{root_age}{Age of the root.}
+\item{root_age}{Age of the root, a single positive number.}
 }
 \value{
 With \code{nsim = 1}, a \code{phylo} object; otherwise a \code{multiPhylo} object
