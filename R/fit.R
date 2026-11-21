@@ -55,13 +55,25 @@
 #' whereas the likelihood treats it as censored. Percentile intervals need a
 #' few hundred replicates.
 #'
+#' \strong{Optimization.} Each parameter is estimated separately with
+#' [stats::optimize()], a golden-section search with successive parabolic
+#' interpolation over the bounded interval `beta_range` or `c_range`, with a
+#' tolerance of `1e-6` on the parameter. The search needs no starting value
+#' and assumes a single maximum within the interval; an estimate at a bound is
+#' flagged (`beta_at_bound`, `c_at_bound`). The name of the algorithm, the
+#' tolerance and the number of evaluations of each log-likelihood are returned
+#' in `optimizer`.
+#'
 #' @param tree A binary, rooted, ultrametric `phylo` object with at least four
 #'   tips.
-#' @param boot Number of parametric bootstrap replicates (0 for none).
-#' @param level Coverage of the bootstrap percentile intervals.
+#' @param boot Number of parametric bootstrap replicates, a single
+#'   non-negative integer (0, the default, for none).
+#' @param level Coverage of the bootstrap percentile intervals, a single number
+#'   between 0 and 1.
 #' @param beta_range,c_range Search intervals for `beta` (lower bound above -2)
-#'   and `c`.
-#' @param tol Tolerance of the ultrametricity check, as in
+#'   and `c`: numeric vectors of two increasing finite values.
+#' @param tol Tolerance of the ultrametricity check, a single non-negative
+#'   number, as in
 #'   [ape::is.ultrametric()] (scaled range of root-to-tip distances). Trees with
 #'   rounded branch lengths may need a larger value, or can be made ultrametric
 #'   first (for instance with `phytools::force.ultrametric()`).
@@ -69,14 +81,16 @@
 #'   `tree`, a single number greater than 0 and at most 1. Below 1, `c` is
 #'   corrected for incomplete sampling (see Details).
 #' @param correction_reps Number of trees at each value of the grid used in the
-#'   correction for incomplete sampling.
+#'   correction for incomplete sampling, a single positive integer.
 #' @return An object of class `shape_fit`: a list with `n`, `beta`, `c`, `r`
 #'   (speciation rate per lineage at one lineage, in the time units of the
 #'   tree), `loglik_beta` (log-likelihood of `beta` up to an additive constant,
 #'   so not comparable with other software), `loglik_c` (profile log-likelihood
 #'   of `c`, equal to the log-likelihood of laser's DDX model at its maximum),
 #'   `beta_at_bound` and `c_at_bound` (estimate at a bound of the search
-#'   interval), `beta_range`, `c_range`, `shape` (output of [tree_shape()]) and,
+#'   interval), `beta_range`, `c_range`, `shape` (output of [tree_shape()]),
+#'   `optimizer` (list with the `algorithm`, its `tol` and the number of
+#'   `evaluations` of each log-likelihood) and,
 #'   with `boot > 0`, `boot` (data frame of bootstrap estimates) and `ci`
 #'   (matrix of percentile intervals). With `sampling_fraction` below 1, `c` is
 #'   the corrected estimate, `r` is `NA`, `loglik_c` refers to the uncorrected
@@ -103,6 +117,15 @@
 #' Rabosky, D. L. (2006). LASER: a maximum likelihood toolkit for detecting
 #' temporal shifts in diversification rates from molecular phylogenies.
 #' *Evolutionary Bioinformatics*, 2. \doi{10.1177/117693430600200024}
+#' @srrstats {G1.0} Primary references for both estimators are listed.
+#' @srrstats {G1.3} The likelihoods, the correction for sampling and the
+#'   bootstrap are defined in Details.
+#' @srrstats {G2.0a, G2.1a} Expected lengths and types are given for every
+#'   argument.
+#' @srrstats {PD1.0} The beta-splitting and DDX models are justified with
+#'   references (Aldous 1996; Rabosky 2006; Etienne et al. 2016).
+#' @srrstats {PD3.2, PD3.3} The optimizer, its tolerance and the number of
+#'   evaluations are documented and returned in `optimizer`.
 #' @examples
 #' set.seed(1)
 #' tr <- sim_tree_shape(200, beta = -1, c = -0.8)
@@ -116,31 +139,8 @@
 fit_shape <- function(tree, boot = 0, level = 0.95, beta_range = c(-1.999, 10),
                       c_range = c(-5, 5), tol = .Machine$double.eps^0.5,
                       sampling_fraction = 1, correction_reps = 100) {
-  if (!inherits(tree, "phylo") || !ape::is.binary(tree) || !ape::is.rooted(tree) ||
-      ape::Ntip(tree) < 4) {
-    stop("`tree` must be a binary, rooted `phylo` object with at least 4 tips.",
-         call. = FALSE)
-  }
-  if (!is.numeric(tol) || length(tol) != 1 || !is.finite(tol) || tol < 0) {
-    stop("`tol` must be a single non-negative number.", call. = FALSE)
-  }
-  if (is.null(tree$edge.length) || !ape::is.ultrametric(tree, tol = tol)) {
-    stop("`tree` must be ultrametric, with branch lengths (increase `tol` for rounded branch lengths, or use e.g. phytools::force.ultrametric()).",
-         call. = FALSE)
-  }
-  if (!is.numeric(boot) || length(boot) != 1 || !is.finite(boot) || boot < 0 ||
-      boot != round(boot)) {
-    stop("`boot` must be a single non-negative integer.", call. = FALSE)
-  }
-  if (!is.numeric(level) || length(level) != 1 || !(level > 0 && level < 1)) {
-    stop("`level` must be a single number between 0 and 1.", call. = FALSE)
-  }
-  check_range(beta_range, "beta_range")
-  check_range(c_range, "c_range")
-  if (beta_range[1] <= -2) stop("`beta_range` must lie above -2.", call. = FALSE)
-  check_fraction(sampling_fraction)
-  check_count(correction_reps, "correction_reps")
-
+  check_fit_args(tree, boot, level, beta_range, c_range, tol, sampling_fraction,
+                 correction_reps)
   n <- ape::Ntip(tree)
   splits <- split_sizes(tree)
   g <- tree_intervals(tree)
@@ -149,10 +149,14 @@ fit_shape <- function(tree, boot = 0, level = 0.95, beta_range = c(-1.999, 10),
   out <- list(n = n, beta = fb$beta, c = fc$c, r = fc$r, loglik_beta = fb$loglik,
               loglik_c = fc$loglik, beta_at_bound = fb$at_bound,
               c_at_bound = fc$at_bound, beta_range = beta_range, c_range = c_range,
-              shape = tree_shape(tree))
+              shape = tree_shape(tree),
+              optimizer = list(algorithm = optimizer_name, tol = optimizer_tol,
+                               evaluations = c(beta = fb$evaluations,
+                                               c = fc$evaluations)))
   sampled <- sampling_fraction < 1
   if (sampled) {
-    curve <- sampling_curve(n, fb$beta, fc$c, sampling_fraction, c_range, correction_reps)
+    curve <- sampling_curve(n, fb$beta, fc$c, sampling_fraction, c_range,
+                            correction_reps)
     out$c_uncorrected <- fc$c
     out$c <- invert_curve(curve, fc$c)
     out$r <- NA_real_
@@ -161,17 +165,8 @@ fit_shape <- function(tree, boot = 0, level = 0.95, beta_range = c(-1.999, 10),
     out$correction <- curve
   }
   if (boot > 0) {
-    draws <- t(vapply(seq_len(boot), function(b) {
-      if (sampled) {
-        tr <- suppressWarnings(sim_tree_shape(n, fb$beta, out$c,
-                                              sampling_fraction = sampling_fraction))
-        c(beta = fit_beta(split_sizes(tr), beta_range)$beta,
-          c = invert_curve(curve, fit_c(tree_intervals(tr), c_range)$c))
-      } else {
-        c(beta = fit_beta(split_sizes(rtopology_beta(n, fb$beta)), beta_range)$beta,
-          c = fit_c(intervals_lineage_rate(n, fc$c), c_range)$c)
-      }
-    }, numeric(2)))
+    draws <- boot_draws(boot, n, fb$beta, fc$c, out$c, beta_range, c_range,
+                        sampling_fraction, out$correction)
     probs <- c((1 - level) / 2, 1 - (1 - level) / 2)
     out$boot <- as.data.frame(draws)
     out$ci <- rbind(beta = stats::quantile(draws[, "beta"], probs),
@@ -202,7 +197,8 @@ print.shape_fit <- function(x, digits = 3, ...) {
         if (upper) "balanced" else "imbalanced", "for this model.\n")
   }
   if (isTRUE(x$c_at_bound) && sampled) {
-    cat("c is at the limit of the correction for sampling: treat it as unreliable.\n")
+    cat("c is at the limit of the correction for sampling: treat it as",
+        "unreliable.\n")
   } else if (isTRUE(x$c_at_bound)) {
     cat("c is at a bound of `c_range`: widen it, or the branching times carry",
         "little information (few tips).\n")
@@ -212,7 +208,75 @@ print.shape_fit <- function(x, digits = 3, ...) {
   invisible(x)
 }
 
-# clade sizes (m) and size of one child (i) at every internal node
+#' Optimizer used by fit_shape()
+#'
+#' Both parameters are estimated with [stats::optimize()], a golden-section
+#' search with successive parabolic interpolation (Brent 1973) over a bounded
+#' interval, with the tolerance below; it needs no starting value.
+#' @srrstats {PD3.2} The optimizer, its tolerance and the search intervals are
+#'   fixed here and documented in [fit_shape()].
+#' @noRd
+optimizer_name <- "stats::optimize (golden-section search, parabolic interpolation)"
+optimizer_tol <- 1e-6
+
+#' Check the arguments of fit_shape()
+#'
+#' @srrstats {G2.0, G2.1, G2.2} Lengths and types of all arguments are asserted.
+#' @noRd
+check_fit_args <- function(tree, boot, level, beta_range, c_range, tol,
+                           sampling_fraction, correction_reps) {
+  check_tree(tree, min_tips = 4, lengths = TRUE)
+  if (!is_number(tol) || tol < 0) {
+    stop("`tol` must be a single non-negative number.", call. = FALSE)
+  }
+  if (!ape::is.ultrametric(tree, tol = tol)) {
+    stop("`tree` must be ultrametric (increase `tol` for rounded branch ",
+         "lengths, or use e.g. phytools::force.ultrametric()).", call. = FALSE)
+  }
+  if (!is_number(boot) || boot < 0 || !is_whole(boot)) {
+    stop("`boot` must be a single non-negative integer.", call. = FALSE)
+  }
+  if (!is_number(level) || level <= 0 || level >= 1) {
+    stop("`level` must be a single number between 0 and 1.", call. = FALSE)
+  }
+  check_range(beta_range, "beta_range")
+  check_range(c_range, "c_range")
+  if (beta_range[1] <= -2) stop("`beta_range` must lie above -2.", call. = FALSE)
+  check_fraction(sampling_fraction)
+  check_count(correction_reps, "correction_reps")
+}
+
+#' Parametric bootstrap estimates of beta and c
+#'
+#' @param boot Number of replicates.
+#' @param n Number of tips.
+#' @param beta,c_hat Estimates used to simulate (uncorrected `c`).
+#' @param c_sim Value of `c` used to simulate whole sampled trees (corrected).
+#' @param curve Correction curve, or `NULL` without sampling.
+#' @return A matrix with columns `beta` and `c`, one row per replicate.
+#' @noRd
+boot_draws <- function(boot, n, beta, c_hat, c_sim, beta_range, c_range,
+                       sampling_fraction, curve) {
+  one <- function(b) {
+    if (is.null(curve)) {
+      return(c(beta = fit_beta(split_sizes(rtopology_beta(n, beta)),
+                               beta_range)$beta,
+               c = fit_c(intervals_lineage_rate(n, c_hat), c_range)$c))
+    }
+    tr <- suppressWarnings(sim_tree_shape(n, beta, c_sim,
+                                          sampling_fraction = sampling_fraction))
+    c(beta = fit_beta(split_sizes(tr), beta_range)$beta,
+      c = invert_curve(curve, fit_c(tree_intervals(tr), c_range)$c))
+  }
+  t(vapply(seq_len(boot), one, numeric(2)))
+}
+
+#' Clade sizes at the internal nodes
+#'
+#' @param topo A binary `phylo` object, with or without branch lengths.
+#' @return A two-column matrix with the clade size `m` and the size `i` of the
+#'   first child at every internal node.
+#' @noRd
 split_sizes <- function(topo) {
   n <- ape::Ntip(topo)
   tips_below <- ape::node.depth(topo, method = 1)
@@ -223,41 +287,85 @@ split_sizes <- function(topo) {
   cbind(m = m, i = i)
 }
 
-# log-likelihood of beta (up to a constant) given the splits
+#' Log-probabilities of the splits of a clade under beta-splitting
+#'
+#' Analytic probabilities (Aldous 1996), normalized on the log scale with the
+#' log-sum-exp trick so that large clades do not overflow.
+#'
+#' @param beta Value of Aldous' beta at which the probabilities are computed.
+#' @param m Clade size (at least 2).
+#' @return Log-probabilities of splits into `1, ..., m - 1` and `m - i` tips.
+#' @srrstats {PD3.0} Probabilities are computed analytically.
+#' @noRd
+log_split_prob <- function(beta, m) {
+  j <- seq_len(m - 1)
+  lw <- lgamma(beta + j + 1) + lgamma(beta + m - j + 1) - lgamma(j + 1) -
+    lgamma(m - j + 1)
+  mx <- max(lw)
+  lw - (mx + log(sum(exp(lw - mx))))
+}
+
+#' Log-likelihood of beta given the splits of a tree
+#'
+#' @param beta Value of Aldous' beta at which the likelihood is computed.
+#' @param splits Output of `split_sizes()`.
+#' @return The log-likelihood; splits of two tips have probability 1 whatever
+#'   `beta` and are left out.
+#' @noRd
 loglik_beta <- function(beta, splits) {
-  log_q <- function(m, i) {
-    j <- seq_len(m - 1)
-    lw <- lgamma(beta + j + 1) + lgamma(beta + m - j + 1) - lgamma(j + 1) - lgamma(m - j + 1)
-    mx <- max(lw)
-    lw[i] - (mx + log(sum(exp(lw - mx))))
-  }
-  # splits of 2 tips have probability 1 whatever beta
   keep <- splits[, "m"] > 2
-  sum(mapply(log_q, splits[keep, "m"], splits[keep, "i"]))
+  sum(mapply(function(m, i) log_split_prob(beta, m)[i],
+             splits[keep, "m"], splits[keep, "i"]))
 }
 
+#' Maximum likelihood estimate of beta
+#'
+#' @return A list with `beta`, `loglik`, `at_bound` and `evaluations` (number
+#'   of evaluations of the log-likelihood).
+#' @srrstats {PD3.3} The number of evaluations is returned with the estimate.
+#' @noRd
 fit_beta <- function(splits, beta_range) {
-  opt <- stats::optimize(loglik_beta, beta_range, splits = splits, maximum = TRUE,
-                         tol = 1e-6)
+  counter <- new.env(parent = emptyenv())
+  counter$calls <- 0L
+  f <- function(beta) {
+    counter$calls <- counter$calls + 1L
+    loglik_beta(beta, splits)
+  }
+  opt <- stats::optimize(f, beta_range, maximum = TRUE, tol = optimizer_tol)
   list(beta = opt$maximum, loglik = opt$objective,
-       at_bound = at_bound(opt$maximum, beta_range))
+       at_bound = at_bound(opt$maximum, beta_range),
+       evaluations = counter$calls)
 }
 
+#' Is an estimate at a bound of its search interval?
+#'
+#' @return `TRUE` if `x` is within 0.1% of the width of `range` from a bound.
+#' @noRd
 at_bound <- function(x, range) {
   eps <- 1e-3 * diff(range)
   x - range[1] < eps || range[2] - x < eps
 }
 
-# internode intervals g_2, ..., g_n of an ultrametric tree (g[k - 1] is the
-# time with k lineages; the last one runs from the most recent split to the
-# present)
+#' Internode intervals of an ultrametric tree
+#'
+#' @return Intervals `g_2, ..., g_n`, where `g[k - 1]` is the time with `k`
+#'   lineages; the last one runs from the most recent split to the present.
+#' @noRd
 tree_intervals <- function(tree) {
   bt <- sort(ape::branching.times(tree), decreasing = TRUE)
   c(-diff(bt), bt[length(bt)])
 }
 
-# DDX profile log-likelihood of c (r at its maximum likelihood value), as in
-# laser::DDX() with x = -c
+#' Profile log-likelihood of c
+#'
+#' The density-dependent exponential (DDX) log-likelihood of laser::DDX() with
+#' `x = -c`, with the rate `r` at its maximum likelihood value.
+#'
+#' @param c Value of `c` at which the likelihood is computed.
+#' @param g Internode intervals, as from `tree_intervals()`.
+#' @return The profile log-likelihood.
+#' @srrstats {PD3.0} The likelihood and the profiled rate are analytic.
+#' @noRd
 loglik_c <- function(c, g) {
   n <- length(g) + 1
   k <- 2:n
@@ -267,31 +375,59 @@ loglik_c <- function(c, g) {
   sum(log(ev)) + (n - 2) * log(r) + c * sum(log(ev)) - r * s
 }
 
+#' Maximum likelihood estimate of c
+#'
+#' @return A list with `c`, `loglik`, `r`, `at_bound` and `evaluations`.
+#' @noRd
 fit_c <- function(g, c_range) {
-  opt <- stats::optimize(loglik_c, c_range, g = g, maximum = TRUE, tol = 1e-6)
+  counter <- new.env(parent = emptyenv())
+  counter$calls <- 0L
+  f <- function(c) {
+    counter$calls <- counter$calls + 1L
+    loglik_c(c, g)
+  }
+  opt <- stats::optimize(f, c_range, maximum = TRUE, tol = optimizer_tol)
   n <- length(g) + 1
   list(c = opt$maximum, loglik = opt$objective,
        r = (n - 2) / sum((2:n)^(1 + opt$maximum) * g),
-       at_bound = at_bound(opt$maximum, c_range))
+       at_bound = at_bound(opt$maximum, c_range),
+       evaluations = counter$calls)
 }
 
-# mean uncorrected estimate of c in sampled trees, over a grid of true c
+#' Curve of the uncorrected estimate of c under incomplete sampling
+#'
+#' @param n Number of tips of the sampled tree.
+#' @param beta,c_hat Estimates from the sampled tree.
+#' @param reps Number of trees at each value of the grid.
+#' @return A data frame with the true `c` on the grid and the mean uncorrected
+#'   estimate, made monotone by isotonic regression.
+#' @noRd
 sampling_curve <- function(n, beta, c_hat, sampling_fraction, c_range, reps) {
-  grid <- unique(pmin(pmax(c_hat + seq(-1, 3, by = 0.5), c_range[1]), c_range[2]))
+  grid <- unique(pmin(pmax(c_hat + seq(-1, 3, by = 0.5), c_range[1]),
+                      c_range[2]))
   estimate <- function(v) {
-    tr <- suppressWarnings(sim_tree_shape(n, beta, v, sampling_fraction = sampling_fraction))
+    tr <- suppressWarnings(sim_tree_shape(n, beta, v,
+                                          sampling_fraction = sampling_fraction))
     fit_c(tree_intervals(tr), c_range)$c
   }
   mean_c <- vapply(grid, function(v) mean(replicate(reps, estimate(v))), 0)
   data.frame(c = grid, uncorrected = stats::isoreg(grid, mean_c)$yf)
 }
 
+#' Invert the correction curve at an uncorrected estimate
+#'
+#' @return The corrected `c`, clamped to the range of the grid.
+#' @noRd
 invert_curve <- function(curve, x) {
   stats::approx(curve$uncorrected, curve$c, xout = x, rule = 2, ties = mean)$y
 }
 
+#' Check a search interval
+#'
+#' @noRd
 check_range <- function(x, name) {
-  if (!is.numeric(x) || length(x) != 2 || any(!is.finite(x)) || x[1] >= x[2]) {
-    stop(sprintf("`%s` must hold two increasing finite numbers.", name), call. = FALSE)
+  if (!is.numeric(x) || length(x) != 2 || !all(is.finite(x)) || x[1] >= x[2]) {
+    stop(sprintf("`%s` must hold two increasing finite numbers.", name),
+         call. = FALSE)
   }
 }

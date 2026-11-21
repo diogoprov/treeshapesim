@@ -12,6 +12,11 @@
 #' @references Aldous, D. (1996). Probability distributions on cladograms. In
 #'   D. Aldous & R. Pemantle (Eds.), *Random discrete structures* (pp. 1--18).
 #'   Springer. \doi{10.1007/978-1-4612-0719-1_1}
+#' @srrstats {G1.0, PD1.0} The beta-splitting model is referenced (Aldous
+#'   1996).
+#' @srrstats {G2.4, G2.4a} `n` is converted with `as.integer()` after it is
+#'   checked to be a whole number.
+#' @srrstats {PD3.0} Split probabilities are analytic.
 #' @examples
 #' set.seed(1)
 #' rtopology_beta(10, beta = -1)
@@ -45,7 +50,10 @@ rtopology_beta <- function(n, beta = 0) {
     }
     if (m > 1) {
       i <- seq_len(m - 1)
-      lw <- lgamma(beta + i + 1) + lgamma(beta + m - i + 1) - lgamma(i + 1) - lgamma(m - i + 1)
+      # unnormalized weights (sample() normalizes); kept as they are so that
+      # the same seed gives the same trees as earlier versions
+      lw <- lgamma(beta + i + 1) + lgamma(beta + m - i + 1) - lgamma(i + 1) -
+        lgamma(m - i + 1)
       k <- sample(i, 1, prob = exp(lw - max(lw)))
       start <- clade[["start"]]
       stack[[length(stack) + 1]] <- c(start = start + k, m = m - k, parent = id)
@@ -90,6 +98,9 @@ rtopology_beta <- function(n, beta = 0) {
 #'   Pybus, O. G., & Harvey, P. H. (2000). Testing macro-evolutionary
 #'   models using incomplete molecular phylogenies. *Proceedings of the Royal
 #'   Society B*, 267, 2267--2272. \doi{10.1098/rspb.2000.1278}
+#' @srrstats {PD1.0} The lineage-dependent pure-birth process and the
+#'   limits of its interpretation are referenced (Pybus & Harvey 2000;
+#'   Pannetier et al. 2021).
 #' @examples
 #' set.seed(1)
 #' intervals_lineage_rate(10, c = -1)
@@ -105,25 +116,34 @@ intervals_lineage_rate <- function(n, c = 0, rate = NULL) {
   g / sum(g)
 }
 
-# total split rates with k = 2, ..., n lineages, after checking `rate`
+#' Total split rates with 2 to n lineages
+#'
+#' @param n Number of tips.
+#' @param c,rate As in [intervals_lineage_rate()], already checked except for
+#'   their combination.
+#' @return The total rates `k * rate(k)` (or `k^(1 + c)`) for `k = 2, ..., n`,
+#'   after checking that they are positive and finite.
+#' @srrstats {G2.16} Rates that overflow, underflow or are not finite are
+#'   rejected with an error.
+#' @noRd
 total_rates <- function(n, c, rate) {
   k <- 2:n
   if (is.null(rate)) {
     total <- k^(1 + c)
-    if (any(!is.finite(total)) || any(total <= 0)) {
-      stop(sprintf("`c` = %g is too extreme for %d tips: the split rates overflow or underflow.",
-                   c, n), call. = FALSE)
+    if (!all(is.finite(total)) || any(total <= 0)) {
+      stop(sprintf(paste("`c` = %g is too extreme for %d tips: the split rates",
+                         "overflow or underflow."), c, n), call. = FALSE)
     }
     return(total)
   }
-  if (c != 0) stop("Use either `c` or `rate`, not both.", call. = FALSE)
+  if (abs(c) > 0) stop("Use either `c` or `rate`, not both.", call. = FALSE)
   msg <- paste("`rate` must be a vectorized function that returns n - 1",
                "positive, finite values for k = 2, ..., n.")
   if (!is.function(rate)) stop(msg, call. = FALSE)
   r <- rate(k)
   if (!is.numeric(r) || length(r) != n - 1) stop(msg, call. = FALSE)
   total <- k * as.vector(r)
-  if (any(!is.finite(total)) || any(total <= 0)) stop(msg, call. = FALSE)
+  if (!all(is.finite(total)) || any(total <= 0)) stop(msg, call. = FALSE)
   total
 }
 
@@ -143,11 +163,9 @@ total_rates <- function(n, c, rate) {
 #' assign_ages(rtopology_beta(10), intervals_lineage_rate(10))
 #' @export
 assign_ages <- function(topo, g) {
-  if (!inherits(topo, "phylo") || !ape::is.binary(topo) || !ape::is.rooted(topo)) {
-    stop("`topo` must be a binary, rooted `phylo` object.", call. = FALSE)
-  }
+  check_tree(topo, name = "topo")
   n <- ape::Ntip(topo)
-  if (!is.numeric(g) || length(g) != n - 1 || any(!is.finite(g)) || any(g <= 0)) {
+  if (!is.numeric(g) || length(g) != n - 1 || !all(is.finite(g)) || any(g <= 0)) {
     stop("`g` must hold Ntip(topo) - 1 positive, finite intervals.", call. = FALSE)
   }
   ages_sorted <- rev(cumsum(rev(g)))      # ages of the n - 1 splits, oldest first
@@ -196,8 +214,8 @@ assign_ages <- function(topo, g) {
 #'
 #' @inheritParams rtopology_beta
 #' @inheritParams intervals_lineage_rate
-#' @param nsim Number of trees.
-#' @param root_age Age of the root (positive).
+#' @param nsim Number of trees, a single positive integer.
+#' @param root_age Age of the root, a single positive number.
 #' @param sampling_fraction Fraction of the tips of the complete tree that are
 #'   kept, a single number greater than 0 and at most 1.
 #' @return With `nsim = 1`, a binary, ultrametric `phylo` object with root
@@ -211,6 +229,8 @@ assign_ages <- function(topo, g) {
 #'   platform. Between platforms (for instance, arm64 and x86-64), differences
 #'   in the last bit of floating-point functions can change a few draws of the
 #'   topology, so trees may differ.
+#' @srrstats {G2.0a, G2.1a} Expected lengths and types are given for every
+#'   argument.
 #' @examples
 #' set.seed(1)
 #' tr <- sim_tree_shape(50, beta = -1, c = -1)
@@ -233,7 +253,8 @@ sim_tree_shape <- function(n, beta = 0, c = 0, nsim = 1, root_age = 1, rate = NU
   check_n(n_full)
   total_rates(n_full, c, rate)
   one <- function() {
-    tr <- assign_ages(rtopology_beta(n_full, beta), intervals_lineage_rate(n_full, c, rate))
+    tr <- assign_ages(rtopology_beta(n_full, beta),
+                      intervals_lineage_rate(n_full, c, rate))
     if (n_full > n) tr <- sample_tips(tr, n)
     tr$edge.length <- tr$edge.length * root_age
     tr
@@ -241,8 +262,8 @@ sim_tree_shape <- function(n, beta = 0, c = 0, nsim = 1, root_age = 1, rate = NU
   trees <- replicate(nsim, one(), simplify = FALSE)
   n_zero <- sum(vapply(trees, function(tr) any(tr$edge.length <= 0), logical(1)))
   if (n_zero > 0) {
-    warning(sprintf("%d of %d trees have branches of length zero: `c` or `rate` is too extreme.",
-                    n_zero, nsim), call. = FALSE)
+    warning(sprintf(paste("%d of %d trees have branches of length zero: `c` or",
+                          "`rate` is too extreme."), n_zero, nsim), call. = FALSE)
   }
   out <- if (nsim == 1) trees[[1]] else structure(trees, class = "multiPhylo")
   attr(out, "params") <- c(beta = beta, c = if (is.null(rate)) c else NA_real_,
@@ -251,7 +272,12 @@ sim_tree_shape <- function(n, beta = 0, c = 0, nsim = 1, root_age = 1, rate = NU
   out
 }
 
-# keep n random tips, with root depth 1 and tips relabelled t1, ..., tn
+#' Keep a random subset of tips
+#'
+#' @param tree An ultrametric `phylo` object.
+#' @param n Number of tips to keep.
+#' @return The subtree with root depth 1 and tips relabelled `t1, ..., tn`.
+#' @noRd
 sample_tips <- function(tree, n) {
   tree <- ape::drop.tip(tree, sample(tree$tip.label, ape::Ntip(tree) - n))
   tree$edge.length <- tree$edge.length / max(ape::node.depth.edgelength(tree))
@@ -259,36 +285,70 @@ sample_tips <- function(tree, n) {
   tree
 }
 
-# argument checks shared by the exported functions
+#' Argument checks shared by the exported functions
+#'
+#' `is_number()` is `TRUE` for a single finite number; `is_whole()` compares
+#' with the nearest integer within a tolerance, not with `==`.
+#'
+#' @srrstats {G2.0, G2.1, G2.2} Single-valued numeric arguments are checked for
+#'   length, type and finiteness, so vectors are rejected where one value is
+#'   expected.
+#' @srrstats {G2.13, G2.14, G2.14a, G2.15, G2.16} Missing (`NA`) and undefined
+#'   (`NaN`, `Inf`) values are rejected with an error in every numeric argument
+#'   and in branch lengths; no function imputes or drops them, because a tree
+#'   with a missing branch length has no defined shape.
+#' @srrstats {G3.0} Integer checks use a tolerance rather than equality of
+#'   floating-point numbers.
+#' @noRd
+is_number <- function(x) {
+  is.numeric(x) && length(x) == 1 && is.finite(x)
+}
+is_whole <- function(x) {
+  abs(x - round(x)) < sqrt(.Machine$double.eps)
+}
+check_tree <- function(tree, min_tips = 2, lengths = FALSE, name = "tree") {
+  ok <- inherits(tree, "phylo") && ape::Ntip(tree) >= min_tips &&
+    ape::is.binary(tree) && ape::is.rooted(tree)
+  if (!ok) {
+    stop(sprintf("`%s` must be a binary, rooted `phylo` object with at least %d tips.",
+                 name, min_tips), call. = FALSE)
+  }
+  if (lengths && (is.null(tree$edge.length) ||
+                    !all(is.finite(tree$edge.length)) ||
+                    any(tree$edge.length < 0))) {
+    stop(sprintf("`%s` must have non-negative, finite branch lengths.", name),
+         call. = FALSE)
+  }
+}
 check_n <- function(n) {
-  if (!is.numeric(n) || length(n) != 1 || !is.finite(n) || n < 2 || n != round(n) ||
-      n > .Machine$integer.max) {
+  if (!is_number(n) || n < 2 || !is_whole(n) || n > .Machine$integer.max) {
     stop("`n` must be a single integer of at least 2.", call. = FALSE)
   }
 }
 check_beta <- function(beta) {
-  if (!is.numeric(beta) || length(beta) != 1 || !is.finite(beta) || beta <= -2) {
+  if (!is_number(beta) || beta <= -2) {
     stop("`beta` must be a single finite number greater than -2.", call. = FALSE)
   }
 }
 check_c <- function(c) {
-  if (!is.numeric(c) || length(c) != 1 || !is.finite(c)) {
+  if (!is_number(c)) {
     stop("`c` must be a single finite number.", call. = FALSE)
   }
 }
 check_fraction <- function(x) {
-  if (!is.numeric(x) || length(x) != 1 || !is.finite(x) || x <= 0 || x > 1) {
+  if (!is_number(x) || x <= 0 || x > 1) {
     stop("`sampling_fraction` must be a single number greater than 0 and at most 1.",
          call. = FALSE)
   }
 }
 check_count <- function(x, name) {
-  if (!is.numeric(x) || length(x) != 1 || !is.finite(x) || x < 1 || x != round(x)) {
+  if (!is_number(x) || x < 1 || !is_whole(x)) {
     stop(sprintf("`%s` must be a single positive integer.", name), call. = FALSE)
   }
 }
 check_positive <- function(x, name) {
-  if (!is.numeric(x) || length(x) != 1 || !is.finite(x) || x <= 0) {
-    stop(sprintf("`%s` must be a single positive, finite number.", name), call. = FALSE)
+  if (!is_number(x) || x <= 0) {
+    stop(sprintf("`%s` must be a single positive, finite number.", name),
+         call. = FALSE)
   }
 }

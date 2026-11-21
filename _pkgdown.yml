@@ -12,7 +12,7 @@ reference:
 - title: Extinction
   desc: Remove tips at random, in clusters on the tree or according to a trait.
   contents:
-  - prune_tips
+  - extinct_tips
 - title: Target shapes and grids
   desc: Shape statistics, calibration of the parameters and grids of tree shapes.
   contents:

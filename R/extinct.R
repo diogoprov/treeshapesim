@@ -75,54 +75,72 @@
 #' @examples
 #' set.seed(1)
 #' tr <- sim_tree_shape(50, beta = -1)
-#' clustered <- prune_tips(tr, 0.4, signal = 1)
-#' random <- prune_tips(tr, 0.4, signal = 0)
+#' clustered <- extinct_tips(tr, 0.4, signal = 1)
+#' random <- extinct_tips(tr, 0.4, signal = 0)
 #' attr(clustered, "lost")
 #' # extinction linked to a trait
 #' body_size <- setNames(rnorm(50), tr$tip.label)
-#' prune_tips(tr, 0.4, risk = exp(2 * body_size))
+#' extinct_tips(tr, 0.4, risk = exp(2 * body_size))
 #' @export
-prune_tips <- function(tree, fraction, risk = NULL, signal = 1) {
-  if (!inherits(tree, "phylo") || !ape::is.binary(tree) || !ape::is.rooted(tree) ||
-      is.null(tree$edge.length)) {
-    stop("`tree` must be a binary, rooted `phylo` object with branch lengths.",
-         call. = FALSE)
-  }
-  if (!is.numeric(fraction) || length(fraction) != 1 || !is.finite(fraction) ||
-      fraction <= 0 || fraction >= 1) {
+extinct_tips <- function(tree, fraction, risk = NULL, signal = 1) {
+  check_tree(tree, min_tips = 3, lengths = TRUE)
+  if (!is_number(fraction) || fraction <= 0 || fraction >= 1) {
     stop("`fraction` must be a single number between 0 and 1.", call. = FALSE)
   }
   tips <- tree$tip.label
   n_lost <- round(fraction * length(tips))
   if (n_lost < 1 || length(tips) - n_lost < 2) {
-    stop("`fraction` must remove at least one tip and leave at least two.", call. = FALSE)
+    stop("`fraction` must remove at least one tip and leave at least two.",
+         call. = FALSE)
   }
-  if (is.null(risk)) {
-    if (!is.numeric(signal) || length(signal) != 1 || !is.finite(signal) ||
-        signal < 0 || signal > 1) {
-      stop("`signal` must be a single number from 0 to 1.", call. = FALSE)
-    }
-    liability <- tip_liability(tree, signal)
-    lost <- names(sort(liability, decreasing = TRUE))[seq_len(n_lost)]
+  lost <- if (is.null(risk)) {
+    lost_by_liability(tree, n_lost, signal)
   } else {
-    if (!is.numeric(risk) || is.null(names(risk)) || !setequal(names(risk), tips) ||
-        anyDuplicated(names(risk)) > 0 || any(!is.finite(risk)) || any(risk < 0)) {
-      stop("`risk` must hold one non-negative, finite value per tip, named with the tip labels.",
-           call. = FALSE)
-    }
-    if (sum(risk > 0) < n_lost) {
-      stop("`risk` must be positive for at least as many tips as are lost.", call. = FALSE)
-    }
-    risk <- risk[tips]
-    lost <- sample(tips, n_lost, prob = risk)
+    lost_by_risk(tips, n_lost, risk)
   }
   out <- ape::drop.tip(tree, lost)
   attr(out, "lost") <- lost
   out
 }
 
-# Brownian liability at the tips under Pagel's lambda: internal branches are
-# multiplied by lambda, and terminal branches extended to keep root-to-tip depths
+#' Tips lost by the highest latent liability
+#'
+#' @return The labels of the `n_lost` tips with the highest liability.
+#' @noRd
+lost_by_liability <- function(tree, n_lost, signal) {
+  if (!is_number(signal) || signal < 0 || signal > 1) {
+    stop("`signal` must be a single number from 0 to 1.", call. = FALSE)
+  }
+  liability <- tip_liability(tree, signal)
+  names(sort(liability, decreasing = TRUE))[seq_len(n_lost)]
+}
+
+#' Tips lost by weighted sampling without replacement
+#'
+#' @srrstats {G2.6} `risk` is matched to the tips by name, whatever its order.
+#' @return The labels of `n_lost` tips drawn with probability proportional to
+#'   `risk`.
+#' @noRd
+lost_by_risk <- function(tips, n_lost, risk) {
+  ok <- is.numeric(risk) && !is.null(names(risk)) &&
+    setequal(names(risk), tips) && anyDuplicated(names(risk)) == 0 &&
+    all(is.finite(risk)) && all(risk >= 0)
+  if (!ok) {
+    stop("`risk` must hold one non-negative, finite value per tip, named with ",
+         "the tip labels.", call. = FALSE)
+  }
+  if (sum(risk > 0) < n_lost) {
+    stop("`risk` must be positive for at least as many tips as are lost.",
+         call. = FALSE)
+  }
+  sample(tips, n_lost, prob = as.numeric(risk[tips]))
+}
+
+#' Brownian liability at the tips under Pagel's lambda
+#'
+#' Internal branches are multiplied by lambda and terminal branches extended
+#' to keep the root-to-tip depths.
+#' @noRd
 tip_liability <- function(tree, lambda) {
   n <- ape::Ntip(tree)
   depth <- ape::node.depth.edgelength(tree)

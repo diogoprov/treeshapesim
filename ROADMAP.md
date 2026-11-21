@@ -31,12 +31,18 @@ Atualizado em 2026-11-05, depois dos itens 8, 9, 10, 12 e 17, da correção de `
 | 17. Cobertura de testes | workflow `test-coverage.yaml` (`covr` e Codecov), `codecov.yml` e badge no README; repositório ativo no Codecov, com o segredo `CODECOV_TOKEN` | versão de desenvolvimento |
 | `fit_shape()` com amostragem incompleta | `sampling_fraction` e `correction_reps`: `c` corrigido por simulação (curva monótona invertida), também no bootstrap; β não é corrigido | versão de desenvolvimento |
 | r-universe | pacote listado em `diogoprov/diogoprov.r-universe.dev` (`packages.json`, branch `main`); a versão 0.2.1 está publicada em diogoprov.r-universe.dev, com badge e instrução de instalação no README | `packages.json` |
-| Extinção não aleatória | `prune_tips()`: um evento de extinção na árvore, aleatório, agrupado na filogenia (`signal`) ou ligado a atributos (`risk`); artigo do site com o comdynamite (`vignettes/articles/comdynamite.Rmd`), fora do `R CMD check` para não criar dependência circular | versão de desenvolvimento |
+| Extinção não aleatória | `extinct_tips()` (antes `prune_tips()`, renomeada pelo conflito de nome com o treesliceR): um evento de extinção na árvore, aleatório, agrupado na filogenia (`signal`) ou ligado a atributos (`risk`); artigo do site com o comdynamite (`vignettes/articles/comdynamite.Rmd`), fora do `R CMD check` para não criar dependência circular | versão de desenvolvimento |
+| Padrões da rOpenSci | dev guide: CONTRIBUTING, Code of Conduct, ORCID, badges de status e lifecycle, codemeta.json; statistical software (geral + Probability Distributions) documentados com `srr` (74 cumpridos, 27 N/A), testes de correção, recuperação, ruído e casos-limite, testes estendidos com `TREESHAPESIM_EXTENDED_TESTS`; `fit_shape()` devolve `optimizer` | versão de desenvolvimento |
 | 14. Documentação precisa | a independência de γ e Colless em relação a `c` e β agora é descrita como exata (para um dado n) | PR #3 |
 
 ## A fazer
 
 ### Alta prioridade
+
+- **Pendências do goodpractice.** Complexidade ciclomática ainda acima de 15 em
+  algumas funções (as checagens de argumentos contam como ramos) e linhas
+  longas em `data-raw/`, que fica fora do pacote. Não bloqueiam, mas o revisor
+  vai ver.
 
 ### Média prioridade
 
@@ -194,7 +200,7 @@ terreno do TreeSim, e o comdynamite não usaria as linhagens extintas. Extinçã
 diferente entre linhagens ao longo da história do clado (BiSSE, QuaSSE) também
 fica de fora, porque gera topologia e tempos juntos e perde a separação que é a
 proposta do pacote. O que cabe é o evento sobre a árvore pronta, em
-`prune_tips()`.
+`extinct_tips()`.
 
 ## Ligação com o artigo
 

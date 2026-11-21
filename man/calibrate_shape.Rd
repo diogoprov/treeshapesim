@@ -20,7 +20,8 @@ least two).}
 
 \item{c}{Values of \code{c} at which gamma is estimated (at least two).}
 
-\item{reps}{Number of topologies or interval sets per value.}
+\item{reps}{Number of topologies or interval sets per value, a single
+positive integer.}
 }
 \value{
 An object of class \code{shape_calibration}: a list with \code{n}, \code{reps} and
