@@ -147,6 +147,10 @@
 </tr><tr><td>Complexidade das funções</td>
 <td>validadores reunidos em <code>R/checks.R</code> (<code>check_number()</code> genérico); <code><a href="reference/shape_params.html">shape_params()</a></code>, <code>check_fit_args()</code>, <code>lost_by_risk()</code>, <code><a href="reference/sim_tree_target.html">sim_tree_target()</a></code>, <code>check_tree()</code>, <code>total_rates()</code> e <code><a href="reference/assign_ages.html">assign_ages()</a></code> divididas; nenhuma função passa de complexidade ciclomática 10</td>
 <td>versão de desenvolvimento</td>
+</tr><tr><td>goodpractice sem pendências</td>
+<td>linhas de no máximo 80 caracteres em <code>R/</code>, testes, vignettes e <code>data-raw/</code>; <code>expect_identical()</code> nas comparações exatas (tolerância explícita nas demais); <code>@inheritParams</code> no lugar de <code>@param</code> repetidos; <code>fixed = TRUE</code> em <code>data-raw/hex_preview_ggplot2.R</code>
+</td>
+<td>versão de desenvolvimento</td>
 </tr><tr><td>14. Documentação precisa</td>
 <td>a independência de γ e Colless em relação a <code>c</code> e β agora é descrita como exata (para um dado n)</td>
 <td>PR #3</td>
@@ -155,8 +159,7 @@
 <h2 id="a-fazer">A fazer<a class="anchor" aria-label="anchor" href="#a-fazer"></a></h2>
 <div class="section level3">
 <h3 id="alta-prioridade">Alta prioridade<a class="anchor" aria-label="anchor" href="#alta-prioridade"></a></h3>
-<ul><li>
-<strong>Pendências do goodpractice.</strong> Linhas com mais de 80 caracteres (em <code>R/</code>, nos testes e em <code>data-raw/</code>), <code>expect_equal()</code> onde <code>expect_identical()</code> bastaria e duas sugestões de <code>@inheritParams</code>. Não bloqueiam, mas o revisor vai ver.</li>
+<ul><li>Nada pendente: o pkgcheck passa sem avisos do goodpractice.</li>
 </ul></div>
 <div class="section level3">
 <h3 id="média-prioridade">Média prioridade<a class="anchor" aria-label="anchor" href="#m%C3%A9dia-prioridade"></a></h3>

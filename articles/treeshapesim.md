@@ -30,8 +30,11 @@ topology, so `c` moves gamma without changing the Colless index and
 yule <- sim_tree_shape(100, nsim = 50)
 early <- sim_tree_shape(100, c = -1, nsim = 50)
 imbalanced <- sim_tree_shape(100, beta = -1.5, nsim = 50)
+mean_shape <- function(trees) {
+  colMeans(t(vapply(trees, tree_shape, numeric(2))))
+}
 shapes <- lapply(list(yule = yule, early = early, imbalanced = imbalanced),
-                 function(trees) colMeans(t(vapply(trees, tree_shape, numeric(2)))))
+                 mean_shape)
 do.call(rbind, shapes)
 #>                  gamma     colless
 #> yule        0.31793823 -0.10063867
@@ -162,7 +165,8 @@ the shape of the lineage-through-time curve, not its cause.
 
 ``` r
 
-empirical <- sim_tree_shape(150, beta = -1, c = -0.7)   # stands in for a real tree
+# stands in for a real tree
+empirical <- sim_tree_shape(150, beta = -1, c = -0.7)
 fit_shape(empirical, boot = 30)
 #> Shape estimates for a tree with 150 tips
 #>      estimate   2.5%  97.5%

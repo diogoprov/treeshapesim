@@ -114,21 +114,23 @@ kept, a single number greater than 0 and at most 1.</p></dd>
     <p>With <code>nsim = 1</code>, a binary, ultrametric <code>phylo</code> object with root
 depth <code>root_age</code>; otherwise a <code>multiPhylo</code> object with <code>nsim</code> such trees.
 Attribute <code>params</code> holds <code>beta</code>, <code>c</code> (<code>NA</code> with <code>rate</code>), <code>root_age</code> and
-<code>sampling_fraction</code>, and attribute <code>rate</code> holds the <code>rate</code> function, if any.</p>
+<code>sampling_fraction</code>, and attribute <code>rate</code> holds the <code>rate</code> function, if
+any.</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
     <p>With <code>sampling_fraction</code> below 1, a complete tree of <code>round(n / sampling_fraction)</code> tips is drawn, <code>beta</code> and <code>c</code> (or <code>rate</code>) apply to that
 tree, and <code>n</code> tips are kept at random, so the result still has <code>n</code> tips and
-root depth <code>root_age</code>. Incomplete sampling removes recent splits and so lowers
-gamma (Pybus &amp; Harvey 2000), so gamma no longer follows the calibration of
-<code><a href="calibrate_shape.html">calibrate_shape()</a></code>. After sampling, gamma also depends slightly on the
-topology, because the splits that remain depend on it, so the separation
-between gamma and the Colless index is exact only for complete trees.
+root depth <code>root_age</code>. Incomplete sampling removes recent splits and so
+lowers gamma (Pybus &amp; Harvey 2000), so gamma no longer follows the
+calibration of <code><a href="calibrate_shape.html">calibrate_shape()</a></code>. After sampling, gamma also depends
+slightly on the topology, because the splits that remain depend on it, so
+the separation between gamma and the Colless index is exact only for
+complete trees.
 A <code>rate</code> function must be valid for the number of tips of the complete tree.</p>
-<p>Very extreme values of <code>c</code> (or <code>rate</code>) make some intervals negligible relative
-to the others, and the corresponding branches round to length zero; a warning
-is given when this happens.</p>
+<p>Very extreme values of <code>c</code> (or <code>rate</code>) make some intervals negligible
+relative to the others, and the corresponding branches round to length zero;
+a warning is given when this happens.</p>
     </div>
     <div class="section level2">
     <h2 id="reproducibility">Reproducibility<a class="anchor" aria-label="anchor" href="#reproducibility"></a></h2>
