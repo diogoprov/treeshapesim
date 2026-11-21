@@ -34,16 +34,17 @@ versão publicada: 0.2.1; versão de desenvolvimento 0.2.1.9000.
 | r-universe | pacote listado em `diogoprov/diogoprov.r-universe.dev` (`packages.json`, branch `main`); a versão 0.2.1 está publicada em diogoprov.r-universe.dev, com badge e instrução de instalação no README | `packages.json` |
 | Extinção não aleatória | [`extinct_tips()`](https://provetelab.org/treeshapesim/reference/extinct_tips.md) (antes `prune_tips()`, renomeada pelo conflito de nome com o treesliceR): um evento de extinção na árvore, aleatório, agrupado na filogenia (`signal`) ou ligado a atributos (`risk`); artigo do site com o comdynamite (`vignettes/articles/comdynamite.Rmd`), fora do `R CMD check` para não criar dependência circular | versão de desenvolvimento |
 | Padrões da rOpenSci | dev guide: CONTRIBUTING, Code of Conduct, ORCID, badges de status e lifecycle, codemeta.json; statistical software (geral + Probability Distributions) documentados com `srr` (74 cumpridos, 27 N/A), testes de correção, recuperação, ruído e casos-limite, testes estendidos com `TREESHAPESIM_EXTENDED_TESTS`; [`fit_shape()`](https://provetelab.org/treeshapesim/reference/fit_shape.md) devolve `optimizer` | versão de desenvolvimento |
+| Complexidade das funções | validadores reunidos em `R/checks.R` (`check_number()` genérico); [`shape_params()`](https://provetelab.org/treeshapesim/reference/shape_params.md), `check_fit_args()`, `lost_by_risk()`, [`sim_tree_target()`](https://provetelab.org/treeshapesim/reference/sim_tree_target.md), `check_tree()`, `total_rates()` e [`assign_ages()`](https://provetelab.org/treeshapesim/reference/assign_ages.md) divididas; nenhuma função passa de complexidade ciclomática 10 | versão de desenvolvimento |
 | 14\. Documentação precisa | a independência de γ e Colless em relação a `c` e β agora é descrita como exata (para um dado n) | PR \#3 |
 
 ## A fazer
 
 ### Alta prioridade
 
-- **Pendências do goodpractice.** Complexidade ciclomática ainda acima
-  de 15 em algumas funções (as checagens de argumentos contam como
-  ramos) e linhas longas em `data-raw/`, que fica fora do pacote. Não
-  bloqueiam, mas o revisor vai ver.
+- **Pendências do goodpractice.** Linhas com mais de 80 caracteres (em
+  `R/`, nos testes e em `data-raw/`), `expect_equal()` onde
+  `expect_identical()` bastaria e duas sugestões de `@inheritParams`.
+  Não bloqueiam, mas o revisor vai ver.
 
 ### Média prioridade
 

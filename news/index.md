@@ -61,6 +61,9 @@
   formulas, of alternative search intervals and optimizers, of noise,
   edge conditions and parameter recovery; extended tests run with
   `TREESHAPESIM_EXTENDED_TESTS="true"`.
+- Argument checks are gathered in internal helpers, so that no function
+  has cyclomatic complexity above 10; error messages and results are
+  unchanged.
 - Test coverage on Codecov.
 - The README compares treeshapesim with TreeSimGM too, and lists
   [`fit_shape()`](https://provetelab.org/treeshapesim/reference/fit_shape.md)

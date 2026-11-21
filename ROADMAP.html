@@ -144,6 +144,9 @@
 <td>dev guide: CONTRIBUTING, Code of Conduct, ORCID, badges de status e lifecycle, codemeta.json; statistical software (geral + Probability Distributions) documentados com <code>srr</code> (74 cumpridos, 27 N/A), testes de correção, recuperação, ruído e casos-limite, testes estendidos com <code>TREESHAPESIM_EXTENDED_TESTS</code>; <code><a href="reference/fit_shape.html">fit_shape()</a></code> devolve <code>optimizer</code>
 </td>
 <td>versão de desenvolvimento</td>
+</tr><tr><td>Complexidade das funções</td>
+<td>validadores reunidos em <code>R/checks.R</code> (<code>check_number()</code> genérico); <code><a href="reference/shape_params.html">shape_params()</a></code>, <code>check_fit_args()</code>, <code>lost_by_risk()</code>, <code><a href="reference/sim_tree_target.html">sim_tree_target()</a></code>, <code>check_tree()</code>, <code>total_rates()</code> e <code><a href="reference/assign_ages.html">assign_ages()</a></code> divididas; nenhuma função passa de complexidade ciclomática 10</td>
+<td>versão de desenvolvimento</td>
 </tr><tr><td>14. Documentação precisa</td>
 <td>a independência de γ e Colless em relação a <code>c</code> e β agora é descrita como exata (para um dado n)</td>
 <td>PR #3</td>
@@ -153,7 +156,7 @@
 <div class="section level3">
 <h3 id="alta-prioridade">Alta prioridade<a class="anchor" aria-label="anchor" href="#alta-prioridade"></a></h3>
 <ul><li>
-<strong>Pendências do goodpractice.</strong> Complexidade ciclomática ainda acima de 15 em algumas funções (as checagens de argumentos contam como ramos) e linhas longas em <code>data-raw/</code>, que fica fora do pacote. Não bloqueiam, mas o revisor vai ver.</li>
+<strong>Pendências do goodpractice.</strong> Linhas com mais de 80 caracteres (em <code>R/</code>, nos testes e em <code>data-raw/</code>), <code>expect_equal()</code> onde <code>expect_identical()</code> bastaria e duas sugestões de <code>@inheritParams</code>. Não bloqueiam, mas o revisor vai ver.</li>
 </ul></div>
 <div class="section level3">
 <h3 id="média-prioridade">Média prioridade<a class="anchor" aria-label="anchor" href="#m%C3%A9dia-prioridade"></a></h3>
