@@ -30,6 +30,7 @@ from quantiles of \code{\link[=tree_shape]{tree_shape()}} over empirical trees o
 }
 \examples{
 set.seed(1)
-grid <- shape_grid(50, gamma = c(-2, -1, 0), colless = c(0, 0.5, 1), reps = 50)
+grid <- shape_grid(50, gamma = c(-2, -1, 0), colless = c(0, 0.5, 1),
+                   reps = 50)
 grid
 }

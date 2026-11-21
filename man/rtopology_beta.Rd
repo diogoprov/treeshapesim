@@ -17,7 +17,8 @@ A \code{phylo} object without branch lengths, with tips \code{t1}, ..., \code{tn
 }
 \description{
 A clade of m tips splits into i and m - i tips with probability proportional
-to Gamma(beta + i + 1) Gamma(beta + m - i + 1) / (Gamma(i + 1) Gamma(m - i + 1)).
+to Gamma(beta + i + 1) Gamma(beta + m - i + 1) /
+(Gamma(i + 1) Gamma(m - i + 1)).
 \code{beta = 0} is Yule, \code{beta = -1.5} is PDA, \code{beta} close to -2 is
 caterpillar-like and large \code{beta} is balanced.
 }

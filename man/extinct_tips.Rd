@@ -10,13 +10,13 @@ extinct_tips(tree, fraction, risk = NULL, signal = 1)
 \item{tree}{A binary, rooted \code{phylo} object with branch lengths.}
 
 \item{fraction}{Fraction of the tips that are lost, a single number greater
-than 0 and less than 1. \code{round(fraction * Ntip(tree))} tips are removed, and
-at least two must remain.}
+than 0 and less than 1. \code{round(fraction * Ntip(tree))} tips are removed,
+and at least two must remain.}
 
-\item{risk}{\code{NULL}, or a numeric vector of non-negative weights named with the
-tip labels of \code{tree}. Tips are drawn without replacement with probability
-proportional to \code{risk}. To link extinction to a trait, use for instance
-\code{exp(b * trait)}.}
+\item{risk}{\code{NULL}, or a numeric vector of non-negative weights named with
+the tip labels of \code{tree}. Tips are drawn without replacement with
+probability proportional to \code{risk}. To link extinction to a trait, use
+for instance \code{exp(b * trait)}.}
 
 \item{signal}{Pagel's lambda of the latent liability, a single number from 0
 to 1, used when \code{risk} is \code{NULL}. The tips with the highest liability are
@@ -35,8 +35,8 @@ clustered the losses are: \code{signal = 0} is random extinction, and with
 \code{signal = 1} close relatives tend to be lost together, up to whole clades.
 }
 \details{
-Under a homogeneous birth-death process the shape of the reconstructed tree is
-the same as under pure birth (Gernhard 2008), so extinction changes the
+Under a homogeneous birth-death process the shape of the reconstructed tree
+is the same as under pure birth (Gernhard 2008), so extinction changes the
 topology only if it differs among lineages. The event acts on the tree as it
 stands, at the present; it does not model extinction that differs among
 lineages throughout the history of the clade, for which speciation and
@@ -49,9 +49,9 @@ its effect depends on how risk relates to speciation rates (Heard & Mooers
 2000) and on the shape of the tree (Veron et al. 2017). The same \code{fraction}
 with \code{signal = 0} is therefore the natural control.
 
-Unlike \code{sampling_fraction} in \code{\link[=sim_tree_shape]{sim_tree_shape()}}, the tree is not rescaled and
-the tip labels are kept, so that traits stay aligned with the species that
-remain. If a whole daughter clade of the root is lost, the root of the
+Unlike \code{sampling_fraction} in \code{\link[=sim_tree_shape]{sim_tree_shape()}}, the tree is not rescaled
+and the tip labels are kept, so that traits stay aligned with the species
+that remain. If a whole daughter clade of the root is lost, the root of the
 remaining tree is younger. The separation between gamma and the Colless index
 holds before the event, not after it, and \code{\link[=calibrate_shape]{calibrate_shape()}} does not apply
 to the remaining tree.

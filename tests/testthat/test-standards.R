@@ -52,7 +52,7 @@ test_that("split probabilities match the beta-splitting formula", {
   expect_equal(sum(p), 1, tolerance = 1e-10)
 })
 
-test_that("the log-likelihood of beta is the sum of the split log-probabilities", {
+test_that("the log-likelihood of beta sums the split log-probabilities", {
   # PD4.1: the caterpillar of 5 tips splits 5 -> (1, 4), 4 -> (1, 3),
   # 3 -> (1, 2); the 2-tip split has probability 1
   cat5 <- ape::stree(5, "left")

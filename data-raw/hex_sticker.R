@@ -41,7 +41,8 @@ p <- ggplot(segs) +
                linewidth = 0.45, lineend = "square") +
   annotate("segment", x = 0.2, xend = 4.15, y = -0.35, yend = -0.35,
            colour = "#264653", linewidth = 0.4,
-           arrow = grid::arrow(length = grid::unit(0.06, "inches"), type = "closed")) +
+           arrow = grid::arrow(length = grid::unit(0.06, "inches"),
+                               type = "closed")) +
   annotate("text", x = 2.17, y = -0.65, label = "\u03b2",
            colour = "#264653", size = 3.2) +
   scale_colour_manual(values = pal, guide = "none") +
@@ -53,5 +54,6 @@ sticker(p, package = "treeshapesim",
         p_size = 17, p_color = "#264653", p_y = 0.47,
         s_x = 1, s_y = 1.08, s_width = 1.35, s_height = 0.85,
         h_fill = "#FFFFFF", h_color = "#264653", h_size = 1.6,
-        url = "diogoprov.github.io/treeshapesim", u_size = 4.5, u_color = "#264653",
+        url = "diogoprov.github.io/treeshapesim", u_size = 4.5,
+        u_color = "#264653",
         filename = "man/figures/logo.png", dpi = 300)

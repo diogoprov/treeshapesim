@@ -28,17 +28,20 @@
 #' cal <- calibrate_shape(50, reps = 50)
 #' cal$gamma
 #' @export
-calibrate_shape <- function(n, beta = c(-1.95, -1.8, -1.6, -1.4, -1.2, -1, -0.75,
-                                        -0.5, 0, 0.5, 1, 2, 4, 8),
+calibrate_shape <- function(n,
+                            beta = c(-1.95, -1.8, -1.6, -1.4, -1.2, -1, -0.75,
+                                     -0.5, 0, 0.5, 1, 2, 4, 8),
                             c = seq(-2, 1, by = 0.25), reps = 200) {
   check_n(n)
   if (n < 4) {
-    stop("`n` must be at least 4 to calibrate the Colless index.", call. = FALSE)
+    stop("`n` must be at least 4 to calibrate the Colless index.",
+         call. = FALSE)
   }
   beta <- sort(unique(beta))
   c <- sort(unique(c))
   if (length(beta) < 2 || length(c) < 2) {
-    stop("`beta` and `c` must hold at least two distinct values each.", call. = FALSE)
+    stop("`beta` and `c` must hold at least two distinct values each.",
+         call. = FALSE)
   }
   for (b in beta) check_beta(b)
   for (v in c) check_c(v)
@@ -53,7 +56,8 @@ calibrate_shape <- function(n, beta = c(-1.95, -1.8, -1.6, -1.4, -1.2, -1, -0.75
   structure(list(n = as.integer(n), reps = as.integer(reps),
                  colless = data.frame(beta = beta, colless = colless,
                                       colless_mean = colless_mean),
-                 gamma = data.frame(c = c, gamma = gamma, gamma_mean = gamma_mean)),
+                 gamma = data.frame(c = c, gamma = gamma,
+                                    gamma_mean = gamma_mean)),
             class = "shape_calibration")
 }
 
@@ -110,7 +114,8 @@ shape_params <- function(calibration, gamma, colless) {
 #' @noRd
 invert_stat <- function(stat, value, target, what) {
   o <- order(stat)
-  res <- stats::approx(stat[o], value[o], xout = target, rule = 1, ties = mean)$y
+  res <- stats::approx(stat[o], value[o], xout = target, rule = 1,
+                       ties = mean)$y
   if (anyNA(res)) {
     param <- c(gamma = "`c`", colless = "`beta`")[[what]]
     stop(sprintf(paste("target %s outside the calibrated range [%.3g, %.3g];",
@@ -277,7 +282,8 @@ get_calibration <- function(calibration, n, reps) {
 #'   [sim_tree_shape()] (parameters).
 #' @examples
 #' set.seed(1)
-#' grid <- shape_grid(50, gamma = c(-2, -1, 0), colless = c(0, 0.5, 1), reps = 50)
+#' grid <- shape_grid(50, gamma = c(-2, -1, 0), colless = c(0, 0.5, 1),
+#'                    reps = 50)
 #' grid
 #' @export
 shape_grid <- function(n, gamma, colless, calibration = NULL, reps = 200) {

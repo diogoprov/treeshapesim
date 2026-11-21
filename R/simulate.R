@@ -1,7 +1,8 @@
 #' Random topology under Aldous' beta-splitting model
 #'
 #' A clade of m tips splits into i and m - i tips with probability proportional
-#' to Gamma(beta + i + 1) Gamma(beta + m - i + 1) / (Gamma(i + 1) Gamma(m - i + 1)).
+#' to Gamma(beta + i + 1) Gamma(beta + m - i + 1) /
+#' (Gamma(i + 1) Gamma(m - i + 1)).
 #' `beta = 0` is Yule, `beta = -1.5` is PDA, `beta` close to -2 is
 #' caterpillar-like and large `beta` is balanced.
 #'
@@ -28,8 +29,9 @@ rtopology_beta <- function(n, beta = 0) {
   # Clades are split depth first, left before right, in the order of a
   # recursive construction, with an explicit stack instead of recursion (which
   # fails for large, very imbalanced trees). Clade = tips start..start + m - 1.
-  # Internal nodes are numbered and edges listed in preorder, as ape::read.tree()
-  # does for the equivalent Newick string, so the same seed gives the same tree.
+  # Internal nodes are numbered and edges listed in preorder, as
+  # ape::read.tree() does for the equivalent Newick string, so the same seed
+  # gives the same tree.
   edge <- matrix(0L, 2 * n - 2, 2)
   n_edge <- 0L
   next_node <- n + 1L
@@ -83,7 +85,7 @@ rtopology_beta <- function(n, beta = 0) {
 #' [calibrate_shape()], [shape_params()] and [sim_tree_target()] work with `c`
 #' only; with `rate`, the calibration is left to the user.
 #'
-#' @param n Number of tips, a single integer of at least 2.
+#' @inheritParams rtopology_beta
 #' @param c Lineage dependence of the split rate, a single finite number.
 #' @param rate `NULL` (the default), to use `c`, or a vectorized function of the
 #'   number of lineages k that returns the per-lineage split rate. It must
@@ -118,9 +120,8 @@ intervals_lineage_rate <- function(n, c = 0, rate = NULL) {
 
 #' Total split rates with 2 to n lineages
 #'
-#' @param n Number of tips.
-#' @param c,rate As in [intervals_lineage_rate()], already checked except for
-#'   their combination.
+#' @param n,c,rate As in [intervals_lineage_rate()], already checked except
+#'   for the combination of `c` and `rate`.
 #' @return The total rates `k * rate(k)` (or `k^(1 + c)`) for `k = 2, ..., n`,
 #'   after checking that they are positive and finite.
 #' @srrstats {G2.16} Rates that overflow, underflow or are not finite are
@@ -172,9 +173,11 @@ assign_ages <- function(topo, g) {
   check_tree(topo, name = "topo")
   n <- ape::Ntip(topo)
   if (!is_finite_numeric(g, n - 1) || any(g <= 0)) {
-    stop("`g` must hold Ntip(topo) - 1 positive, finite intervals.", call. = FALSE)
+    stop("`g` must hold Ntip(topo) - 1 positive, finite intervals.",
+         call. = FALSE)
   }
-  ages_sorted <- rev(cumsum(rev(g)))      # ages of the n - 1 splits, oldest first
+  # ages of the n - 1 splits, oldest first
+  ages_sorted <- rev(cumsum(rev(g)))
   parent <- topo$edge[, 1]
   child <- topo$edge[, 2]
   internal <- n + seq_len(topo$Nnode)
@@ -207,16 +210,17 @@ assign_ages <- function(topo, g) {
 #' With `sampling_fraction` below 1, a complete tree of `round(n /
 #' sampling_fraction)` tips is drawn, `beta` and `c` (or `rate`) apply to that
 #' tree, and `n` tips are kept at random, so the result still has `n` tips and
-#' root depth `root_age`. Incomplete sampling removes recent splits and so lowers
-#' gamma (Pybus & Harvey 2000), so gamma no longer follows the calibration of
-#' [calibrate_shape()]. After sampling, gamma also depends slightly on the
-#' topology, because the splits that remain depend on it, so the separation
-#' between gamma and the Colless index is exact only for complete trees.
+#' root depth `root_age`. Incomplete sampling removes recent splits and so
+#' lowers gamma (Pybus & Harvey 2000), so gamma no longer follows the
+#' calibration of [calibrate_shape()]. After sampling, gamma also depends
+#' slightly on the topology, because the splits that remain depend on it, so
+#' the separation between gamma and the Colless index is exact only for
+#' complete trees.
 #' A `rate` function must be valid for the number of tips of the complete tree.
 #'
-#' Very extreme values of `c` (or `rate`) make some intervals negligible relative
-#' to the others, and the corresponding branches round to length zero; a warning
-#' is given when this happens.
+#' Very extreme values of `c` (or `rate`) make some intervals negligible
+#' relative to the others, and the corresponding branches round to length zero;
+#' a warning is given when this happens.
 #'
 #' @inheritParams rtopology_beta
 #' @inheritParams intervals_lineage_rate
@@ -227,7 +231,8 @@ assign_ages <- function(topo, g) {
 #' @return With `nsim = 1`, a binary, ultrametric `phylo` object with root
 #'   depth `root_age`; otherwise a `multiPhylo` object with `nsim` such trees.
 #'   Attribute `params` holds `beta`, `c` (`NA` with `rate`), `root_age` and
-#'   `sampling_fraction`, and attribute `rate` holds the `rate` function, if any.
+#'   `sampling_fraction`, and attribute `rate` holds the `rate` function, if
+#'   any.
 #' @references Pybus, O. G., & Harvey, P. H. (2000). Testing macro-evolutionary
 #'   models using incomplete molecular phylogenies. *Proceedings of the Royal
 #'   Society B*, 267, 2267--2272. \doi{10.1098/rspb.2000.1278}
@@ -247,8 +252,8 @@ assign_ages <- function(topo, g) {
 #' # 50 tips sampled from a complete tree of 100
 #' sim_tree_shape(50, sampling_fraction = 0.5)
 #' @export
-sim_tree_shape <- function(n, beta = 0, c = 0, nsim = 1, root_age = 1, rate = NULL,
-                           sampling_fraction = 1) {
+sim_tree_shape <- function(n, beta = 0, c = 0, nsim = 1, root_age = 1,
+                           rate = NULL, sampling_fraction = 1) {
   check_n(n)
   check_beta(beta)
   check_c(c)
@@ -266,14 +271,17 @@ sim_tree_shape <- function(n, beta = 0, c = 0, nsim = 1, root_age = 1, rate = NU
     tr
   }
   trees <- replicate(nsim, one(), simplify = FALSE)
-  n_zero <- sum(vapply(trees, function(tr) any(tr$edge.length <= 0), logical(1)))
+  n_zero <- sum(vapply(trees, function(tr) any(tr$edge.length <= 0),
+                       logical(1)))
   if (n_zero > 0) {
     warning(sprintf(paste("%d of %d trees have branches of length zero: `c` or",
-                          "`rate` is too extreme."), n_zero, nsim), call. = FALSE)
+                          "`rate` is too extreme."), n_zero, nsim),
+            call. = FALSE)
   }
   out <- if (nsim == 1) trees[[1]] else structure(trees, class = "multiPhylo")
   attr(out, "params") <- c(beta = beta, c = if (is.null(rate)) c else NA_real_,
-                           root_age = root_age, sampling_fraction = sampling_fraction)
+                           root_age = root_age,
+                           sampling_fraction = sampling_fraction)
   attr(out, "rate") <- rate
   out
 }

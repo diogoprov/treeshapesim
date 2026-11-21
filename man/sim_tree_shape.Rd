@@ -38,7 +38,8 @@ kept, a single number greater than 0 and at most 1.}
 With \code{nsim = 1}, a binary, ultrametric \code{phylo} object with root
 depth \code{root_age}; otherwise a \code{multiPhylo} object with \code{nsim} such trees.
 Attribute \code{params} holds \code{beta}, \code{c} (\code{NA} with \code{rate}), \code{root_age} and
-\code{sampling_fraction}, and attribute \code{rate} holds the \code{rate} function, if any.
+\code{sampling_fraction}, and attribute \code{rate} holds the \code{rate} function, if
+any.
 }
 \description{
 Draws the topology with \code{\link[=rtopology_beta]{rtopology_beta()}} and the internode intervals with
@@ -52,16 +53,17 @@ both statistics, see \code{\link[=sim_tree_target]{sim_tree_target()}}.
 \details{
 With \code{sampling_fraction} below 1, a complete tree of \code{round(n / sampling_fraction)} tips is drawn, \code{beta} and \code{c} (or \code{rate}) apply to that
 tree, and \code{n} tips are kept at random, so the result still has \code{n} tips and
-root depth \code{root_age}. Incomplete sampling removes recent splits and so lowers
-gamma (Pybus & Harvey 2000), so gamma no longer follows the calibration of
-\code{\link[=calibrate_shape]{calibrate_shape()}}. After sampling, gamma also depends slightly on the
-topology, because the splits that remain depend on it, so the separation
-between gamma and the Colless index is exact only for complete trees.
+root depth \code{root_age}. Incomplete sampling removes recent splits and so
+lowers gamma (Pybus & Harvey 2000), so gamma no longer follows the
+calibration of \code{\link[=calibrate_shape]{calibrate_shape()}}. After sampling, gamma also depends
+slightly on the topology, because the splits that remain depend on it, so
+the separation between gamma and the Colless index is exact only for
+complete trees.
 A \code{rate} function must be valid for the number of tips of the complete tree.
 
-Very extreme values of \code{c} (or \code{rate}) make some intervals negligible relative
-to the others, and the corresponding branches round to length zero; a warning
-is given when this happens.
+Very extreme values of \code{c} (or \code{rate}) make some intervals negligible
+relative to the others, and the corresponding branches round to length zero;
+a warning is given when this happens.
 }
 \section{Reproducibility}{
  The same seed gives the same trees on the same

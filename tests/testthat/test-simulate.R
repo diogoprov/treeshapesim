@@ -6,7 +6,7 @@ tree_shape <- function(tree) {
 test_that("sim_tree_shape gives binary ultrametric trees with root depth 1", {
   set.seed(2)
   tr <- sim_tree_shape(60, beta = -1, c = -1)
-  expect_equal(ape::Ntip(tr), 60)
+  expect_identical(ape::Ntip(tr), 60L)
   expect_true(ape::is.binary(tr))
   expect_true(ape::is.ultrametric(tr))
   expect_equal(max(ape::node.depth.edgelength(tr)), 1, tolerance = 1e-10)
@@ -32,7 +32,9 @@ test_that("beta = 0 and c = 0 reproduce Yule expectations", {
 test_that("Colless decreases with beta and gamma increases with c", {
   skip_if_not_installed("treestats")
   set.seed(5)
-  m <- function(b, c) colMeans(t(replicate(100, tree_shape(sim_tree_shape(50, b, c)))))
+  m <- function(b, c) {
+    colMeans(t(replicate(100, tree_shape(sim_tree_shape(50, b, c)))))
+  }
   expect_gt(m(-1.2, 0)[["colless"]], m(1, 0)[["colless"]])
   expect_lt(m(0, -1)[["gamma"]], m(0, 0.5)[["gamma"]])
 })
@@ -49,9 +51,11 @@ rtopology_beta_newick <- function(n, beta) {
     m <- length(tips)
     if (m == 1) return(tips)
     i <- seq_len(m - 1)
-    lw <- lgamma(beta + i + 1) + lgamma(beta + m - i + 1) - lgamma(i + 1) - lgamma(m - i + 1)
+    lw <- lgamma(beta + i + 1) + lgamma(beta + m - i + 1) -
+      lgamma(i + 1) - lgamma(m - i + 1)
     k <- sample(i, 1, prob = exp(lw - max(lw)))
-    paste0("(", split_clade(tips[seq_len(k)]), ",", split_clade(tips[-seq_len(k)]), ")")
+    paste0("(", split_clade(tips[seq_len(k)]), ",",
+           split_clade(tips[-seq_len(k)]), ")")
   }
   ape::read.tree(text = paste0(split_clade(paste0("t", seq_len(n))), ";"))
 }
@@ -73,7 +77,7 @@ test_that("the iterative topology gives the same trees as version 0.1.0", {
 test_that("large, very imbalanced trees do not hit the recursion limit", {
   set.seed(6)
   tr <- sim_tree_shape(3000, beta = -1.99)
-  expect_equal(ape::Ntip(tr), 3000)
+  expect_identical(ape::Ntip(tr), 3000L)
   expect_true(ape::is.binary(tr))
   expect_true(ape::is.ultrametric(tr))
 })
@@ -94,7 +98,8 @@ test_that("nsim and root_age", {
   trees <- sim_tree_shape(20, beta = -1, c = -1, nsim = 3, root_age = 25)
   expect_s3_class(trees, "multiPhylo")
   expect_length(trees, 3)
-  expect_equal(max(ape::node.depth.edgelength(trees[[2]])), 25, tolerance = 1e-10)
+  expect_equal(max(ape::node.depth.edgelength(trees[[2]])), 25,
+               tolerance = 1e-10)
   # the defaults keep the trees of version 0.1.0 (values frozen from it)
   set.seed(9)
   a <- sim_tree_shape(30, -0.5, 0.2)
@@ -102,7 +107,8 @@ test_that("nsim and root_age", {
                c(0.438640484330867, 0.561359515669133, 0.561359515669133,
                  0.212964724332516, 0.119147621644043, 0.39735936236442),
                tolerance = 1e-12)
-  expect_equal(a$edge[c(1, 10, 30), ], matrix(c(31L, 36L, 45L, 32L, 5L, 15L), 3))
+  expect_identical(a$edge[c(1, 10, 30), ],
+                   matrix(c(31L, 36L, 45L, 32L, 5L, 15L), 3))
   expect_error(sim_tree_shape(10, nsim = 0), "`nsim`")
   expect_error(sim_tree_shape(10, root_age = -1), "`root_age`")
   expect_error(assign_ages(rtopology_beta(5), c(1, 1, 1, -1)), "`g`")
@@ -141,25 +147,30 @@ test_that("rate works with nsim and root_age and gives valid trees", {
                           rate = function(k) ifelse(k <= 10, 1, 0.1))
   expect_s3_class(trees, "multiPhylo")
   expect_true(ape::is.ultrametric(trees[[3]]))
-  expect_equal(max(ape::node.depth.edgelength(trees[[3]])), 10, tolerance = 1e-10)
+  expect_equal(max(ape::node.depth.edgelength(trees[[3]])), 10,
+               tolerance = 1e-10)
   expect_length(intervals_lineage_rate(2, rate = function(k) k), 1)
 })
 
 test_that("a logistic rate with K close to n gives negative gamma", {
   set.seed(15)
-  gam <- replicate(100, ape::gammaStat(sim_tree_shape(50, rate = function(k) 1 - k / 55)))
+  logistic <- function(k) 1 - k / 55
+  gam <- replicate(100, ape::gammaStat(sim_tree_shape(50, rate = logistic)))
   expect_lt(mean(gam), 0)
 })
 
 test_that("invalid rate functions are rejected", {
   expect_error(sim_tree_shape(10, c = -1, rate = function(k) k), "not both")
-  expect_error(intervals_lineage_rate(10, c = 1, rate = function(k) k), "not both")
+  expect_error(intervals_lineage_rate(10, c = 1, rate = function(k) k),
+               "not both")
   expect_error(sim_tree_shape(10, rate = 2), "`rate`")
   expect_error(sim_tree_shape(10, rate = function(k) 1), "`rate`")
-  expect_error(sim_tree_shape(10, rate = function(k) rep("a", length(k))), "`rate`")
-  expect_error(sim_tree_shape(10, rate = function(k) 1 - k / 10), "`rate`") # K <= n
-  expect_error(sim_tree_shape(10, rate = function(k) rep(NA_real_, length(k))), "`rate`")
-  expect_error(sim_tree_shape(10, rate = function(k) rep(Inf, length(k))), "`rate`")
+  constant <- function(value) function(k) rep(value, length(k))
+  expect_error(sim_tree_shape(10, rate = constant("a")), "`rate`")
+  # K <= n
+  expect_error(sim_tree_shape(10, rate = function(k) 1 - k / 10), "`rate`")
+  expect_error(sim_tree_shape(10, rate = constant(NA_real_)), "`rate`")
+  expect_error(sim_tree_shape(10, rate = constant(Inf)), "`rate`")
   expect_error(intervals_lineage_rate(10, rate = function(k) -k), "`rate`")
 })
 
@@ -191,24 +202,29 @@ test_that("extreme c gives a warning or a clear error", {
 
 test_that("sampling_fraction keeps n tips of a larger tree", {
   set.seed(18)
-  tr <- sim_tree_shape(30, beta = -1, c = -0.5, root_age = 7, sampling_fraction = 0.3)
-  expect_equal(ape::Ntip(tr), 30)
+  tr <- sim_tree_shape(30, beta = -1, c = -0.5, root_age = 7,
+                       sampling_fraction = 0.3)
+  expect_identical(ape::Ntip(tr), 30L)
   expect_true(ape::is.binary(tr))
   expect_true(ape::is.ultrametric(tr))
   expect_equal(max(ape::node.depth.edgelength(tr)), 7, tolerance = 1e-10)
   expect_setequal(tr$tip.label, paste0("t", 1:30))
   expect_equal(attr(tr, "params")[["sampling_fraction"]], 0.3)
-  expect_equal(ape::Ntip(sim_tree_shape(2, sampling_fraction = 0.1)), 2)
+  expect_identical(ape::Ntip(sim_tree_shape(2, sampling_fraction = 0.1)), 2L)
   # the default draws the same trees, and sampling lowers gamma
   set.seed(19)
   a <- sim_tree_shape(30, -0.5, 0.2)
   set.seed(19)
-  expect_equal(sim_tree_shape(30, -0.5, 0.2, sampling_fraction = 1), a)
-  gam <- replicate(100, ape::gammaStat(sim_tree_shape(50, sampling_fraction = 0.25)))
+  expect_identical(sim_tree_shape(30, -0.5, 0.2, sampling_fraction = 1), a)
+  gam <- replicate(100, {
+    ape::gammaStat(sim_tree_shape(50, sampling_fraction = 0.25))
+  })
   expect_lt(mean(gam), -0.5)
   # a rate must hold for the complete tree
-  expect_error(sim_tree_shape(10, rate = function(k) 1 - k / 15, sampling_fraction = 0.5),
+  expect_error(sim_tree_shape(10, rate = function(k) 1 - k / 15,
+                              sampling_fraction = 0.5),
                "`rate`")
   expect_error(sim_tree_shape(10, sampling_fraction = 0), "`sampling_fraction`")
-  expect_error(sim_tree_shape(10, sampling_fraction = 1.5), "`sampling_fraction`")
+  expect_error(sim_tree_shape(10, sampling_fraction = 1.5),
+               "`sampling_fraction`")
 })

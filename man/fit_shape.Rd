@@ -96,7 +96,8 @@ below 1, \code{c} is corrected by simulation: trees are drawn with
 \code{\link[=sim_tree_shape]{sim_tree_shape()}} at the estimated \code{beta}, the same \code{sampling_fraction} and
 a grid of \code{c} from 1 below to 3 above the uncorrected estimate, and the mean
 uncorrected estimate at each value (\code{correction_reps} trees) gives a curve,
-made monotone by isotonic regression and inverted at the estimate from \code{tree}.
+made monotone by isotonic regression and inverted at the estimate from
+\code{tree}.
 This assumes that tips are missing at random and that the fraction is known;
 sampling biased towards old or distinct lineages is not corrected. The result
 varies slightly with the seed.
@@ -105,8 +106,9 @@ varies slightly with the seed.
 \code{\link[=rtopology_beta]{rtopology_beta()}} at the estimated \code{beta} and intervals with
 \code{\link[=intervals_lineage_rate]{intervals_lineage_rate()}} at the estimated \code{c} (with \code{sampling_fraction}
 below 1, whole trees with \code{\link[=sim_tree_shape]{sim_tree_shape()}}, and \code{c} is corrected with the
-same curve), and both parameters are re-estimated, following the recommendation of a parametric bootstrap for
-diversification models by Etienne et al. (2016). The spread of the bootstrap
+same curve), and both parameters are re-estimated, following the
+recommendation of a parametric bootstrap for diversification models by
+Etienne et al. (2016). The spread of the bootstrap
 estimates around the point estimate includes the small-sample bias of the
 estimators, and, for \code{c}, a small additional bias because
 \code{\link[=intervals_lineage_rate]{intervals_lineage_rate()}} draws the last interval from the same law,
