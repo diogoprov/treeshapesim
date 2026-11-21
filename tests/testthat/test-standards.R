@@ -129,7 +129,7 @@ test_that("outputs hold no missing or undefined values", {
   cal <- calibrate_shape(20, reps = 10)
   expect_false(anyNA(cal$gamma))
   expect_false(anyNA(cal$colless))
-  expect_false(anyNA(prune_tips(tr, 0.3)$edge.length))
+  expect_false(anyNA(extinct_tips(tr, 0.3)$edge.length))
 })
 
 test_that("edge conditions give clear errors", {
@@ -150,13 +150,13 @@ test_that("edge conditions give clear errors", {
   na_tree <- tr
   na_tree$edge.length[] <- NA_real_
   expect_error(fit_shape(na_tree), "branch lengths")
-  expect_error(prune_tips(na_tree, 0.3), "branch lengths")
+  expect_error(extinct_tips(na_tree, 0.3), "branch lengths")
   expect_error(sim_tree_shape(NA_real_), "`n`")
   expect_error(fit_shape(tr, boot = NA), "`boot`")
   # G5.8d data outside the scope of the algorithm
   expect_error(fit_shape(sim_tree_shape(3)), "at least 4")
   expect_error(fit_shape(ape::rtree(10)), "ultrametric")
-  expect_error(prune_tips(sim_tree_shape(2), 0.5), "at least 3")
+  expect_error(extinct_tips(sim_tree_shape(2), 0.5), "at least 3")
 })
 
 test_that("every error and warning message is triggered", {

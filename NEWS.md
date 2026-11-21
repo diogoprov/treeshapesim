@@ -5,11 +5,11 @@
 - `sim_tree_shape()` stores `beta`, `c`, `root_age` and `sampling_fraction` in attribute `params`, and the `rate` function, if any, in attribute `rate`.
 - `sim_tree_shape()` warns when branches round to length zero, which happens with very negative `c` (for instance, `c = -20` with 100 tips); `c` so extreme that the split rates overflow or underflow now gives a clear error instead of `NA` draws.
 - `fit_shape()` gains `sampling_fraction` and `correction_reps`: with incomplete sampling, `c` is corrected by simulation, and the bootstrap uses the same correction. In a validation with 100 tips, the bias fell from -0.08 to -0.78 to within 0.03 for sampling fractions of 0.75 to 0.25 (`data-raw/validate_sampling.R`).
-- `prune_tips()` applies one extinction event to a tree: tips are lost at random, in clusters on the tree (a latent liability with Pagel's lambda, `signal`) or according to a trait (`risk`). The tip labels are kept, so that traits stay aligned with the remaining species.
+- `extinct_tips()` applies one extinction event to a tree: tips are lost at random, in clusters on the tree (a latent liability with Pagel's lambda, `signal`) or according to a trait (`risk`). The tip labels are kept, so that traits stay aligned with the remaining species. It was first added as `prune_tips()` and renamed before release, because treesliceR exports a function with that name.
 - A new article shows trees from treeshapesim, with non-random extinction, as regional pools in comdynamite.
 - The package follows the rOpenSci packaging guide and the general and probability-distribution statistical software standards, documented with srr tags (`srr::srr_report()`): a contributing guide, a Code of Conduct, a codemeta.json file, ORCID, status and lifecycle badges, and a package help page with definitions of terms, the novelty of the algorithms and a life cycle statement.
 - `fit_shape()` returns `optimizer`, with the name of the algorithm, its tolerance and the number of evaluations of each log-likelihood.
-- Branch lengths that are missing, infinite or negative are now an error in `fit_shape()` and `prune_tips()`, and whole-number arguments are checked with a tolerance.
+- Branch lengths that are missing, infinite or negative are now an error in `fit_shape()` and `extinct_tips()`, and whole-number arguments are checked with a tolerance.
 - New tests of split probabilities and likelihoods against explicit formulas, of alternative search intervals and optimizers, of noise, edge conditions and parameter recovery; extended tests run with `TREESHAPESIM_EXTENDED_TESTS="true"`.
 - Test coverage on Codecov.
 - The README compares treeshapesim with TreeSimGM too, and lists `fit_shape()` as estimation of tree shape.

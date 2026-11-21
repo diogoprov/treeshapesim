@@ -75,14 +75,14 @@
 #' @examples
 #' set.seed(1)
 #' tr <- sim_tree_shape(50, beta = -1)
-#' clustered <- prune_tips(tr, 0.4, signal = 1)
-#' random <- prune_tips(tr, 0.4, signal = 0)
+#' clustered <- extinct_tips(tr, 0.4, signal = 1)
+#' random <- extinct_tips(tr, 0.4, signal = 0)
 #' attr(clustered, "lost")
 #' # extinction linked to a trait
 #' body_size <- setNames(rnorm(50), tr$tip.label)
-#' prune_tips(tr, 0.4, risk = exp(2 * body_size))
+#' extinct_tips(tr, 0.4, risk = exp(2 * body_size))
 #' @export
-prune_tips <- function(tree, fraction, risk = NULL, signal = 1) {
+extinct_tips <- function(tree, fraction, risk = NULL, signal = 1) {
   check_tree(tree, min_tips = 3, lengths = TRUE)
   if (!is_number(fraction) || fraction <= 0 || fraction >= 1) {
     stop("`fraction` must be a single number between 0 and 1.", call. = FALSE)
