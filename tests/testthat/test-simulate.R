@@ -61,6 +61,7 @@ rtopology_beta_newick <- function(n, beta) {
 }
 
 test_that("the iterative topology gives the same trees as version 0.1.0", {
+  skip_if_traced()
   for (n in c(2, 3, 17, 60)) for (beta in c(-1.99, -1, 0, 5)) for (s in 1:3) {
     set.seed(s)
     ref <- rtopology_beta_newick(n, beta)
@@ -100,7 +101,14 @@ test_that("nsim and root_age", {
   expect_length(trees, 3)
   expect_equal(max(ape::node.depth.edgelength(trees[[2]])), 25,
                tolerance = 1e-10)
-  # the defaults keep the trees of version 0.1.0 (values frozen from it)
+  expect_error(sim_tree_shape(10, nsim = 0), "`nsim`")
+  expect_error(sim_tree_shape(10, root_age = -1), "`root_age`")
+  expect_error(assign_ages(rtopology_beta(5), c(1, 1, 1, -1)), "`g`")
+})
+
+test_that("the defaults keep the trees of version 0.1.0", {
+  skip_if_traced()
+  # values frozen from version 0.1.0
   set.seed(9)
   a <- sim_tree_shape(30, -0.5, 0.2)
   expect_equal(a$edge.length[c(1, 2, 3, 10, 30, 58)],
@@ -109,9 +117,6 @@ test_that("nsim and root_age", {
                tolerance = 1e-12)
   expect_identical(a$edge[c(1, 10, 30), ],
                    matrix(c(31L, 36L, 45L, 32L, 5L, 15L), 3))
-  expect_error(sim_tree_shape(10, nsim = 0), "`nsim`")
-  expect_error(sim_tree_shape(10, root_age = -1), "`root_age`")
-  expect_error(assign_ages(rtopology_beta(5), c(1, 1, 1, -1)), "`g`")
 })
 
 test_that("rate = k^c gives the intervals of c", {
