@@ -6,7 +6,7 @@
 #' `beta = 0` is Yule, `beta = -1.5` is PDA, `beta` close to -2 is
 #' caterpillar-like and large `beta` is balanced.
 #'
-#' @param n Number of tips, a single integer of at least 2.
+#' @param n Number of tips, a single positive integer of at least 2.
 #' @param beta Aldous' beta, a single finite number greater than -2. Lower
 #'   values give more imbalanced trees.
 #' @return A `phylo` object without branch lengths, with tips `t1`, ..., `tn`.
@@ -164,7 +164,8 @@ all_positive <- function(x) {
 #' @param topo Binary, rooted `phylo` topology.
 #' @param g Internode intervals, as from [intervals_lineage_rate()]
 #'   (length `Ntip(topo) - 1`, positive and finite).
-#' @return `topo` with branch lengths; ultrametric, with root depth `sum(g)`.
+#' @return A `phylo` object: `topo` with branch lengths, ultrametric, with
+#'   root depth `sum(g)`.
 #' @examples
 #' set.seed(1)
 #' assign_ages(rtopology_beta(10), intervals_lineage_rate(10))

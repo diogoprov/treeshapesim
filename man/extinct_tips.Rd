@@ -19,12 +19,12 @@ probability proportional to \code{risk}. To link extinction to a trait, use
 for instance \code{exp(b * trait)}.}
 
 \item{signal}{Pagel's lambda of the latent liability, a single number from 0
-to 1, used when \code{risk} is \code{NULL}. The tips with the highest liability are
-lost.}
+to 1, used when \code{risk} is \code{NULL} (checked in either case). The tips with
+the highest liability are lost.}
 }
 \value{
-The remaining tree, with the labels of the lost tips in attribute
-\code{lost}.
+A \code{phylo} object: the remaining tree, with the labels of the lost
+tips in attribute \code{lost}.
 }
 \description{
 Applies one extinction event to a tree and removes a fixed fraction of its

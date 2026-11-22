@@ -11,8 +11,9 @@
 #' for few tips or few draws, so each curve is made monotone by isotonic
 #' regression ([stats::isoreg()]) before it is inverted with [shape_params()].
 #'
-#' @param n Number of tips, a single integer of at least 4 (with 3 tips there
-#'   is a single topology, so the Colless index cannot be calibrated).
+#' @param n Number of tips, a single positive integer of at least 4 (with 3
+#'   tips there is a single topology, so the Colless index cannot be
+#'   calibrated).
 #' @param beta Values of `beta` at which the Colless index is estimated (at
 #'   least two).
 #' @param c Values of `c` at which gamma is estimated (at least two).
@@ -259,6 +260,7 @@ draw_kept <- function(draw, stat, target, tol, nsim, max_tries) {
 #' @return `calibration`, or the output of [calibrate_shape()] if it is `NULL`.
 #' @noRd
 get_calibration <- function(calibration, n, reps) {
+  check_count(reps, "reps")
   if (is.null(calibration)) return(calibrate_shape(n, reps = reps))
   if (!inherits(calibration, "shape_calibration") || calibration$n != n) {
     stop("`calibration` must come from calibrate_shape() with the same `n`.",

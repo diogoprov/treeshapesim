@@ -17,7 +17,7 @@ sim_tree_target(
 )
 }
 \arguments{
-\item{n}{Number of tips, a single integer of at least 2.}
+\item{n}{Number of tips, a single positive integer of at least 2.}
 
 \item{gamma, colless}{Target gamma statistic and normalized Colless index
 (single values).}

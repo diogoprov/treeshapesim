@@ -7,7 +7,7 @@
 rtopology_beta(n, beta = 0)
 }
 \arguments{
-\item{n}{Number of tips, a single integer of at least 2.}
+\item{n}{Number of tips, a single positive integer of at least 2.}
 
 \item{beta}{Aldous' beta, a single finite number greater than -2. Lower
 values give more imbalanced trees.}

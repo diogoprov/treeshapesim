@@ -41,6 +41,10 @@ test_that("sim_tree_target returns trees within the tolerance", {
   expect_s3_class(one, "phylo")
   expect_error(sim_tree_target(30, gamma = 0, colless = 0, calibration = cal),
                "same `n`")
+  # reps is checked even when a calibration is given
+  expect_error(sim_tree_target(40, gamma = 0, colless = 0, calibration = cal,
+                               reps = c(10, 20)), "`reps`")
+  expect_error(shape_grid(40, 0, 0, calibration = cal, reps = 0), "`reps`")
   # nothing within an impossible tolerance: a warning, then an error
   expect_warning(
     expect_error(sim_tree_target(40, gamma = 0, colless = 0, nsim = 3,

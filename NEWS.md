@@ -12,6 +12,7 @@
 - Branch lengths that are missing, infinite or negative are now an error in `fit_shape()` and `extinct_tips()`, and whole-number arguments are checked with a tolerance.
 - New tests of split probabilities and likelihoods against explicit formulas, of alternative search intervals and optimizers, of noise, edge conditions and parameter recovery; extended tests run with `TREESHAPESIM_EXTENDED_TESTS="true"`.
 - Argument checks are gathered in internal helpers, so that no function has cyclomatic complexity above 10; error messages and results are unchanged.
+- `reps` in `sim_tree_target()` and `shape_grid()` is checked even when a calibration is given, and `signal` in `extinct_tips()` is checked even when `risk` is given (found with autotest). The tests that compare trees with values frozen for a seed are skipped while autotest traces the package, because its tracer draws random numbers.
 - Test coverage on Codecov.
 - The README compares treeshapesim with TreeSimGM too, and lists `fit_shape()` as estimation of tree shape.
 - The README explains the use of trees from treeshapesim as regional pools in comdynamite.
