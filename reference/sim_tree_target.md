@@ -42,7 +42,7 @@ sim_tree_target(
 
 - n:
 
-  Number of tips, a single integer of at least 2.
+  Number of tips, a single positive integer of at least 2.
 
 - gamma, colless:
 

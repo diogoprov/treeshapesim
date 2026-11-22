@@ -17,7 +17,7 @@ shape_grid(n, gamma, colless, calibration = NULL, reps = 200)
 
 - n:
 
-  Number of tips, a single integer of at least 2.
+  Number of tips, a single positive integer of at least 2.
 
 - gamma, colless:
 

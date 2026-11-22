@@ -31,7 +31,7 @@ sim_tree_shape(
 
 - n:
 
-  Number of tips, a single integer of at least 2.
+  Number of tips, a single positive integer of at least 2.
 
 - beta:
 

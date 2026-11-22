@@ -64,6 +64,15 @@
 - Argument checks are gathered in internal helpers, so that no function
   has cyclomatic complexity above 10; error messages and results are
   unchanged.
+- `reps` in
+  [`sim_tree_target()`](https://provetelab.org/treeshapesim/reference/sim_tree_target.md)
+  and
+  [`shape_grid()`](https://provetelab.org/treeshapesim/reference/shape_grid.md)
+  is checked even when a calibration is given, and `signal` in
+  [`extinct_tips()`](https://provetelab.org/treeshapesim/reference/extinct_tips.md)
+  is checked even when `risk` is given (found with autotest). The tests
+  that compare trees with values frozen for a seed are skipped while
+  autotest traces the package, because its tracer draws random numbers.
 - Test coverage on Codecov.
 - The README compares treeshapesim with TreeSimGM too, and lists
   [`fit_shape()`](https://provetelab.org/treeshapesim/reference/fit_shape.md)

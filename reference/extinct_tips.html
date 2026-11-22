@@ -84,14 +84,14 @@ for instance <code>exp(b * trait)</code>.</p></dd>
 
 <dt id="arg-signal">signal<a class="anchor" aria-label="anchor" href="#arg-signal"></a></dt>
 <dd><p>Pagel's lambda of the latent liability, a single number from 0
-to 1, used when <code>risk</code> is <code>NULL</code>. The tips with the highest liability are
-lost.</p></dd>
+to 1, used when <code>risk</code> is <code>NULL</code> (checked in either case). The tips with
+the highest liability are lost.</p></dd>
 
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>The remaining tree, with the labels of the lost tips in attribute
-<code>lost</code>.</p>
+    <p>A <code>phylo</code> object: the remaining tree, with the labels of the lost
+tips in attribute <code>lost</code>.</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>

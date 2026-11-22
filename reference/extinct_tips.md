@@ -36,13 +36,13 @@ extinct_tips(tree, fraction, risk = NULL, signal = 1)
 - signal:
 
   Pagel's lambda of the latent liability, a single number from 0 to 1,
-  used when `risk` is `NULL`. The tips with the highest liability are
-  lost.
+  used when `risk` is `NULL` (checked in either case). The tips with the
+  highest liability are lost.
 
 ## Value
 
-The remaining tree, with the labels of the lost tips in attribute
-`lost`.
+A `phylo` object: the remaining tree, with the labels of the lost tips
+in attribute `lost`.
 
 ## Details
 

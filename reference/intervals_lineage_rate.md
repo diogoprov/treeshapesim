@@ -16,7 +16,7 @@ intervals_lineage_rate(n, c = 0, rate = NULL)
 
 - n:
 
-  Number of tips, a single integer of at least 2.
+  Number of tips, a single positive integer of at least 2.
 
 - c:
 

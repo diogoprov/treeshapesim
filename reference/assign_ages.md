@@ -25,7 +25,8 @@ assign_ages(topo, g)
 
 ## Value
 
-`topo` with branch lengths; ultrametric, with root depth `sum(g)`.
+A `phylo` object: `topo` with branch lengths, ultrametric, with root
+depth `sum(g)`.
 
 ## Examples
 
