@@ -7,7 +7,7 @@
 intervals_lineage_rate(n, c = 0, rate = NULL)
 }
 \arguments{
-\item{n}{Number of tips, a single integer of at least 2.}
+\item{n}{Number of tips, a single positive integer of at least 2.}
 
 \item{c}{Lineage dependence of the split rate, a single finite number.}
 

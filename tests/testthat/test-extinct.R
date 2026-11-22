@@ -70,6 +70,9 @@ test_that("extinct_tips checks its arguments", {
   expect_error(extinct_tips(tr, 0.01), "at least one")
   expect_error(extinct_tips(tr, 0.95), "leave at least two")
   expect_error(extinct_tips(tr, 0.5, signal = 2), "`signal`")
+  expect_error(extinct_tips(tr, 0.5, risk = stats::setNames(rep(1, 10),
+                                                            tr$tip.label),
+                            signal = c(0.5, 1)), "`signal`")
   expect_error(extinct_tips(tr, 0.5, risk = rep(1, 10)), "`risk`")
   r <- stats::setNames(rep(1, 10), tr$tip.label)
   expect_error(extinct_tips(tr, 0.5, risk = r[1:9]), "`risk`")

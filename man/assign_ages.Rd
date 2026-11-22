@@ -13,7 +13,8 @@ assign_ages(topo, g)
 (length \code{Ntip(topo) - 1}, positive and finite).}
 }
 \value{
-\code{topo} with branch lengths; ultrametric, with root depth \code{sum(g)}.
+A \code{phylo} object: \code{topo} with branch lengths, ultrametric, with
+root depth \code{sum(g)}.
 }
 \description{
 Internal nodes are ranked by a uniform random linear extension of the tree

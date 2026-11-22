@@ -37,10 +37,10 @@
 #'   probability proportional to `risk`. To link extinction to a trait, use
 #'   for instance `exp(b * trait)`.
 #' @param signal Pagel's lambda of the latent liability, a single number from 0
-#'   to 1, used when `risk` is `NULL`. The tips with the highest liability are
-#'   lost.
-#' @return The remaining tree, with the labels of the lost tips in attribute
-#'   `lost`.
+#'   to 1, used when `risk` is `NULL` (checked in either case). The tips with
+#'   the highest liability are lost.
+#' @return A `phylo` object: the remaining tree, with the labels of the lost
+#'   tips in attribute `lost`.
 #' @references
 #' Gernhard, T. (2008). The conditioned reconstructed process. *Journal of
 #' Theoretical Biology*, 253, 769--778. \doi{10.1016/j.jtbi.2008.04.005}
@@ -86,6 +86,8 @@ extinct_tips <- function(tree, fraction, risk = NULL, signal = 1) {
   check_tree(tree, min_tips = 3, lengths = TRUE)
   check_number(fraction, "`fraction` must be a single number between 0 and 1.",
                lower = 0, upper = 1, open = c(TRUE, TRUE))
+  check_number(signal, "`signal` must be a single number from 0 to 1.",
+               lower = 0, upper = 1)
   tips <- tree$tip.label
   n_lost <- round(fraction * length(tips))
   if (n_lost < 1 || length(tips) - n_lost < 2) {
@@ -107,9 +109,6 @@ extinct_tips <- function(tree, fraction, risk = NULL, signal = 1) {
 #' @return The labels of the `n_lost` tips with the highest liability.
 #' @noRd
 lost_by_liability <- function(tree, n_lost, signal) {
-  if (!is_number(signal) || signal < 0 || signal > 1) {
-    stop("`signal` must be a single number from 0 to 1.", call. = FALSE)
-  }
   liability <- tip_liability(tree, signal)
   names(sort(liability, decreasing = TRUE))[seq_len(n_lost)]
 }

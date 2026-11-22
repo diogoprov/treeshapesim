@@ -7,7 +7,7 @@
 shape_grid(n, gamma, colless, calibration = NULL, reps = 200)
 }
 \arguments{
-\item{n}{Number of tips, a single integer of at least 2.}
+\item{n}{Number of tips, a single positive integer of at least 2.}
 
 \item{gamma, colless}{Levels of each statistic.}
 

@@ -12,8 +12,9 @@ calibrate_shape(
 )
 }
 \arguments{
-\item{n}{Number of tips, a single integer of at least 4 (with 3 tips there
-is a single topology, so the Colless index cannot be calibrated).}
+\item{n}{Number of tips, a single positive integer of at least 4 (with 3
+tips there is a single topology, so the Colless index cannot be
+calibrated).}
 
 \item{beta}{Values of \code{beta} at which the Colless index is estimated (at
 least two).}
