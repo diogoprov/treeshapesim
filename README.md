@@ -8,6 +8,7 @@
 [![R-CMD-check](https://github.com/diogoprov/treeshapesim/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/diogoprov/treeshapesim/actions/workflows/R-CMD-check.yaml)
 [![Codecov test coverage](https://codecov.io/gh/diogoprov/treeshapesim/graph/badge.svg)](https://app.codecov.io/gh/diogoprov/treeshapesim)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.23647260.svg)](https://doi.org/10.5281/zenodo.23647260)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 <!-- badges: end -->
 
 Simulate rooted, binary, ultrametric trees in which topological imbalance and
