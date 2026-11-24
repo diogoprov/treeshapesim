@@ -1,7 +1,7 @@
 # treeshapesim: estado e próximos passos
 
-Atualizado em 2026-11-05, depois dos itens 8, 9, 10, 12 e 17, da correção de `c` para amostragem incompleta e de `prune_tips()`. Última versão publicada:
-0.2.1; versão de desenvolvimento 0.2.1.9000.
+Atualizado em 2026-11-24, na release 0.3.0 (versão registrada no INPI via AGINOVA/UFMS). Última versão publicada:
+0.3.0.
 
 ## Feito
 
