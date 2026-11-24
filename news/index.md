@@ -1,6 +1,6 @@
 # Changelog
 
-## treeshapesim (development version)
+## treeshapesim 0.3.0
 
 - [`sim_tree_shape()`](https://provetelab.org/treeshapesim/reference/sim_tree_shape.md)
   and
