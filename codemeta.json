@@ -8,7 +8,7 @@
   "codeRepository": "https://github.com/diogoprov/treeshapesim",
   "issueTracker": "https://github.com/diogoprov/treeshapesim/issues",
   "license": "https://spdx.org/licenses/MIT",
-  "version": "0.2.1.9000",
+  "version": "0.3.0",
   "programmingLanguage": {
     "@type": "ComputerLanguage",
     "name": "R",
@@ -121,7 +121,7 @@
       "name": "treeshapesim: Simulate Trees with Separately Controlled Imbalance and Branching Times",
       "identifier": "10.5281/zenodo.23647260",
       "url": "https://github.com/diogoprov/treeshapesim",
-      "description": "R package version 0.2.1.9000",
+      "description": "R package version 0.3.0",
       "@id": "https://doi.org/10.5281/zenodo.23647260",
       "sameAs": "https://doi.org/10.5281/zenodo.23647260"
     }

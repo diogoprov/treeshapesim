@@ -1,4 +1,4 @@
-# treeshapesim (development version)
+# treeshapesim 0.3.0
 
 - `sim_tree_shape()` and `intervals_lineage_rate()` gain `rate`, a function of the number of lineages that returns the per-lineage split rate, for any dependence other than k^c (for instance, logistic or stepwise). The intervals remain independent of the topology, and with the default `rate = NULL` the trees are unchanged. `calibrate_shape()`, `shape_params()` and `sim_tree_target()` still work with `c` only.
 - `sim_tree_shape()` gains `sampling_fraction`: it draws a complete tree of `round(n / sampling_fraction)` tips and keeps `n` at random, with root depth `root_age`. The default keeps the same trees.
