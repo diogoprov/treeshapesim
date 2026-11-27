@@ -16,6 +16,12 @@ The gamma statistic depends only on the internode intervals and the
 Colless index only on the topology, so `beta` mainly moves the Colless
 index and `c` mainly moves gamma.
 
+![Animation of 48-tip trees simulated with treeshapesim along a circuit
+in parameter space: as beta increases, the topology goes from imbalanced
+to balanced while gamma stays the same; as c increases, branching shifts
+from near the root to near the tips while the Colless index stays the
+same.](reference/figures/treeshapesim.gif)
+
 Documentation: <https://provetelab.org/treeshapesim/>
 
 ## Installation
